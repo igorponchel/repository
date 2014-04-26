@@ -1,0 +1,124 @@
+module OperateurDeTransportObjet {
+
+	struct CoordBancaire {
+	
+		long numeroCarte;
+		string proprietaire;
+		string date;
+		long numDos;
+	};
+
+	struct Adresse {
+		
+		string numeroRue;
+		string nomRue;
+		string ville;
+		string pays;
+	};
+	
+	interface GestionUtilisateurs {
+	
+		struct DemandeInscriptionTrans {
+	
+			string nomTransporteur;
+			Adresse adresseTransporteur;
+			CoordBancaire coordonneesBancaires;
+		};
+	
+		struct DemandeAdhesion {
+			
+			string prenomAdherent;
+			string nomAdherent;
+			Adresse adresseAdherent;
+			CoordBancaire coordonneesBancaires;
+		};
+	
+		struct Adhesion {
+		
+			string numeroAdherent;
+			string nomAdherent;
+			string prenomAdherent;
+			string zoneAdherent;
+		};
+		
+		struct InscriptionTrans {
+		
+			string numeroInscritTrans;
+			string nomTransporteur;
+		};
+	
+		exception AdherentExistantException {
+			string explication;
+		};
+		exception TransExistantException {
+			string explication;
+		};
+		exception AdherentInexistantException {
+			string explication;
+		};
+		exception TransInexistantException {
+			string explication;
+		};
+		
+		Adhesion demandeAdhesion(in DemandeAdhesion demandeAdhesion) raises (AdherentExistantException);
+		InscriptionTrans demandeInscriptionTrans(in DemandeInscriptionTrans demandeInscriptionTrans) raises (TransExistantException);
+		boolean verifierAdherent(in short codeVerif); //On suppose que le GestionnaireUtilisateur contient les IOR des adhérents
+		boolean verifierTransporteur(in short codeVerif); //On suppose que le GestionnaireUtilisateur contient les IOR des transporteurs
+		string getNumAdherent(in string nomAdherent, in string prenom) raises(AdherentInexistantException);
+	};
+	
+	interface GestionnairePaiement {
+	
+		short debiter(in CoordBancaire coordonneesBancaires, in long somme); // une seule suffit quelque soit l'entité
+		short crediter(in CoordBancaire coordonneesBancaires, in long somme);
+	};
+	
+	interface Station {
+		
+		enum EtatCasier {vide, occupe};
+		
+		struct Casier {
+		
+			string numeroCasier;
+			EtatCasier etatCasier;
+		};
+		
+		exception AucunCasierDisponibleException {
+			string explication;
+		};
+	
+		boolean verifierDispoCasier(); //on sait déjà de quelle station il s'agit vu qu'on invoque la méthode dessus
+		long reserverCasier(in string codeTransport) raises (AucunCasierDisponibleException);
+	};
+	
+	interface GestionnaireTransportObjet {
+	
+		enum EtatObjet {depose, enTransit, livre, delivre}; // delivré signifie que le destinataire l'a récupéré.
+	
+		struct Objet {
+		
+			string numeroObjet;
+			EtatObjet etatObjet;
+		};
+		
+		exception ObjetInexistantException {
+			string explication;
+		};
+		
+		oneway void notifierOffreTransport(in string numeroStation);
+		oneway void notifierOffreAcceptee(in string numeroTransporteur);
+		boolean verifierTransporteur(in string numeroTransporteur, in string codeTransport);
+		void notifierEtatObjet(in string numeroObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
+		EtatObjet consulterEtatObjet(in string numeroObjet) raises (ObjetInexistantException);
+	};
+	
+	interface Adherent {
+	
+		oneway void notifierColisArrive(in string numeroObjet);
+	};
+	
+	interface Transporteur {
+	
+		oneway void notifierOffreTransport(in string numeroStation, in string codeTransport);
+	};
+};
