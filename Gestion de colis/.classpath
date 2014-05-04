@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="C:/TRAVAIL/OpenORB-1.3.1_complet/OpenORB-1.3.1/lib/avalon-framework.jar"/>
-	<classpathentry kind="lib" path="C:/TRAVAIL/OpenORB-1.3.1_complet/OpenORB-1.3.1/lib/logkit.jar"/>
-	<classpathentry kind="lib" path="C:/TRAVAIL/OpenORB-1.3.1_complet/OpenORB-1.3.1/lib/openorb_tools-1.3.1.jar"/>
-	<classpathentry kind="lib" path="C:/TRAVAIL/OpenORB-1.3.1_complet/OpenORB-1.3.1/lib/openorb-1.3.1.jar"/>
+	<classpathentry kind="lib" path="libs/avalon-framework.jar"/>
+	<classpathentry kind="lib" path="libs/logkit.jar"/>
+	<classpathentry kind="lib" path="libs/openorb_tools-1.3.1.jar"/>
+	<classpathentry kind="lib" path="libs/openorb-1.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
