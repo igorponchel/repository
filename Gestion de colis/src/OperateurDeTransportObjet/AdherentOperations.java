@@ -10,6 +10,6 @@ public interface AdherentOperations
     /**
      * Operation notifierColisArrive
      */
-    public void notifierColisArrive(String numeroObjet);
+    public void notifierColisArrive(int numeroObjet);
 
 }

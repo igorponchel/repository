@@ -7,12 +7,21 @@ module OperateurDeTransportObjet {
 		string date;
 		long numDos;
 	};
+	
+	struct CoordBancairePro {
+	
+		long codeBanque;
+		long codeGuichet;
+		long numCompte;
+		long cleRIB;
+	};
 
 	struct Adresse {
 		
 		string numeroRue;
 		string nomRue;
 		string ville;
+		long departement;
 		string pays;
 	};
 	
@@ -22,7 +31,7 @@ module OperateurDeTransportObjet {
 	
 			string nomTransporteur;
 			Adresse adresseTransporteur;
-			CoordBancaire coordonneesBancaires;
+			CoordBancairePro coordonneesBancairesPro;
 		};
 	
 		struct DemandeAdhesion {
@@ -35,15 +44,15 @@ module OperateurDeTransportObjet {
 	
 		struct Adhesion {
 		
-			string numeroAdherent;
+			long numeroAdherent;
 			string nomAdherent;
 			string prenomAdherent;
-			string zoneAdherent;
+			long zoneAdherent;
 		};
 		
 		struct InscriptionTrans {
 		
-			string numeroInscritTrans;
+			long numeroInscritTrans;
 			string nomTransporteur;
 		};
 	
@@ -64,13 +73,13 @@ module OperateurDeTransportObjet {
 		InscriptionTrans demandeInscriptionTrans(in DemandeInscriptionTrans demandeInscriptionTrans) raises (TransExistantException);
 		boolean verifierAdherent(in short codeVerif); //On suppose que le GestionnaireUtilisateur contient les IOR des adhérents
 		boolean verifierTransporteur(in short codeVerif); //On suppose que le GestionnaireUtilisateur contient les IOR des transporteurs
-		string getNumAdherent(in string nomAdherent, in string prenom) raises(AdherentInexistantException);
+		long getNumAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 	};
 	
 	interface GestionnairePaiement {
 	
 		short debiter(in CoordBancaire coordonneesBancaires, in long somme); // une seule suffit quelque soit l'entité
-		short crediter(in CoordBancaire coordonneesBancaires, in long somme);
+		short crediter(in CoordBancairePro coordonneesBancairesPro, in long somme);
 	};
 	
 	interface Station {
@@ -79,7 +88,7 @@ module OperateurDeTransportObjet {
 		
 		struct Casier {
 		
-			string numeroCasier;
+			long numeroCasier;
 			EtatCasier etatCasier;
 		};
 		
@@ -97,7 +106,7 @@ module OperateurDeTransportObjet {
 	
 		struct Objet {
 		
-			string numeroObjet;
+			long numeroObjet;
 			EtatObjet etatObjet;
 		};
 		
@@ -105,20 +114,20 @@ module OperateurDeTransportObjet {
 			string explication;
 		};
 		
-		oneway void notifierOffreTransport(in string numeroStation);
-		oneway void notifierOffreAcceptee(in string numeroTransporteur);
-		boolean verifierTransporteur(in string numeroTransporteur, in string codeTransport);
-		void notifierEtatObjet(in string numeroObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
+		oneway void notifierOffreTransport(in long numeroStation);
+		oneway void notifierOffreAcceptee(in long numeroTransporteur);
+		boolean verifierTransporteur(in long numeroTransporteur, in string codeTransport);
+		void notifierEtatObjet(in long numeroObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
 		EtatObjet consulterEtatObjet(in string numeroObjet) raises (ObjetInexistantException);
 	};
 	
 	interface Adherent {
 	
-		oneway void notifierColisArrive(in string numeroObjet);
+		oneway void notifierColisArrive(in long numeroObjet);
 	};
 	
 	interface Transporteur {
 	
-		oneway void notifierOffreTransport(in string numeroStation, in string codeTransport);
+		oneway void notifierOffreTransport(in long numeroStation, in string codeTransport);
 	};
 };

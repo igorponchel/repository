@@ -65,7 +65,7 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     /**
      * Operation notifierOffreTransport
      */
-    public void notifierOffreTransport(String numeroStation)
+    public void notifierOffreTransport(int numeroStation)
     {
         _tie.notifierOffreTransport( numeroStation);
     }
@@ -73,7 +73,7 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     /**
      * Operation notifierOffreAcceptee
      */
-    public void notifierOffreAcceptee(String numeroTransporteur)
+    public void notifierOffreAcceptee(int numeroTransporteur)
     {
         _tie.notifierOffreAcceptee( numeroTransporteur);
     }
@@ -81,7 +81,7 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     /**
      * Operation verifierTransporteur
      */
-    public boolean verifierTransporteur(String numeroTransporteur, String codeTransport)
+    public boolean verifierTransporteur(int numeroTransporteur, String codeTransport)
     {
         return _tie.verifierTransporteur( numeroTransporteur,  codeTransport);
     }
@@ -89,7 +89,7 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     /**
      * Operation notifierEtatObjet
      */
-    public void notifierEtatObjet(String numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public void notifierEtatObjet(int numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
         _tie.notifierEtatObjet( numeroObjet,  etatObjet);

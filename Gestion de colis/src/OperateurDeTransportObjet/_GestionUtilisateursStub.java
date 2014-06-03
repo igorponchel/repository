@@ -235,7 +235,7 @@ public class _GestionUtilisateursStub extends org.omg.CORBA.portable.ObjectImpl
     /**
      * Operation getNumAdherent
      */
-    public String getNumAdherent(String nomAdherent, String prenom)
+    public int getNumAdherent(String nomAdherent, String prenomAdherent)
         throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException
     {
         while(true)
@@ -247,9 +247,9 @@ public class _GestionUtilisateursStub extends org.omg.CORBA.portable.ObjectImpl
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("getNumAdherent",true);
                     _output.write_string(nomAdherent);
-                    _output.write_string(prenom);
+                    _output.write_string(prenomAdherent);
                     _input = this._invoke(_output);
-                    String _arg_ret = _input.read_string();
+                    int _arg_ret = _input.read_long();
                     return _arg_ret;
                 }
                 catch(org.omg.CORBA.portable.RemarshalException _exception)
@@ -279,7 +279,7 @@ public class _GestionUtilisateursStub extends org.omg.CORBA.portable.ObjectImpl
                 OperateurDeTransportObjet.GestionUtilisateursOperations _self = (OperateurDeTransportObjet.GestionUtilisateursOperations) _so.servant;
                 try
                 {
-                    return _self.getNumAdherent( nomAdherent,  prenom);
+                    return _self.getNumAdherent( nomAdherent,  prenomAdherent);
                 }
                 finally
                 {

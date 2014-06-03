@@ -130,10 +130,10 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
 
         try
         {
-            String _arg_result = getNumAdherent(arg0_in, arg1_in);
+            int _arg_result = getNumAdherent(arg0_in, arg1_in);
 
             _output = handler.createReply();
-            _output.write_string(_arg_result);
+            _output.write_long(_arg_result);
 
         }
         catch (OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException _exception)

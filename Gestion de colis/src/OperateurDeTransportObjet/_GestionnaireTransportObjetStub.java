@@ -23,7 +23,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation notifierOffreTransport
      */
-    public void notifierOffreTransport(String numeroStation)
+    public void notifierOffreTransport(int numeroStation)
     {
         while(true)
         {
@@ -33,7 +33,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("notifierOffreTransport",false);
-                    _output.write_string(numeroStation);
+                    _output.write_long(numeroStation);
                     _input = this._invoke(_output);
                     return;
                 }
@@ -73,7 +73,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation notifierOffreAcceptee
      */
-    public void notifierOffreAcceptee(String numeroTransporteur)
+    public void notifierOffreAcceptee(int numeroTransporteur)
     {
         while(true)
         {
@@ -83,7 +83,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("notifierOffreAcceptee",false);
-                    _output.write_string(numeroTransporteur);
+                    _output.write_long(numeroTransporteur);
                     _input = this._invoke(_output);
                     return;
                 }
@@ -123,7 +123,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation verifierTransporteur
      */
-    public boolean verifierTransporteur(String numeroTransporteur, String codeTransport)
+    public boolean verifierTransporteur(int numeroTransporteur, String codeTransport)
     {
         while(true)
         {
@@ -133,7 +133,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("verifierTransporteur",true);
-                    _output.write_string(numeroTransporteur);
+                    _output.write_long(numeroTransporteur);
                     _output.write_string(codeTransport);
                     _input = this._invoke(_output);
                     boolean _arg_ret = _input.read_boolean();
@@ -174,7 +174,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation notifierEtatObjet
      */
-    public void notifierEtatObjet(String numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public void notifierEtatObjet(int numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
         while(true)
@@ -185,7 +185,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("notifierEtatObjet",true);
-                    _output.write_string(numeroObjet);
+                    _output.write_long(numeroObjet);
                     OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.write(_output,etatObjet);
                     _input = this._invoke(_output);
                     return;

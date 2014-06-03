@@ -77,7 +77,7 @@ public class AdhesionHelper
 
                 _members[0] = new org.omg.CORBA.StructMember();
                 _members[0].name = "numeroAdherent";
-                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
+                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
                 _members[1] = new org.omg.CORBA.StructMember();
                 _members[1].name = "nomAdherent";
                 _members[1].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
@@ -86,7 +86,7 @@ public class AdhesionHelper
                 _members[2].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
                 _members[3] = new org.omg.CORBA.StructMember();
                 _members[3].name = "zoneAdherent";
-                _members[3].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
+                _members[3].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
                 _tc = orb.create_struct_tc(id(),"Adhesion",_members);
                 _working = false;
             }
@@ -114,10 +114,10 @@ public class AdhesionHelper
     {
         OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion new_one = new OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion();
 
-        new_one.numeroAdherent = istream.read_string();
+        new_one.numeroAdherent = istream.read_long();
         new_one.nomAdherent = istream.read_string();
         new_one.prenomAdherent = istream.read_string();
-        new_one.zoneAdherent = istream.read_string();
+        new_one.zoneAdherent = istream.read_long();
 
         return new_one;
     }
@@ -129,10 +129,10 @@ public class AdhesionHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion value)
     {
-        ostream.write_string(value.numeroAdherent);
+        ostream.write_long(value.numeroAdherent);
         ostream.write_string(value.nomAdherent);
         ostream.write_string(value.prenomAdherent);
-        ostream.write_string(value.zoneAdherent);
+        ostream.write_long(value.zoneAdherent);
     }
 
 }

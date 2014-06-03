@@ -77,7 +77,7 @@ public class CasierHelper
 
                 _members[0] = new org.omg.CORBA.StructMember();
                 _members[0].name = "numeroCasier";
-                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
+                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
                 _members[1] = new org.omg.CORBA.StructMember();
                 _members[1].name = "etatCasier";
                 _members[1].type = OperateurDeTransportObjet.StationPackage.EtatCasierHelper.type();
@@ -108,7 +108,7 @@ public class CasierHelper
     {
         OperateurDeTransportObjet.StationPackage.Casier new_one = new OperateurDeTransportObjet.StationPackage.Casier();
 
-        new_one.numeroCasier = istream.read_string();
+        new_one.numeroCasier = istream.read_long();
         new_one.etatCasier = OperateurDeTransportObjet.StationPackage.EtatCasierHelper.read(istream);
 
         return new_one;
@@ -121,7 +121,7 @@ public class CasierHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, OperateurDeTransportObjet.StationPackage.Casier value)
     {
-        ostream.write_string(value.numeroCasier);
+        ostream.write_long(value.numeroCasier);
         OperateurDeTransportObjet.StationPackage.EtatCasierHelper.write(ostream,value.etatCasier);
     }
 

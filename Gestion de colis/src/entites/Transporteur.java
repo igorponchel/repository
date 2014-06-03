@@ -1,6 +1,6 @@
 package entites;
 
-import entites.ui.FrameStandard;
+import entites.ui.TransporteurUI;
 
 
 /*******************************
@@ -8,7 +8,7 @@ import entites.ui.FrameStandard;
 *******************************/
 public class Transporteur {
 
-	public static OperateurDeTransportObjet.Transporteur monTransporteur;
+	public static OperateurDeTransportObjet.GestionUtilisateurs monGestionnaireUtilisateurs;
 
 	public static void main(String args[]) {
 
@@ -39,12 +39,12 @@ public class Transporteur {
         System.out.println(orb.object_to_string(distantEuro));
 */
         // Utilisation directe de l'IOR (SAUF utilisation du service de nommage)
-        org.omg.CORBA.Object distantTransporteur = orb.string_to_object("IOR:000000000000001B49444C3A436F6E766572746973736575722F4575726F3A312E300000000000010000000000000060000102000000000D3139322E3136382E312E31330000CA3D00000014004F4F01C64426C845010000504F41FE99A55A8F00000001000000010000002400000000100204E4000000030001000F0001000100010020000101090000000100010100");
-        // Casting de l'objet CORBA au type convertisseur euro
-        monTransporteur = OperateurDeTransportObjet.TransporteurHelper.narrow(distantTransporteur);
+        org.omg.CORBA.Object distantGestionUtilisateurs = orb.string_to_object("IOR:000000000000003649444C3A4F706572617465757244655472616E73706F72744F626A65742F47657374696F6E5574696C69736174657572733A312E30000000000000010000000000000060000102000000000D3139322E3136382E312E31330000C3F400000014004F4F011590986246010000504F41FE3C8EEED300000001000000010000002400000000100204E4000000030001000F0001000100010020000101090000000100010100");
+//         Casting de l'objet CORBA au type Ad
+        monGestionnaireUtilisateurs = OperateurDeTransportObjet.GestionUtilisateursHelper.narrow(distantGestionUtilisateurs);
 
         // Appel de l'interface graphique
-        FrameStandard frame = new FrameStandard();
+        TransporteurUI frame = new TransporteurUI(monGestionnaireUtilisateurs);
         frame.setTitle("Fenetre Transporteur");
         frame.setVisible(true);
 	}

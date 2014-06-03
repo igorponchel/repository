@@ -23,6 +23,11 @@ public final class Adresse implements org.omg.CORBA.portable.IDLEntity
     public String ville;
 
     /**
+     * Struct member departement
+     */
+    public int departement;
+
+    /**
      * Struct member pays
      */
     public String pays;
@@ -38,13 +43,15 @@ public final class Adresse implements org.omg.CORBA.portable.IDLEntity
      * @param numeroRue numeroRue struct member
      * @param nomRue nomRue struct member
      * @param ville ville struct member
+     * @param departement departement struct member
      * @param pays pays struct member
      */
-    public Adresse(String numeroRue, String nomRue, String ville, String pays)
+    public Adresse(String numeroRue, String nomRue, String ville, int departement, String pays)
     {
         this.numeroRue = numeroRue;
         this.nomRue = nomRue;
         this.ville = ville;
+        this.departement = departement;
         this.pays = pays;
     }
 

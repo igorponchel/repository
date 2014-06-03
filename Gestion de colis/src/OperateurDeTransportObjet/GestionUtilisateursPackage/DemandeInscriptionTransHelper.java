@@ -82,8 +82,8 @@ public class DemandeInscriptionTransHelper
                 _members[1].name = "adresseTransporteur";
                 _members[1].type = OperateurDeTransportObjet.AdresseHelper.type();
                 _members[2] = new org.omg.CORBA.StructMember();
-                _members[2].name = "coordonneesBancaires";
-                _members[2].type = OperateurDeTransportObjet.CoordBancaireHelper.type();
+                _members[2].name = "coordonneesBancairesPro";
+                _members[2].type = OperateurDeTransportObjet.CoordBancaireProHelper.type();
                 _tc = orb.create_struct_tc(id(),"DemandeInscriptionTrans",_members);
                 _working = false;
             }
@@ -113,7 +113,7 @@ public class DemandeInscriptionTransHelper
 
         new_one.nomTransporteur = istream.read_string();
         new_one.adresseTransporteur = OperateurDeTransportObjet.AdresseHelper.read(istream);
-        new_one.coordonneesBancaires = OperateurDeTransportObjet.CoordBancaireHelper.read(istream);
+        new_one.coordonneesBancairesPro = OperateurDeTransportObjet.CoordBancaireProHelper.read(istream);
 
         return new_one;
     }
@@ -127,7 +127,7 @@ public class DemandeInscriptionTransHelper
     {
         ostream.write_string(value.nomTransporteur);
         OperateurDeTransportObjet.AdresseHelper.write(ostream,value.adresseTransporteur);
-        OperateurDeTransportObjet.CoordBancaireHelper.write(ostream,value.coordonneesBancaires);
+        OperateurDeTransportObjet.CoordBancaireProHelper.write(ostream,value.coordonneesBancairesPro);
     }
 
 }

@@ -18,9 +18,9 @@ public final class DemandeInscriptionTrans implements org.omg.CORBA.portable.IDL
     public OperateurDeTransportObjet.Adresse adresseTransporteur;
 
     /**
-     * Struct member coordonneesBancaires
+     * Struct member coordonneesBancairesPro
      */
-    public OperateurDeTransportObjet.CoordBancaire coordonneesBancaires;
+    public OperateurDeTransportObjet.CoordBancairePro coordonneesBancairesPro;
 
     /**
      * Default constructor
@@ -32,13 +32,13 @@ public final class DemandeInscriptionTrans implements org.omg.CORBA.portable.IDL
      * Constructor with fields initialization
      * @param nomTransporteur nomTransporteur struct member
      * @param adresseTransporteur adresseTransporteur struct member
-     * @param coordonneesBancaires coordonneesBancaires struct member
+     * @param coordonneesBancairesPro coordonneesBancairesPro struct member
      */
-    public DemandeInscriptionTrans(String nomTransporteur, OperateurDeTransportObjet.Adresse adresseTransporteur, OperateurDeTransportObjet.CoordBancaire coordonneesBancaires)
+    public DemandeInscriptionTrans(String nomTransporteur, OperateurDeTransportObjet.Adresse adresseTransporteur, OperateurDeTransportObjet.CoordBancairePro coordonneesBancairesPro)
     {
         this.nomTransporteur = nomTransporteur;
         this.adresseTransporteur = adresseTransporteur;
-        this.coordonneesBancaires = coordonneesBancaires;
+        this.coordonneesBancairesPro = coordonneesBancairesPro;
     }
 
 }

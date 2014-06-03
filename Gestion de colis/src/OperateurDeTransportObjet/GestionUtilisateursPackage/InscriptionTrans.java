@@ -10,7 +10,7 @@ public final class InscriptionTrans implements org.omg.CORBA.portable.IDLEntity
     /**
      * Struct member numeroInscritTrans
      */
-    public String numeroInscritTrans;
+    public int numeroInscritTrans;
 
     /**
      * Struct member nomTransporteur
@@ -28,7 +28,7 @@ public final class InscriptionTrans implements org.omg.CORBA.portable.IDLEntity
      * @param numeroInscritTrans numeroInscritTrans struct member
      * @param nomTransporteur nomTransporteur struct member
      */
-    public InscriptionTrans(String numeroInscritTrans, String nomTransporteur)
+    public InscriptionTrans(int numeroInscritTrans, String nomTransporteur)
     {
         this.numeroInscritTrans = numeroInscritTrans;
         this.nomTransporteur = nomTransporteur;

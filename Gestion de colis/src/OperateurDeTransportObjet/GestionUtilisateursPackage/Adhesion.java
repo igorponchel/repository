@@ -10,7 +10,7 @@ public final class Adhesion implements org.omg.CORBA.portable.IDLEntity
     /**
      * Struct member numeroAdherent
      */
-    public String numeroAdherent;
+    public int numeroAdherent;
 
     /**
      * Struct member nomAdherent
@@ -25,7 +25,7 @@ public final class Adhesion implements org.omg.CORBA.portable.IDLEntity
     /**
      * Struct member zoneAdherent
      */
-    public String zoneAdherent;
+    public int zoneAdherent;
 
     /**
      * Default constructor
@@ -40,7 +40,7 @@ public final class Adhesion implements org.omg.CORBA.portable.IDLEntity
      * @param prenomAdherent prenomAdherent struct member
      * @param zoneAdherent zoneAdherent struct member
      */
-    public Adhesion(String numeroAdherent, String nomAdherent, String prenomAdherent, String zoneAdherent)
+    public Adhesion(int numeroAdherent, String nomAdherent, String prenomAdherent, int zoneAdherent)
     {
         this.numeroAdherent = numeroAdherent;
         this.nomAdherent = nomAdherent;

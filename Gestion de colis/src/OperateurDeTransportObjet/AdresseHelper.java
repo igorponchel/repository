@@ -73,7 +73,7 @@ public class AdresseHelper
                     return org.omg.CORBA.ORB.init().create_recursive_tc(id());
                 _working = true;
                 org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init();
-                org.omg.CORBA.StructMember []_members = new org.omg.CORBA.StructMember[4];
+                org.omg.CORBA.StructMember []_members = new org.omg.CORBA.StructMember[5];
 
                 _members[0] = new org.omg.CORBA.StructMember();
                 _members[0].name = "numeroRue";
@@ -85,8 +85,11 @@ public class AdresseHelper
                 _members[2].name = "ville";
                 _members[2].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
                 _members[3] = new org.omg.CORBA.StructMember();
-                _members[3].name = "pays";
-                _members[3].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
+                _members[3].name = "departement";
+                _members[3].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
+                _members[4] = new org.omg.CORBA.StructMember();
+                _members[4].name = "pays";
+                _members[4].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
                 _tc = orb.create_struct_tc(id(),"Adresse",_members);
                 _working = false;
             }
@@ -117,6 +120,7 @@ public class AdresseHelper
         new_one.numeroRue = istream.read_string();
         new_one.nomRue = istream.read_string();
         new_one.ville = istream.read_string();
+        new_one.departement = istream.read_long();
         new_one.pays = istream.read_string();
 
         return new_one;
@@ -132,6 +136,7 @@ public class AdresseHelper
         ostream.write_string(value.numeroRue);
         ostream.write_string(value.nomRue);
         ostream.write_string(value.ville);
+        ostream.write_long(value.departement);
         ostream.write_string(value.pays);
     }
 

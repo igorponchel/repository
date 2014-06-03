@@ -74,7 +74,7 @@ public class _GestionnairePaiementStub extends org.omg.CORBA.portable.ObjectImpl
     /**
      * Operation crediter
      */
-    public short crediter(OperateurDeTransportObjet.CoordBancaire coordonneesBancaires, int somme)
+    public short crediter(OperateurDeTransportObjet.CoordBancairePro coordonneesBancairesPro, int somme)
     {
         while(true)
         {
@@ -84,7 +84,7 @@ public class _GestionnairePaiementStub extends org.omg.CORBA.portable.ObjectImpl
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("crediter",true);
-                    OperateurDeTransportObjet.CoordBancaireHelper.write(_output,coordonneesBancaires);
+                    OperateurDeTransportObjet.CoordBancaireProHelper.write(_output,coordonneesBancairesPro);
                     _output.write_long(somme);
                     _input = this._invoke(_output);
                     short _arg_ret = _input.read_short();
@@ -112,7 +112,7 @@ public class _GestionnairePaiementStub extends org.omg.CORBA.portable.ObjectImpl
                 OperateurDeTransportObjet.GestionnairePaiementOperations _self = (OperateurDeTransportObjet.GestionnairePaiementOperations) _so.servant;
                 try
                 {
-                    return _self.crediter( coordonneesBancaires,  somme);
+                    return _self.crediter( coordonneesBancairesPro,  somme);
                 }
                 finally
                 {

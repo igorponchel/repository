@@ -62,7 +62,7 @@ public abstract class GestionnairePaiementPOA extends org.omg.PortableServer.Ser
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
-        OperateurDeTransportObjet.CoordBancaire arg0_in = OperateurDeTransportObjet.CoordBancaireHelper.read(_is);
+        OperateurDeTransportObjet.CoordBancairePro arg0_in = OperateurDeTransportObjet.CoordBancaireProHelper.read(_is);
         int arg1_in = _is.read_long();
 
         short _arg_result = crediter(arg0_in, arg1_in);

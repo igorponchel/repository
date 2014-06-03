@@ -15,6 +15,6 @@ public interface GestionnairePaiementOperations
     /**
      * Operation crediter
      */
-    public short crediter(OperateurDeTransportObjet.CoordBancaire coordonneesBancaires, int somme);
+    public short crediter(OperateurDeTransportObjet.CoordBancairePro coordonneesBancairesPro, int somme);
 
 }

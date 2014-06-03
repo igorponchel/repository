@@ -99,10 +99,10 @@ public class GestionUtilisateursPOATie extends GestionUtilisateursPOA
     /**
      * Operation getNumAdherent
      */
-    public String getNumAdherent(String nomAdherent, String prenom)
+    public int getNumAdherent(String nomAdherent, String prenomAdherent)
         throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException
     {
-        return _tie.getNumAdherent( nomAdherent,  prenom);
+        return _tie.getNumAdherent( nomAdherent,  prenomAdherent);
     }
 
 }

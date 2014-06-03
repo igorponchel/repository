@@ -32,7 +32,7 @@ public interface GestionUtilisateursOperations
     /**
      * Operation getNumAdherent
      */
-    public String getNumAdherent(String nomAdherent, String prenom)
+    public int getNumAdherent(String nomAdherent, String prenomAdherent)
         throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException;
 
 }

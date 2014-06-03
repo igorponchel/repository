@@ -10,22 +10,22 @@ public interface GestionnaireTransportObjetOperations
     /**
      * Operation notifierOffreTransport
      */
-    public void notifierOffreTransport(String numeroStation);
+    public void notifierOffreTransport(int numeroStation);
 
     /**
      * Operation notifierOffreAcceptee
      */
-    public void notifierOffreAcceptee(String numeroTransporteur);
+    public void notifierOffreAcceptee(int numeroTransporteur);
 
     /**
      * Operation verifierTransporteur
      */
-    public boolean verifierTransporteur(String numeroTransporteur, String codeTransport);
+    public boolean verifierTransporteur(int numeroTransporteur, String codeTransport);
 
     /**
      * Operation notifierEtatObjet
      */
-    public void notifierEtatObjet(String numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public void notifierEtatObjet(int numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
 
     /**

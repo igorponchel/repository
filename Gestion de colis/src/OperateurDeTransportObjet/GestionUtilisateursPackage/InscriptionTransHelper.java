@@ -77,7 +77,7 @@ public class InscriptionTransHelper
 
                 _members[0] = new org.omg.CORBA.StructMember();
                 _members[0].name = "numeroInscritTrans";
-                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
+                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
                 _members[1] = new org.omg.CORBA.StructMember();
                 _members[1].name = "nomTransporteur";
                 _members[1].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
@@ -108,7 +108,7 @@ public class InscriptionTransHelper
     {
         OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans new_one = new OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans();
 
-        new_one.numeroInscritTrans = istream.read_string();
+        new_one.numeroInscritTrans = istream.read_long();
         new_one.nomTransporteur = istream.read_string();
 
         return new_one;
@@ -121,7 +121,7 @@ public class InscriptionTransHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans value)
     {
-        ostream.write_string(value.numeroInscritTrans);
+        ostream.write_long(value.numeroInscritTrans);
         ostream.write_string(value.nomTransporteur);
     }
 

@@ -23,7 +23,7 @@ public class _TransporteurStub extends org.omg.CORBA.portable.ObjectImpl
     /**
      * Operation notifierOffreTransport
      */
-    public void notifierOffreTransport(String numeroStation, String codeTransport)
+    public void notifierOffreTransport(int numeroStation, String codeTransport)
     {
         while(true)
         {
@@ -33,7 +33,7 @@ public class _TransporteurStub extends org.omg.CORBA.portable.ObjectImpl
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("notifierOffreTransport",false);
-                    _output.write_string(numeroStation);
+                    _output.write_long(numeroStation);
                     _output.write_string(codeTransport);
                     _input = this._invoke(_output);
                     return;

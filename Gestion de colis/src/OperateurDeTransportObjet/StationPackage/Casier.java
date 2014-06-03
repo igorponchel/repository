@@ -10,7 +10,7 @@ public final class Casier implements org.omg.CORBA.portable.IDLEntity
     /**
      * Struct member numeroCasier
      */
-    public String numeroCasier;
+    public int numeroCasier;
 
     /**
      * Struct member etatCasier
@@ -28,7 +28,7 @@ public final class Casier implements org.omg.CORBA.portable.IDLEntity
      * @param numeroCasier numeroCasier struct member
      * @param etatCasier etatCasier struct member
      */
-    public Casier(String numeroCasier, OperateurDeTransportObjet.StationPackage.EtatCasier etatCasier)
+    public Casier(int numeroCasier, OperateurDeTransportObjet.StationPackage.EtatCasier etatCasier)
     {
         this.numeroCasier = numeroCasier;
         this.etatCasier = etatCasier;

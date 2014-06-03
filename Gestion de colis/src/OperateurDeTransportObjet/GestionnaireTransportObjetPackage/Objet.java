@@ -10,7 +10,7 @@ public final class Objet implements org.omg.CORBA.portable.IDLEntity
     /**
      * Struct member numeroObjet
      */
-    public String numeroObjet;
+    public int numeroObjet;
 
     /**
      * Struct member etatObjet
@@ -28,7 +28,7 @@ public final class Objet implements org.omg.CORBA.portable.IDLEntity
      * @param numeroObjet numeroObjet struct member
      * @param etatObjet etatObjet struct member
      */
-    public Objet(String numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public Objet(int numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
     {
         this.numeroObjet = numeroObjet;
         this.etatObjet = etatObjet;

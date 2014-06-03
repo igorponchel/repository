@@ -73,9 +73,9 @@ public class GestionnairePaiementPOATie extends GestionnairePaiementPOA
     /**
      * Operation crediter
      */
-    public short crediter(OperateurDeTransportObjet.CoordBancaire coordonneesBancaires, int somme)
+    public short crediter(OperateurDeTransportObjet.CoordBancairePro coordonneesBancairesPro, int somme)
     {
-        return _tie.crediter( coordonneesBancaires,  somme);
+        return _tie.crediter( coordonneesBancairesPro,  somme);
     }
 
 }

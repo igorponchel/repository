@@ -77,7 +77,7 @@ public class ObjetHelper
 
                 _members[0] = new org.omg.CORBA.StructMember();
                 _members[0].name = "numeroObjet";
-                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
+                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
                 _members[1] = new org.omg.CORBA.StructMember();
                 _members[1].name = "etatObjet";
                 _members[1].type = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.type();
@@ -108,7 +108,7 @@ public class ObjetHelper
     {
         OperateurDeTransportObjet.GestionnaireTransportObjetPackage.Objet new_one = new OperateurDeTransportObjet.GestionnaireTransportObjetPackage.Objet();
 
-        new_one.numeroObjet = istream.read_string();
+        new_one.numeroObjet = istream.read_long();
         new_one.etatObjet = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.read(istream);
 
         return new_one;
@@ -121,7 +121,7 @@ public class ObjetHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.Objet value)
     {
-        ostream.write_string(value.numeroObjet);
+        ostream.write_long(value.numeroObjet);
         OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.write(ostream,value.etatObjet);
     }
 
