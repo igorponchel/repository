@@ -83,9 +83,9 @@ public class GestionUtilisateursPOATie extends GestionUtilisateursPOA
     /**
      * Operation verifierAdherent
      */
-    public boolean verifierAdherent(short codeVerif)
+    public boolean verifierAdherent(int numeroAdherent, String motDePasse)
     {
-        return _tie.verifierAdherent( codeVerif);
+        return _tie.verifierAdherent( numeroAdherent,  motDePasse);
     }
 
     /**
@@ -103,6 +103,15 @@ public class GestionUtilisateursPOATie extends GestionUtilisateursPOA
         throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException
     {
         return _tie.getNumAdherent( nomAdherent,  prenomAdherent);
+    }
+
+    /**
+     * Operation getZoneAdherent
+     */
+    public int getZoneAdherent(String nomAdherent, String prenomAdherent)
+        throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException
+    {
+        return _tie.getZoneAdherent( nomAdherent,  prenomAdherent);
     }
 
 }

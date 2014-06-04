@@ -2,10 +2,9 @@ package entites;
 
 import impl.GestionUtilisateursImpl;
 
+import org.omg.CosNaming.NamingContext;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
-
-import entites.ui.FrameStandard;
 
 
 /*******************************
@@ -36,7 +35,7 @@ public class GestionnaireUtilisateurs {
 			// Activer le POA manager
 			rootPOA.the_POAManager().activate();
 
-			/*
+			
 	        // Enregistrement dans le service de nommage
 	        //*******************************************
 	        // Recuperation du naming service
@@ -45,18 +44,17 @@ public class GestionnaireUtilisateurs {
 	        // Construction du nom a enregistrer
 	        org.omg.CosNaming.NameComponent[] nameToRegister = new org.omg.CosNaming.NameComponent[1];
 	        System.out.println("Sous quel nom voulez-vous enregistrer l'objet Corba ?");
-	        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-	        String nomObj = in.readLine();
+	        String nomObj = "GUtilisateurs";
 	        nameToRegister[0] = new org.omg.CosNaming.NameComponent(nomObj,"");
 
 	        // Enregistrement de l'objet CORBA dans le service de noms
-	        nameRoot.rebind(nameToRegister,rootPOA.servant_to_reference(monEuro));
+	        nameRoot.rebind(nameToRegister,rootPOA.servant_to_reference(monGestionnaireUtilisateurs));
 	        System.out.println("==> Nom '"+ nomObj + "' est enregistre dans le service de noms.");
-			 */
+			 
 			String IORServant = orb.object_to_string(rootPOA.servant_to_reference(monGestionnaireUtilisateurs));
 			System.out.println("L'objet possede la reference suivante :");
 			System.out.println(IORServant);
-			
+
 			// Lancement de l'ORB et mise en attente de requete
 			//**************************************************
 			orb.run();

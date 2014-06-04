@@ -45,7 +45,7 @@ public abstract class AdherentPOA extends org.omg.PortableServer.Servant
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
-        int arg0_in = _is.read_long();
+        String arg0_in = _is.read_string();
 
         notifierColisArrive(arg0_in);
 

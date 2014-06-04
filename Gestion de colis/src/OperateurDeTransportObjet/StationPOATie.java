@@ -63,20 +63,12 @@ public class StationPOATie extends StationPOA
     }
 
     /**
-     * Operation verifierDispoCasier
-     */
-    public boolean verifierDispoCasier()
-    {
-        return _tie.verifierDispoCasier();
-    }
-
-    /**
      * Operation reserverCasier
      */
-    public int reserverCasier(String codeTransport)
+    public int reserverCasier(String idObjet)
         throws OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleException
     {
-        return _tie.reserverCasier( codeTransport);
+        return _tie.reserverCasier( idObjet);
     }
 
 }

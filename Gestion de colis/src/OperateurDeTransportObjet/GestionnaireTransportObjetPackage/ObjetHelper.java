@@ -73,14 +73,20 @@ public class ObjetHelper
                     return org.omg.CORBA.ORB.init().create_recursive_tc(id());
                 _working = true;
                 org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init();
-                org.omg.CORBA.StructMember []_members = new org.omg.CORBA.StructMember[2];
+                org.omg.CORBA.StructMember []_members = new org.omg.CORBA.StructMember[4];
 
                 _members[0] = new org.omg.CORBA.StructMember();
-                _members[0].name = "numeroObjet";
-                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
+                _members[0].name = "idObjet";
+                _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
                 _members[1] = new org.omg.CORBA.StructMember();
                 _members[1].name = "etatObjet";
                 _members[1].type = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.type();
+                _members[2] = new org.omg.CORBA.StructMember();
+                _members[2].name = "numeroCasierDepart";
+                _members[2].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
+                _members[3] = new org.omg.CORBA.StructMember();
+                _members[3].name = "numeroCasierArrivee";
+                _members[3].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
                 _tc = orb.create_struct_tc(id(),"Objet",_members);
                 _working = false;
             }
@@ -108,8 +114,10 @@ public class ObjetHelper
     {
         OperateurDeTransportObjet.GestionnaireTransportObjetPackage.Objet new_one = new OperateurDeTransportObjet.GestionnaireTransportObjetPackage.Objet();
 
-        new_one.numeroObjet = istream.read_long();
+        new_one.idObjet = istream.read_string();
         new_one.etatObjet = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.read(istream);
+        new_one.numeroCasierDepart = istream.read_long();
+        new_one.numeroCasierArrivee = istream.read_long();
 
         return new_one;
     }
@@ -121,8 +129,10 @@ public class ObjetHelper
      */
     public static void write(org.omg.CORBA.portable.OutputStream ostream, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.Objet value)
     {
-        ostream.write_long(value.numeroObjet);
+        ostream.write_string(value.idObjet);
         OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.write(ostream,value.etatObjet);
+        ostream.write_long(value.numeroCasierDepart);
+        ostream.write_long(value.numeroCasierArrivee);
     }
 
 }

@@ -23,7 +23,7 @@ public class _AdherentStub extends org.omg.CORBA.portable.ObjectImpl
     /**
      * Operation notifierColisArrive
      */
-    public void notifierColisArrive(int numeroObjet)
+    public void notifierColisArrive(String idObjet)
     {
         while(true)
         {
@@ -33,7 +33,7 @@ public class _AdherentStub extends org.omg.CORBA.portable.ObjectImpl
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("notifierColisArrive",false);
-                    _output.write_long(numeroObjet);
+                    _output.write_string(idObjet);
                     _input = this._invoke(_output);
                     return;
                 }
@@ -59,7 +59,7 @@ public class _AdherentStub extends org.omg.CORBA.portable.ObjectImpl
                 OperateurDeTransportObjet.AdherentOperations _self = (OperateurDeTransportObjet.AdherentOperations) _so.servant;
                 try
                 {
-                    _self.notifierColisArrive( numeroObjet);
+                    _self.notifierColisArrive( idObjet);
                     return;
                 }
                 finally

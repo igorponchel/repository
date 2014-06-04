@@ -10,6 +10,6 @@ public interface TransporteurOperations
     /**
      * Operation notifierOffreTransport
      */
-    public void notifierOffreTransport(int numeroStation, String codeTransport);
+    public void notifierOffreTransport(String nomStationDepart, String nomStationArrivee, String codeTransport);
 
 }

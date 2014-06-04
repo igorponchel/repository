@@ -23,7 +23,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation notifierOffreTransport
      */
-    public void notifierOffreTransport(int numeroStation)
+    public String notifierOffreTransport(String nomStationDepart, String nomStationArrivee)
     {
         while(true)
         {
@@ -32,10 +32,12 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 org.omg.CORBA.portable.InputStream _input = null;
                 try
                 {
-                    org.omg.CORBA.portable.OutputStream _output = this._request("notifierOffreTransport",false);
-                    _output.write_long(numeroStation);
+                    org.omg.CORBA.portable.OutputStream _output = this._request("notifierOffreTransport",true);
+                    _output.write_string(nomStationDepart);
+                    _output.write_string(nomStationArrivee);
                     _input = this._invoke(_output);
-                    return;
+                    String _arg_ret = _input.read_string();
+                    return _arg_ret;
                 }
                 catch(org.omg.CORBA.portable.RemarshalException _exception)
                 {
@@ -59,8 +61,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 OperateurDeTransportObjet.GestionnaireTransportObjetOperations _self = (OperateurDeTransportObjet.GestionnaireTransportObjetOperations) _so.servant;
                 try
                 {
-                    _self.notifierOffreTransport( numeroStation);
-                    return;
+                    return _self.notifierOffreTransport( nomStationDepart,  nomStationArrivee);
                 }
                 finally
                 {
@@ -73,7 +74,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation notifierOffreAcceptee
      */
-    public void notifierOffreAcceptee(int numeroTransporteur)
+    public void notifierOffreAcceptee(int numeroTransporteur, String codeTransport)
     {
         while(true)
         {
@@ -84,6 +85,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("notifierOffreAcceptee",false);
                     _output.write_long(numeroTransporteur);
+                    _output.write_string(codeTransport);
                     _input = this._invoke(_output);
                     return;
                 }
@@ -109,7 +111,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 OperateurDeTransportObjet.GestionnaireTransportObjetOperations _self = (OperateurDeTransportObjet.GestionnaireTransportObjetOperations) _so.servant;
                 try
                 {
-                    _self.notifierOffreAcceptee( numeroTransporteur);
+                    _self.notifierOffreAcceptee( numeroTransporteur,  codeTransport);
                     return;
                 }
                 finally
@@ -174,7 +176,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation notifierEtatObjet
      */
-    public void notifierEtatObjet(int numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public void notifierEtatObjet(String idObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
         while(true)
@@ -185,7 +187,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("notifierEtatObjet",true);
-                    _output.write_long(numeroObjet);
+                    _output.write_string(idObjet);
                     OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.write(_output,etatObjet);
                     _input = this._invoke(_output);
                     return;
@@ -217,7 +219,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 OperateurDeTransportObjet.GestionnaireTransportObjetOperations _self = (OperateurDeTransportObjet.GestionnaireTransportObjetOperations) _so.servant;
                 try
                 {
-                    _self.notifierEtatObjet( numeroObjet,  etatObjet);
+                    _self.notifierEtatObjet( idObjet,  etatObjet);
                     return;
                 }
                 finally
@@ -231,7 +233,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation consulterEtatObjet
      */
-    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet consulterEtatObjet(String numeroObjet)
+    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet consulterEtatObjet(String idObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
         while(true)
@@ -242,7 +244,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("consulterEtatObjet",true);
-                    _output.write_string(numeroObjet);
+                    _output.write_string(idObjet);
                     _input = this._invoke(_output);
                     OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet _arg_ret = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.read(_input);
                     return _arg_ret;
@@ -274,7 +276,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 OperateurDeTransportObjet.GestionnaireTransportObjetOperations _self = (OperateurDeTransportObjet.GestionnaireTransportObjetOperations) _so.servant;
                 try
                 {
-                    return _self.consulterEtatObjet( numeroObjet);
+                    return _self.consulterEtatObjet( idObjet);
                 }
                 finally
                 {

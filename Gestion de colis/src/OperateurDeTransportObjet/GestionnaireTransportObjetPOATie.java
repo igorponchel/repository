@@ -65,17 +65,17 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     /**
      * Operation notifierOffreTransport
      */
-    public void notifierOffreTransport(int numeroStation)
+    public String notifierOffreTransport(String nomStationDepart, String nomStationArrivee)
     {
-        _tie.notifierOffreTransport( numeroStation);
+        return _tie.notifierOffreTransport( nomStationDepart,  nomStationArrivee);
     }
 
     /**
      * Operation notifierOffreAcceptee
      */
-    public void notifierOffreAcceptee(int numeroTransporteur)
+    public void notifierOffreAcceptee(int numeroTransporteur, String codeTransport)
     {
-        _tie.notifierOffreAcceptee( numeroTransporteur);
+        _tie.notifierOffreAcceptee( numeroTransporteur,  codeTransport);
     }
 
     /**
@@ -89,19 +89,19 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     /**
      * Operation notifierEtatObjet
      */
-    public void notifierEtatObjet(int numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public void notifierEtatObjet(String idObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
-        _tie.notifierEtatObjet( numeroObjet,  etatObjet);
+        _tie.notifierEtatObjet( idObjet,  etatObjet);
     }
 
     /**
      * Operation consulterEtatObjet
      */
-    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet consulterEtatObjet(String numeroObjet)
+    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet consulterEtatObjet(String idObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
-        return _tie.consulterEtatObjet( numeroObjet);
+        return _tie.consulterEtatObjet( idObjet);
     }
 
 }

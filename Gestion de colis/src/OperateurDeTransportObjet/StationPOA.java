@@ -35,27 +35,12 @@ public abstract class StationPOA extends org.omg.PortableServer.Servant
 
         if (opName.equals("reserverCasier")) {
                 return _invoke_reserverCasier(_is, handler);
-        } else if (opName.equals("verifierDispoCasier")) {
-                return _invoke_verifierDispoCasier(_is, handler);
         } else {
             throw new org.omg.CORBA.BAD_OPERATION(opName);
         }
     }
 
     // helper methods
-    private org.omg.CORBA.portable.OutputStream _invoke_verifierDispoCasier(
-            final org.omg.CORBA.portable.InputStream _is,
-            final org.omg.CORBA.portable.ResponseHandler handler) {
-        org.omg.CORBA.portable.OutputStream _output;
-
-        boolean _arg_result = verifierDispoCasier();
-
-        _output = handler.createReply();
-        _output.write_boolean(_arg_result);
-
-        return _output;
-    }
-
     private org.omg.CORBA.portable.OutputStream _invoke_reserverCasier(
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {

@@ -73,20 +73,23 @@ public class AdhesionHelper
                     return org.omg.CORBA.ORB.init().create_recursive_tc(id());
                 _working = true;
                 org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init();
-                org.omg.CORBA.StructMember []_members = new org.omg.CORBA.StructMember[4];
+                org.omg.CORBA.StructMember []_members = new org.omg.CORBA.StructMember[5];
 
                 _members[0] = new org.omg.CORBA.StructMember();
                 _members[0].name = "numeroAdherent";
                 _members[0].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
                 _members[1] = new org.omg.CORBA.StructMember();
-                _members[1].name = "nomAdherent";
+                _members[1].name = "motDePasse";
                 _members[1].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
                 _members[2] = new org.omg.CORBA.StructMember();
-                _members[2].name = "prenomAdherent";
+                _members[2].name = "nomAdherent";
                 _members[2].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
                 _members[3] = new org.omg.CORBA.StructMember();
-                _members[3].name = "zoneAdherent";
-                _members[3].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
+                _members[3].name = "prenomAdherent";
+                _members[3].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_string);
+                _members[4] = new org.omg.CORBA.StructMember();
+                _members[4].name = "zoneAdherent";
+                _members[4].type = orb.get_primitive_tc(org.omg.CORBA.TCKind.tk_long);
                 _tc = orb.create_struct_tc(id(),"Adhesion",_members);
                 _working = false;
             }
@@ -115,6 +118,7 @@ public class AdhesionHelper
         OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion new_one = new OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion();
 
         new_one.numeroAdherent = istream.read_long();
+        new_one.motDePasse = istream.read_string();
         new_one.nomAdherent = istream.read_string();
         new_one.prenomAdherent = istream.read_string();
         new_one.zoneAdherent = istream.read_long();
@@ -130,6 +134,7 @@ public class AdhesionHelper
     public static void write(org.omg.CORBA.portable.OutputStream ostream, OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion value)
     {
         ostream.write_long(value.numeroAdherent);
+        ostream.write_string(value.motDePasse);
         ostream.write_string(value.nomAdherent);
         ostream.write_string(value.prenomAdherent);
         ostream.write_long(value.zoneAdherent);

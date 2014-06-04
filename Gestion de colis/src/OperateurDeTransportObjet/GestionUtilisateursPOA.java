@@ -39,6 +39,8 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
                 return _invoke_demandeInscriptionTrans(_is, handler);
         } else if (opName.equals("getNumAdherent")) {
                 return _invoke_getNumAdherent(_is, handler);
+        } else if (opName.equals("getZoneAdherent")) {
+                return _invoke_getZoneAdherent(_is, handler);
         } else if (opName.equals("verifierAdherent")) {
                 return _invoke_verifierAdherent(_is, handler);
         } else if (opName.equals("verifierTransporteur")) {
@@ -97,9 +99,10 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
-        short arg0_in = _is.read_short();
+        int arg0_in = _is.read_long();
+        String arg1_in = _is.read_string();
 
-        boolean _arg_result = verifierAdherent(arg0_in);
+        boolean _arg_result = verifierAdherent(arg0_in, arg1_in);
 
         _output = handler.createReply();
         _output.write_boolean(_arg_result);
@@ -131,6 +134,29 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
         try
         {
             int _arg_result = getNumAdherent(arg0_in, arg1_in);
+
+            _output = handler.createReply();
+            _output.write_long(_arg_result);
+
+        }
+        catch (OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException _exception)
+        {
+            _output = handler.createExceptionReply();
+            OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantExceptionHelper.write(_output,_exception);
+        }
+        return _output;
+    }
+
+    private org.omg.CORBA.portable.OutputStream _invoke_getZoneAdherent(
+            final org.omg.CORBA.portable.InputStream _is,
+            final org.omg.CORBA.portable.ResponseHandler handler) {
+        org.omg.CORBA.portable.OutputStream _output;
+        String arg0_in = _is.read_string();
+        String arg1_in = _is.read_string();
+
+        try
+        {
+            int _arg_result = getZoneAdherent(arg0_in, arg1_in);
 
             _output = handler.createReply();
             _output.write_long(_arg_result);

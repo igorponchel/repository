@@ -53,11 +53,13 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
-        int arg0_in = _is.read_long();
+        String arg0_in = _is.read_string();
+        String arg1_in = _is.read_string();
 
-        notifierOffreTransport(arg0_in);
+        String _arg_result = notifierOffreTransport(arg0_in, arg1_in);
 
         _output = handler.createReply();
+        _output.write_string(_arg_result);
 
         return _output;
     }
@@ -67,8 +69,9 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
         int arg0_in = _is.read_long();
+        String arg1_in = _is.read_string();
 
-        notifierOffreAcceptee(arg0_in);
+        notifierOffreAcceptee(arg0_in, arg1_in);
 
         _output = handler.createReply();
 
@@ -94,7 +97,7 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
-        int arg0_in = _is.read_long();
+        String arg0_in = _is.read_string();
         OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet arg1_in = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.read(_is);
 
         try

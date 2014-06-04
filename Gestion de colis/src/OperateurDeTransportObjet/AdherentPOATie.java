@@ -65,9 +65,9 @@ public class AdherentPOATie extends AdherentPOA
     /**
      * Operation notifierColisArrive
      */
-    public void notifierColisArrive(int numeroObjet)
+    public void notifierColisArrive(String idObjet)
     {
-        _tie.notifierColisArrive( numeroObjet);
+        _tie.notifierColisArrive( idObjet);
     }
 
 }

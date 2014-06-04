@@ -22,7 +22,7 @@ public interface GestionUtilisateursOperations
     /**
      * Operation verifierAdherent
      */
-    public boolean verifierAdherent(short codeVerif);
+    public boolean verifierAdherent(int numeroAdherent, String motDePasse);
 
     /**
      * Operation verifierTransporteur
@@ -33,6 +33,12 @@ public interface GestionUtilisateursOperations
      * Operation getNumAdherent
      */
     public int getNumAdherent(String nomAdherent, String prenomAdherent)
+        throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException;
+
+    /**
+     * Operation getZoneAdherent
+     */
+    public int getZoneAdherent(String nomAdherent, String prenomAdherent)
         throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException;
 
 }

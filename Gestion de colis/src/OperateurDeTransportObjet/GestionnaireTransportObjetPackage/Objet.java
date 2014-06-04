@@ -8,14 +8,24 @@ package OperateurDeTransportObjet.GestionnaireTransportObjetPackage;
 public final class Objet implements org.omg.CORBA.portable.IDLEntity
 {
     /**
-     * Struct member numeroObjet
+     * Struct member idObjet
      */
-    public int numeroObjet;
+    public String idObjet;
 
     /**
      * Struct member etatObjet
      */
     public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet;
+
+    /**
+     * Struct member numeroCasierDepart
+     */
+    public int numeroCasierDepart;
+
+    /**
+     * Struct member numeroCasierArrivee
+     */
+    public int numeroCasierArrivee;
 
     /**
      * Default constructor
@@ -25,13 +35,17 @@ public final class Objet implements org.omg.CORBA.portable.IDLEntity
 
     /**
      * Constructor with fields initialization
-     * @param numeroObjet numeroObjet struct member
+     * @param idObjet idObjet struct member
      * @param etatObjet etatObjet struct member
+     * @param numeroCasierDepart numeroCasierDepart struct member
+     * @param numeroCasierArrivee numeroCasierArrivee struct member
      */
-    public Objet(int numeroObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public Objet(String idObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet, int numeroCasierDepart, int numeroCasierArrivee)
     {
-        this.numeroObjet = numeroObjet;
+        this.idObjet = idObjet;
         this.etatObjet = etatObjet;
+        this.numeroCasierDepart = numeroCasierDepart;
+        this.numeroCasierArrivee = numeroCasierArrivee;
     }
 
 }

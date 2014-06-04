@@ -8,14 +8,9 @@ package OperateurDeTransportObjet;
 public interface StationOperations
 {
     /**
-     * Operation verifierDispoCasier
-     */
-    public boolean verifierDispoCasier();
-
-    /**
      * Operation reserverCasier
      */
-    public int reserverCasier(String codeTransport)
+    public int reserverCasier(String idObjet)
         throws OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleException;
 
 }

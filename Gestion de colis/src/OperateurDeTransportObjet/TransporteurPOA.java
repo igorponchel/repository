@@ -45,10 +45,11 @@ public abstract class TransporteurPOA extends org.omg.PortableServer.Servant
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
-        int arg0_in = _is.read_long();
+        String arg0_in = _is.read_string();
         String arg1_in = _is.read_string();
+        String arg2_in = _is.read_string();
 
-        notifierOffreTransport(arg0_in, arg1_in);
+        notifierOffreTransport(arg0_in, arg1_in, arg2_in);
 
         _output = handler.createReply();
 

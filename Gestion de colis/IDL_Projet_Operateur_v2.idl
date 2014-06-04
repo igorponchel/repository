@@ -45,6 +45,7 @@ module OperateurDeTransportObjet {
 		struct Adhesion {
 		
 			long numeroAdherent;
+			string motDePasse;
 			string nomAdherent;
 			string prenomAdherent;
 			long zoneAdherent;
@@ -71,9 +72,10 @@ module OperateurDeTransportObjet {
 		
 		Adhesion demandeAdhesion(in DemandeAdhesion demandeAdhesion) raises (AdherentExistantException);
 		InscriptionTrans demandeInscriptionTrans(in DemandeInscriptionTrans demandeInscriptionTrans) raises (TransExistantException);
-		boolean verifierAdherent(in short codeVerif); //On suppose que le GestionnaireUtilisateur contient les IOR des adhérents
+		boolean verifierAdherent(in long numeroAdherent, in string motDePasse); //On suppose que le GestionnaireUtilisateur contient les IOR des adhérents
 		boolean verifierTransporteur(in short codeVerif); //On suppose que le GestionnaireUtilisateur contient les IOR des transporteurs
 		long getNumAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
+		long getZoneAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 	};
 	
 	interface GestionnairePaiement {
@@ -96,8 +98,8 @@ module OperateurDeTransportObjet {
 			string explication;
 		};
 	
-		boolean verifierDispoCasier(); //on sait déjà de quelle station il s'agit vu qu'on invoque la méthode dessus
-		long reserverCasier(in string codeTransport) raises (AucunCasierDisponibleException);
+
+		long reserverCasier(in string idObjet) raises (AucunCasierDisponibleException);
 	};
 	
 	interface GestionnaireTransportObjet {
@@ -106,28 +108,30 @@ module OperateurDeTransportObjet {
 	
 		struct Objet {
 		
-			long numeroObjet;
+			string idObjet;
 			EtatObjet etatObjet;
+			long numeroCasierDepart;
+			long numeroCasierArrivee;
 		};
 		
 		exception ObjetInexistantException {
 			string explication;
 		};
-		
-		oneway void notifierOffreTransport(in long numeroStation);
-		oneway void notifierOffreAcceptee(in long numeroTransporteur);
+		//retourne le codeTransport à la station
+		string notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee);
+		oneway void notifierOffreAcceptee(in long numeroTransporteur, in string codeTransport);
 		boolean verifierTransporteur(in long numeroTransporteur, in string codeTransport);
-		void notifierEtatObjet(in long numeroObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
-		EtatObjet consulterEtatObjet(in string numeroObjet) raises (ObjetInexistantException);
+		void notifierEtatObjet(in string idObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
+		EtatObjet consulterEtatObjet(in string idObjet) raises (ObjetInexistantException);
 	};
 	
 	interface Adherent {
 	
-		oneway void notifierColisArrive(in long numeroObjet);
+		oneway void notifierColisArrive(in string idObjet);
 	};
 	
 	interface Transporteur {
 	
-		oneway void notifierOffreTransport(in long numeroStation, in string codeTransport);
+		oneway void notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee, in string codeTransport);
 	};
 };

@@ -135,7 +135,7 @@ public class _GestionUtilisateursStub extends org.omg.CORBA.portable.ObjectImpl
     /**
      * Operation verifierAdherent
      */
-    public boolean verifierAdherent(short codeVerif)
+    public boolean verifierAdherent(int numeroAdherent, String motDePasse)
     {
         while(true)
         {
@@ -145,7 +145,8 @@ public class _GestionUtilisateursStub extends org.omg.CORBA.portable.ObjectImpl
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("verifierAdherent",true);
-                    _output.write_short(codeVerif);
+                    _output.write_long(numeroAdherent);
+                    _output.write_string(motDePasse);
                     _input = this._invoke(_output);
                     boolean _arg_ret = _input.read_boolean();
                     return _arg_ret;
@@ -172,7 +173,7 @@ public class _GestionUtilisateursStub extends org.omg.CORBA.portable.ObjectImpl
                 OperateurDeTransportObjet.GestionUtilisateursOperations _self = (OperateurDeTransportObjet.GestionUtilisateursOperations) _so.servant;
                 try
                 {
-                    return _self.verifierAdherent( codeVerif);
+                    return _self.verifierAdherent( numeroAdherent,  motDePasse);
                 }
                 finally
                 {
@@ -280,6 +281,63 @@ public class _GestionUtilisateursStub extends org.omg.CORBA.portable.ObjectImpl
                 try
                 {
                     return _self.getNumAdherent( nomAdherent,  prenomAdherent);
+                }
+                finally
+                {
+                    _servant_postinvoke(_so);
+                }
+            }
+        }
+    }
+
+    /**
+     * Operation getZoneAdherent
+     */
+    public int getZoneAdherent(String nomAdherent, String prenomAdherent)
+        throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException
+    {
+        while(true)
+        {
+            if (!this._is_local())
+            {
+                org.omg.CORBA.portable.InputStream _input = null;
+                try
+                {
+                    org.omg.CORBA.portable.OutputStream _output = this._request("getZoneAdherent",true);
+                    _output.write_string(nomAdherent);
+                    _output.write_string(prenomAdherent);
+                    _input = this._invoke(_output);
+                    int _arg_ret = _input.read_long();
+                    return _arg_ret;
+                }
+                catch(org.omg.CORBA.portable.RemarshalException _exception)
+                {
+                    continue;
+                }
+                catch(org.omg.CORBA.portable.ApplicationException _exception)
+                {
+                    String _exception_id = _exception.getId();
+                    if (_exception_id.equals(OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantExceptionHelper.id()))
+                    {
+                        throw OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantExceptionHelper.read(_exception.getInputStream());
+                    }
+
+                    throw new org.omg.CORBA.UNKNOWN("Unexpected User Exception: "+ _exception_id);
+                }
+                finally
+                {
+                    this._releaseReply(_input);
+                }
+            }
+            else
+            {
+                org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("getZoneAdherent",_opsClass);
+                if (_so == null)
+                   continue;
+                OperateurDeTransportObjet.GestionUtilisateursOperations _self = (OperateurDeTransportObjet.GestionUtilisateursOperations) _so.servant;
+                try
+                {
+                    return _self.getZoneAdherent( nomAdherent,  prenomAdherent);
                 }
                 finally
                 {
