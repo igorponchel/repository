@@ -13,4 +13,9 @@ public interface StationOperations
     public int reserverCasier(String idObjet)
         throws OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleException;
 
+    /**
+     * Operation notifierCodeTransport
+     */
+    public void notifierCodeTransport(int numeroCasier, String codeTransport);
+
 }

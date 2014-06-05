@@ -33,7 +33,9 @@ public abstract class TransporteurPOA extends org.omg.PortableServer.Servant
             final org.omg.CORBA.portable.ResponseHandler handler)
     {
 
-        if (opName.equals("notifierOffreTransport")) {
+        if (opName.equals("notifierOffrePriseEnCharge")) {
+                return _invoke_notifierOffrePriseEnCharge(_is, handler);
+        } else if (opName.equals("notifierOffreTransport")) {
                 return _invoke_notifierOffreTransport(_is, handler);
         } else {
             throw new org.omg.CORBA.BAD_OPERATION(opName);
@@ -50,6 +52,19 @@ public abstract class TransporteurPOA extends org.omg.PortableServer.Servant
         String arg2_in = _is.read_string();
 
         notifierOffreTransport(arg0_in, arg1_in, arg2_in);
+
+        _output = handler.createReply();
+
+        return _output;
+    }
+
+    private org.omg.CORBA.portable.OutputStream _invoke_notifierOffrePriseEnCharge(
+            final org.omg.CORBA.portable.InputStream _is,
+            final org.omg.CORBA.portable.ResponseHandler handler) {
+        org.omg.CORBA.portable.OutputStream _output;
+        String arg0_in = _is.read_string();
+
+        notifierOffrePriseEnCharge(arg0_in);
 
         _output = handler.createReply();
 

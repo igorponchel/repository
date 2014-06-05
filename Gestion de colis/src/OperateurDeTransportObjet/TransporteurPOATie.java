@@ -65,9 +65,17 @@ public class TransporteurPOATie extends TransporteurPOA
     /**
      * Operation notifierOffreTransport
      */
-    public void notifierOffreTransport(String nomStationDepart, String nomStationArrivee, String codeTransport)
+    public void notifierOffreTransport(String nomStationDepart, String nomStationArrivee, String numeroOffre)
     {
-        _tie.notifierOffreTransport( nomStationDepart,  nomStationArrivee,  codeTransport);
+        _tie.notifierOffreTransport( nomStationDepart,  nomStationArrivee,  numeroOffre);
+    }
+
+    /**
+     * Operation notifierOffrePriseEnCharge
+     */
+    public void notifierOffrePriseEnCharge(String numeroOffre)
+    {
+        _tie.notifierOffrePriseEnCharge( numeroOffre);
     }
 
 }

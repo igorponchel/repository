@@ -26,8 +26,15 @@ public class StationImpl extends StationPOA {
 			return numeroCasier;
 		}
 		else {
-			throw new AucunCasierDisponibleException("Aucune casier n'est disponible");
+			throw new AucunCasierDisponibleException("Aucun casier n'est disponible");
 		}
+	}
+
+	@Override
+	public void notifierCodeTransport(int numeroCasier, String codeTransport) {
+		// TODO Auto-generated method stub
+		
+		maStation.ajouterCoupleCodeTransportCasier(codeTransport, numeroCasier);
 	}
 	
 	

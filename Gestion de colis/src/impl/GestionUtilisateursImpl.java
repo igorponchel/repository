@@ -12,7 +12,7 @@ import OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeInscriptionTr
 import OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.TransExistantException;
 
-import com.google.common.primitives.Ints;
+import com.google.common.collect.Lists;
 
 public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 
@@ -28,11 +28,11 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 		mapTransporteur = new HashMap<Integer, InscriptionTrans>();
 		mapTransporteur.put(1, new InscriptionTrans(1, "Mory"));	
 
-		List <Integer> zones01 = Ints.asList(75, 77, 78, 91, 92, 93, 94, 95);
-		List <Integer> zones02 = Ints.asList(14, 18, 22, 27, 28, 29, 35, 36, 37, 41, 44, 45, 49, 50, 53, 56, 61, 72, 76, 85);
-		List <Integer> zones03 = Ints.asList(2, 8, 10, 21, 25, 39, 51, 52, 54, 55, 57, 58, 59, 60, 62, 67, 68, 70, 71, 80, 88, 89, 90);
-		List <Integer> zones04 = Ints.asList(1, 3, 4, 5, 6, 7, 11, 13, 15, 26, 30, 34, 38, 42, 43, 48, 63, 66, 69, 73, 74, 83, 84);	
-		List <Integer> zones05 = Ints.asList(9, 12, 16, 17, 19, 23, 24, 31, 32, 33, 40, 46, 47, 64, 65, 49, 81, 82, 86, 87);		
+		List <Integer> zones01 = Lists.newArrayList(75, 77, 78, 91, 92, 93, 94, 95);
+		List <Integer> zones02 = Lists.newArrayList(14, 18, 22, 27, 28, 29, 35, 36, 37, 41, 44, 45, 49, 50, 53, 56, 61, 72, 76, 85);
+		List <Integer> zones03 = Lists.newArrayList(2, 8, 10, 21, 25, 39, 51, 52, 54, 55, 57, 58, 59, 60, 62, 67, 68, 70, 71, 80, 88, 89, 90);
+		List <Integer> zones04 = Lists.newArrayList(1, 3, 4, 5, 6, 7, 11, 13, 15, 26, 30, 34, 38, 42, 43, 48, 63, 66, 69, 73, 74, 83, 84);	
+		List <Integer> zones05 = Lists.newArrayList(9, 12, 16, 17, 19, 23, 24, 31, 32, 33, 40, 46, 47, 64, 65, 49, 81, 82, 86, 87);		
 		
 		mapRegionZones = new HashMap<Integer, List<Integer>>();
 		mapRegionZones.put(1, zones01);

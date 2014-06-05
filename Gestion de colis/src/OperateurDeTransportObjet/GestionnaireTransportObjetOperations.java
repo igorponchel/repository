@@ -15,7 +15,7 @@ public interface GestionnaireTransportObjetOperations
     /**
      * Operation notifierOffreAcceptee
      */
-    public void notifierOffreAcceptee(int numeroTransporteur, String codeTransport);
+    public String notifierOffreAcceptee(int numeroTransporteur, String numeroOffre);
 
     /**
      * Operation verifierTransporteur

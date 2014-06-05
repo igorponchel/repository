@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -15,13 +16,11 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import utils.EtatOffreTransport;
+import utils.OffreTransport;
 import OperateurDeTransportObjet.Adresse;
-import OperateurDeTransportObjet.CoordBancaire;
 import OperateurDeTransportObjet.CoordBancairePro;
 import OperateurDeTransportObjet.GestionUtilisateurs;
-import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentExistantException;
-import OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion;
-import OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeAdhesion;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeInscriptionTrans;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.TransExistantException;
@@ -32,6 +31,10 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	
 	private OperateurDeTransportObjet.GestionUtilisateurs gestionnaireUtilisateurs;
 
+	
+	private Map <String, OffreTransport> mapNumOffreOffre;
+	
+	
 	private boolean initialized = false;
 	private Actions actions = new Actions();
 	private JList<DefaultListModel<String>> listeDeEvenements;
@@ -214,7 +217,17 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		} else if (source == boutonAccepterOffreTransport) {
 			
 		}
-
+	}
+	
+	public void ajouterOffreTransport(String numeroOffre, String nomStationDepart, String nomStationArrivee) {
+		
+		OffreTransport nouvelleOffre = new OffreTransport(numeroOffre, nomStationDepart, nomStationArrivee, EtatOffreTransport.aPrendreEnCharge);
+		mapNumOffreOffre.put(numeroOffre, nouvelleOffre);
+	}
+	
+	public void alerterOffreDejaPriseEnCharge(String numeroOffre) {
+		
+		mapNumOffreOffre.remove(numeroOffre);
 	}
 	
 	private void notifierSucces (String message) {

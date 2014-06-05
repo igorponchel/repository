@@ -100,6 +100,8 @@ module OperateurDeTransportObjet {
 	
 
 		long reserverCasier(in string idObjet) raises (AucunCasierDisponibleException);
+		//signale à la station distante le couple codeTransport/CasierDistant pour assurer la recherche lors de la livraison
+		oneway void notifierCodeTransport(in long numeroCasier, in string codeTransport);
 	};
 	
 	interface GestionnaireTransportObjet {
@@ -119,7 +121,7 @@ module OperateurDeTransportObjet {
 		};
 		//retourne le codeTransport à la station
 		string notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee);
-		oneway void notifierOffreAcceptee(in long numeroTransporteur, in string codeTransport);
+		string notifierOffreAcceptee(in long numeroTransporteur, in string numeroOffre);
 		boolean verifierTransporteur(in long numeroTransporteur, in string codeTransport);
 		void notifierEtatObjet(in string idObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
 		EtatObjet consulterEtatObjet(in string idObjet) raises (ObjetInexistantException);
@@ -132,6 +134,7 @@ module OperateurDeTransportObjet {
 	
 	interface Transporteur {
 	
-		oneway void notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee, in string codeTransport);
+		oneway void notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee, in string numeroOffre);
+		oneway void notifierOffrePriseEnCharge(in string numeroOffre);
 	};
 };

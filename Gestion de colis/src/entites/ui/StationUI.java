@@ -29,7 +29,7 @@ import OperateurDeTransportObjet.GestionnaireTransportObjet;
 import OperateurDeTransportObjet.Station;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet;
-import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.Objet;
+import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
 import OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleException;
 import OperateurDeTransportObjet.StationPackage.Casier;
 import OperateurDeTransportObjet.StationPackage.EtatCasier;
@@ -65,7 +65,6 @@ public class StationUI extends JFrame implements ActionListener{
 
 	//Liste des casiers
 	private List <Casier> listeCasiers;
-	private Map <Objet, Casier> mapObjetCasier;
 	private Map <String, Casier> mapCodeCasier;
 	
 	private GestionnaireTransportObjet gestionnaireTransportObjetDistant;
@@ -74,10 +73,9 @@ public class StationUI extends JFrame implements ActionListener{
 	public StationUI(String nomStation, GestionUtilisateurs gestionnaireUtilisateurs, String args[]) {
 
 
-		listeCasiers = new ArrayList<Casier>();
+		listeCasiers = new ArrayList<>();
 		initCasiers();
-		mapObjetCasier = new HashMap<Objet, Casier>();
-		mapCodeCasier = new HashMap<String, Casier>();
+		mapCodeCasier = new HashMap<>();
 		
 		this.nomStation = nomStation;
 		this.gestionnaireUtilisateurs = gestionnaireUtilisateurs;
@@ -160,14 +158,17 @@ public class StationUI extends JFrame implements ActionListener{
 				int numeroCasierArrivee = stationDistante.reserverCasier(idObjet);
 				if(numeroCasierDepart != 0) {
 					
-					Objet objetDepot = new Objet(idObjet, EtatObjet.depose, numeroCasierDepart, numeroCasierArrivee);
 					Casier casierDepot = listeCasiers.get(numeroCasierDepart);
-					mapObjetCasier.put(objetDepot, casierDepot);
-					
+									
 					String codeTransport = gestionnaireTransportObjetDistant.notifierOffreTransport(nomStation, "S" + zoneDestinataire) ;
 					mapCodeCasier.put(codeTransport, casierDepot);
 					
+					//signale à la station distante le couple codeTransport/CasierDistant pour assurer la recherche lors de la livraison
+					stationDistante.notifierCodeTransport(numeroCasierArrivee, codeTransport);
+					
 					notifierSucces("Vous pouvez effectuer votre dépot dans le casier : " + numeroCasierDepart);
+					
+					gestionnaireTransportObjetDistant.notifierEtatObjet(idObjet, EtatObjet.depose);
 				}
 				else {
 					notifierErreur("Il n'y a plus de casier libre dans notre station. Veuillez re-essayer plus tard.");
@@ -179,6 +180,9 @@ public class StationUI extends JFrame implements ActionListener{
 			} catch (AucunCasierDisponibleException e) {
 
 				notifierErreur("Aucun casier n'est disponible pour le moment dans la station destinataire. Veuillez re-essayer plus tard.");
+			} catch (ObjetInexistantException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 		} else if (source == boutonLogin) {
@@ -331,5 +335,12 @@ public class StationUI extends JFrame implements ActionListener{
 		}
 		
 		return 0;
+	}
+	
+	public void ajouterCoupleCodeTransportCasier(String codeTransport, int numeroCasier) {
+		
+		Casier casier = listeCasiers.get(numeroCasier);
+				
+		mapCodeCasier.put(codeTransport, casier);
 	}
 }

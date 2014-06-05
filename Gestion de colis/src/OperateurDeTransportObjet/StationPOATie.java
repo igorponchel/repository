@@ -71,4 +71,12 @@ public class StationPOATie extends StationPOA
         return _tie.reserverCasier( idObjet);
     }
 
+    /**
+     * Operation notifierCodeTransport
+     */
+    public void notifierCodeTransport(int numeroCasier, String codeTransport)
+    {
+        _tie.notifierCodeTransport( numeroCasier,  codeTransport);
+    }
+
 }

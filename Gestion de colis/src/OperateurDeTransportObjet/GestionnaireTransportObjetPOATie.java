@@ -73,9 +73,9 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     /**
      * Operation notifierOffreAcceptee
      */
-    public void notifierOffreAcceptee(int numeroTransporteur, String codeTransport)
+    public String notifierOffreAcceptee(int numeroTransporteur, String numeroOffre)
     {
-        _tie.notifierOffreAcceptee( numeroTransporteur,  codeTransport);
+        return _tie.notifierOffreAcceptee( numeroTransporteur,  numeroOffre);
     }
 
     /**

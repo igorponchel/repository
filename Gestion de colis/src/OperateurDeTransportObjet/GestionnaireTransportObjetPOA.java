@@ -71,9 +71,10 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
         int arg0_in = _is.read_long();
         String arg1_in = _is.read_string();
 
-        notifierOffreAcceptee(arg0_in, arg1_in);
+        String _arg_result = notifierOffreAcceptee(arg0_in, arg1_in);
 
         _output = handler.createReply();
+        _output.write_string(_arg_result);
 
         return _output;
     }

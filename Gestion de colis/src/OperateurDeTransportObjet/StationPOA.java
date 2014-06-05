@@ -33,7 +33,9 @@ public abstract class StationPOA extends org.omg.PortableServer.Servant
             final org.omg.CORBA.portable.ResponseHandler handler)
     {
 
-        if (opName.equals("reserverCasier")) {
+        if (opName.equals("notifierCodeTransport")) {
+                return _invoke_notifierCodeTransport(_is, handler);
+        } else if (opName.equals("reserverCasier")) {
                 return _invoke_reserverCasier(_is, handler);
         } else {
             throw new org.omg.CORBA.BAD_OPERATION(opName);
@@ -60,6 +62,20 @@ public abstract class StationPOA extends org.omg.PortableServer.Servant
             _output = handler.createExceptionReply();
             OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleExceptionHelper.write(_output,_exception);
         }
+        return _output;
+    }
+
+    private org.omg.CORBA.portable.OutputStream _invoke_notifierCodeTransport(
+            final org.omg.CORBA.portable.InputStream _is,
+            final org.omg.CORBA.portable.ResponseHandler handler) {
+        org.omg.CORBA.portable.OutputStream _output;
+        int arg0_in = _is.read_long();
+        String arg1_in = _is.read_string();
+
+        notifierCodeTransport(arg0_in, arg1_in);
+
+        _output = handler.createReply();
+
         return _output;
     }
 

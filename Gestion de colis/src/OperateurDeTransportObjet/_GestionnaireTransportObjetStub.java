@@ -74,7 +74,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation notifierOffreAcceptee
      */
-    public void notifierOffreAcceptee(int numeroTransporteur, String codeTransport)
+    public String notifierOffreAcceptee(int numeroTransporteur, String numeroOffre)
     {
         while(true)
         {
@@ -83,11 +83,12 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 org.omg.CORBA.portable.InputStream _input = null;
                 try
                 {
-                    org.omg.CORBA.portable.OutputStream _output = this._request("notifierOffreAcceptee",false);
+                    org.omg.CORBA.portable.OutputStream _output = this._request("notifierOffreAcceptee",true);
                     _output.write_long(numeroTransporteur);
-                    _output.write_string(codeTransport);
+                    _output.write_string(numeroOffre);
                     _input = this._invoke(_output);
-                    return;
+                    String _arg_ret = _input.read_string();
+                    return _arg_ret;
                 }
                 catch(org.omg.CORBA.portable.RemarshalException _exception)
                 {
@@ -111,8 +112,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 OperateurDeTransportObjet.GestionnaireTransportObjetOperations _self = (OperateurDeTransportObjet.GestionnaireTransportObjetOperations) _so.servant;
                 try
                 {
-                    _self.notifierOffreAcceptee( numeroTransporteur,  codeTransport);
-                    return;
+                    return _self.notifierOffreAcceptee( numeroTransporteur,  numeroOffre);
                 }
                 finally
                 {

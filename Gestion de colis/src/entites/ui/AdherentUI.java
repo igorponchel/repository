@@ -230,5 +230,10 @@ public class AdherentUI extends JFrame implements ActionListener{
 		
 		JOptionPane.showMessageDialog(this, message, "Attention", JOptionPane.WARNING_MESSAGE);
 	}
+	
+	public void notifierColisArrive(String idObjet) {
+		
+		JOptionPane.showMessageDialog(this, "L'objet " + idObjet + " vient d'arriver dans votre station.");
+	}
 
 }
