@@ -47,7 +47,7 @@ public abstract class StationPOA extends org.omg.PortableServer.Servant
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
-        String arg0_in = _is.read_string();
+        int arg0_in = _is.read_long();
 
         try
         {

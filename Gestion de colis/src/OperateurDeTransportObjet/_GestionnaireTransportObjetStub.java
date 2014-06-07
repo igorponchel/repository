@@ -174,9 +174,59 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     }
 
     /**
+     * Operation enregistrerObjet
+     */
+    public void enregistrerObjet(OperateurDeTransportObjet.Objet objet)
+    {
+        while(true)
+        {
+            if (!this._is_local())
+            {
+                org.omg.CORBA.portable.InputStream _input = null;
+                try
+                {
+                    org.omg.CORBA.portable.OutputStream _output = this._request("enregistrerObjet",false);
+                    OperateurDeTransportObjet.ObjetHelper.write(_output,objet);
+                    _input = this._invoke(_output);
+                    return;
+                }
+                catch(org.omg.CORBA.portable.RemarshalException _exception)
+                {
+                    continue;
+                }
+                catch(org.omg.CORBA.portable.ApplicationException _exception)
+                {
+                    String _exception_id = _exception.getId();
+                    throw new org.omg.CORBA.UNKNOWN("Unexpected User Exception: "+ _exception_id);
+                }
+                finally
+                {
+                    this._releaseReply(_input);
+                }
+            }
+            else
+            {
+                org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("enregistrerObjet",_opsClass);
+                if (_so == null)
+                   continue;
+                OperateurDeTransportObjet.GestionnaireTransportObjetOperations _self = (OperateurDeTransportObjet.GestionnaireTransportObjetOperations) _so.servant;
+                try
+                {
+                    _self.enregistrerObjet( objet);
+                    return;
+                }
+                finally
+                {
+                    _servant_postinvoke(_so);
+                }
+            }
+        }
+    }
+
+    /**
      * Operation notifierEtatObjet
      */
-    public void notifierEtatObjet(String idObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public void notifierEtatObjet(String idObjet, OperateurDeTransportObjet.EtatObjet etatObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
         while(true)
@@ -188,7 +238,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("notifierEtatObjet",true);
                     _output.write_string(idObjet);
-                    OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.write(_output,etatObjet);
+                    OperateurDeTransportObjet.EtatObjetHelper.write(_output,etatObjet);
                     _input = this._invoke(_output);
                     return;
                 }
@@ -233,7 +283,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     /**
      * Operation consulterEtatObjet
      */
-    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet consulterEtatObjet(String idObjet)
+    public OperateurDeTransportObjet.InfoObjet[] consulterEtatObjet(int numeroAdherent)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
         while(true)
@@ -244,9 +294,9 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("consulterEtatObjet",true);
-                    _output.write_string(idObjet);
+                    _output.write_long(numeroAdherent);
                     _input = this._invoke(_output);
-                    OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet _arg_ret = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.read(_input);
+                    OperateurDeTransportObjet.InfoObjet[] _arg_ret = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ListeInfoObjetHelper.read(_input);
                     return _arg_ret;
                 }
                 catch(org.omg.CORBA.portable.RemarshalException _exception)
@@ -276,7 +326,7 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
                 OperateurDeTransportObjet.GestionnaireTransportObjetOperations _self = (OperateurDeTransportObjet.GestionnaireTransportObjetOperations) _so.servant;
                 try
                 {
-                    return _self.consulterEtatObjet( idObjet);
+                    return _self.consulterEtatObjet( numeroAdherent);
                 }
                 finally
                 {

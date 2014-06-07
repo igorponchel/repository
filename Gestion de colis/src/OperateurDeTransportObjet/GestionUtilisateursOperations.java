@@ -51,4 +51,19 @@ public interface GestionUtilisateursOperations
      */
     public void notifierDeconnexion(int numeroTransporteur);
 
+    /**
+     * Operation notifierConnexionAdh
+     */
+    public void notifierConnexionAdh(int numeroAdherent, OperateurDeTransportObjet.Adherent adherent);
+
+    /**
+     * Operation notifierDeconnexionAdh
+     */
+    public void notifierDeconnexionAdh(int numeroAdherent);
+
+    /**
+     * Operation getAdherentSiConnecte
+     */
+    public OperateurDeTransportObjet.Adherent getAdherentSiConnecte(int numeroAdherent);
+
 }

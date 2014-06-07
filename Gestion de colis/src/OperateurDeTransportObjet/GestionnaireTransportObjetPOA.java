@@ -35,6 +35,8 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
 
         if (opName.equals("consulterEtatObjet")) {
                 return _invoke_consulterEtatObjet(_is, handler);
+        } else if (opName.equals("enregistrerObjet")) {
+                return _invoke_enregistrerObjet(_is, handler);
         } else if (opName.equals("notifierConnexion")) {
                 return _invoke_notifierConnexion(_is, handler);
         } else if (opName.equals("notifierDeconnexion")) {
@@ -98,12 +100,25 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
         return _output;
     }
 
+    private org.omg.CORBA.portable.OutputStream _invoke_enregistrerObjet(
+            final org.omg.CORBA.portable.InputStream _is,
+            final org.omg.CORBA.portable.ResponseHandler handler) {
+        org.omg.CORBA.portable.OutputStream _output;
+        OperateurDeTransportObjet.Objet arg0_in = OperateurDeTransportObjet.ObjetHelper.read(_is);
+
+        enregistrerObjet(arg0_in);
+
+        _output = handler.createReply();
+
+        return _output;
+    }
+
     private org.omg.CORBA.portable.OutputStream _invoke_notifierEtatObjet(
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
         String arg0_in = _is.read_string();
-        OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet arg1_in = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.read(_is);
+        OperateurDeTransportObjet.EtatObjet arg1_in = OperateurDeTransportObjet.EtatObjetHelper.read(_is);
 
         try
         {
@@ -124,14 +139,14 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
         org.omg.CORBA.portable.OutputStream _output;
-        String arg0_in = _is.read_string();
+        int arg0_in = _is.read_long();
 
         try
         {
-            OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet _arg_result = consulterEtatObjet(arg0_in);
+            OperateurDeTransportObjet.InfoObjet[] _arg_result = consulterEtatObjet(arg0_in);
 
             _output = handler.createReply();
-            OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjetHelper.write(_output,_arg_result);
+            OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ListeInfoObjetHelper.write(_output,_arg_result);
 
         }
         catch (OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException _exception)

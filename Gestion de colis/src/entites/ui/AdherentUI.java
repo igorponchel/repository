@@ -18,15 +18,19 @@ import javax.swing.JTextField;
 import OperateurDeTransportObjet.Adresse;
 import OperateurDeTransportObjet.CoordBancaire;
 import OperateurDeTransportObjet.GestionUtilisateurs;
+import OperateurDeTransportObjet.GestionnaireTransportObjet;
+import OperateurDeTransportObjet.InfoObjet;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentExistantException;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeAdhesion;
+import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
 
 public class AdherentUI extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private OperateurDeTransportObjet.GestionUtilisateurs gestionnaireUtilisateurs;
+	private OperateurDeTransportObjet.GestionnaireTransportObjet gestionnaireTransportObjet;
 
 	private boolean initialized = false;
 	private Actions actions = new Actions();
@@ -35,8 +39,8 @@ public class AdherentUI extends JFrame implements ActionListener{
 	private JButton boutonDemandeAdhesion;
 	private JButton boutonConsulterEtatObjet;
 	private Container pane;
-	
-	
+
+
 	//Formulaire adhésion
 	private JLabel labelPrenomAdherent;
 	private JTextField prenomAdherent;
@@ -62,14 +66,18 @@ public class AdherentUI extends JFrame implements ActionListener{
 	private JTextField numDos;
 	private JButton boutonAdherer;
 
-	public AdherentUI(GestionUtilisateurs gestionnaireUtilisateurs) {
-		
+	//vue consulter etat
+	private JList listeInfoObjet;
+
+	public AdherentUI(GestionUtilisateurs gestionnaireUtilisateurs, GestionnaireTransportObjet gestionnaireTransportObjet) {
+
 		this.gestionnaireUtilisateurs = gestionnaireUtilisateurs;
+		this.gestionnaireTransportObjet = gestionnaireTransportObjet;
 		this.setVisible(true);
 		initialize();
 	}
-	
-	
+
+
 	public void initialize() {
 		initializeGui();
 		initializeEvents();
@@ -124,9 +132,9 @@ public class AdherentUI extends JFrame implements ActionListener{
 
 		defaultListModel.addElement(texte);
 	}
-	
+
 	private void initFormulaireAdhesion() {
-		
+
 		labelPrenomAdherent = new JLabel("Prénom ");
 		prenomAdherent = new JTextField();
 		labelNomAdherent = new JLabel("Nom ");
@@ -151,7 +159,7 @@ public class AdherentUI extends JFrame implements ActionListener{
 		numDos = new JTextField();
 		boutonAdherer = new JButton("Adherer");
 		boutonAdherer.addActionListener(this);
-		
+
 		pane.removeAll();
 		pane.revalidate();
 		pane.repaint();
@@ -182,22 +190,40 @@ public class AdherentUI extends JFrame implements ActionListener{
 		pane.add(boutonAdherer);
 		pane.repaint();
 	}
-	
+
+	private void initVueInfosObjet() {
+
+		pane.removeAll();
+		pane.revalidate();
+		pane.repaint();
+
+		try {
+			InfoObjet[] infosObjet = gestionnaireTransportObjet.consulterEtatObjet(1);
+
+			listeInfoObjet = new JList<InfoObjet>(infosObjet);
+
+		} catch (ObjetInexistantException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	private void envoyerFormulaireAdhesion() {
-		
+
 		DemandeAdhesion demandeAdhesion = new DemandeAdhesion(prenomAdherent.getText(), nomAdherent.getText(), 
 				new Adresse(numeroRue.getText(), nomRue.getText(), ville.getText(), Integer.parseInt(departement.getText()), pays.getText()), 
 				new CoordBancaire(Integer.parseInt(numeroCarte.getText()), proprietaire.getText(), date.getText(), Integer.parseInt(numDos.getText())));
 		try {
 			Adhesion adhesion = gestionnaireUtilisateurs.demandeAdhesion(demandeAdhesion);
 			notifierSucces("Adhesion réussie : " + adhesion.toString());
-			
+
 		} catch (AdherentExistantException e) {
 
 			notifierErreur("Adhesion échouée : " + e.getLocalizedMessage());
 		}
 	}
-	
+
 
 	public void actionPerformed(ActionEvent evt) {
 
@@ -206,33 +232,36 @@ public class AdherentUI extends JFrame implements ActionListener{
 		if (source == boutonDemandeAdhesion) {
 			//Afficher formulaire adhésion
 			initFormulaireAdhesion();
-			
+
 		} else if (source == boutonConsulterEtatObjet) {
 
+			initVueInfosObjet();
+
+
 		} else if (source == boutonAdherer) {
-			
+
 			envoyerFormulaireAdhesion();
 		}
 
 	}
-	
+
 	private void notifierSucces (String message) {
-		
+
 		JOptionPane.showMessageDialog(this, message);
 	}
-	
+
 	private void notifierErreur (String message) {
-		
+
 		JOptionPane.showMessageDialog(this, message, "Erreur", JOptionPane.ERROR_MESSAGE);
 	}
-	
+
 	private void notifierWarning (String message) {
-		
+
 		JOptionPane.showMessageDialog(this, message, "Attention", JOptionPane.WARNING_MESSAGE);
 	}
-	
+
 	public void notifierColisArrive(String idObjet) {
-		
+
 		JOptionPane.showMessageDialog(this, "L'objet " + idObjet + " vient d'arriver dans votre station.");
 	}
 

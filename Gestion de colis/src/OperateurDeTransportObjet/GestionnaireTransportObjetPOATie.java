@@ -87,9 +87,17 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     }
 
     /**
+     * Operation enregistrerObjet
+     */
+    public void enregistrerObjet(OperateurDeTransportObjet.Objet objet)
+    {
+        _tie.enregistrerObjet( objet);
+    }
+
+    /**
      * Operation notifierEtatObjet
      */
-    public void notifierEtatObjet(String idObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public void notifierEtatObjet(String idObjet, OperateurDeTransportObjet.EtatObjet etatObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
         _tie.notifierEtatObjet( idObjet,  etatObjet);
@@ -98,10 +106,10 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     /**
      * Operation consulterEtatObjet
      */
-    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet consulterEtatObjet(String idObjet)
+    public OperateurDeTransportObjet.InfoObjet[] consulterEtatObjet(int numeroAdherent)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException
     {
-        return _tie.consulterEtatObjet( idObjet);
+        return _tie.consulterEtatObjet( numeroAdherent);
     }
 
     /**

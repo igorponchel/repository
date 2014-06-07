@@ -24,6 +24,25 @@ module OperateurDeTransportObjet {
 		long departement;
 		string pays;
 	};
+
+	enum EtatObjet {depose, enTransit, livre, delivre}; // delivré signifie que le destinataire l'a récupéré.
+	
+	struct Objet {
+		
+		string idObjet;
+		EtatObjet etatObjet;
+		long numExpediteur;
+		long numDestinataire;
+		long numeroCasierDepart;
+		long numeroCasierArrivee;
+	};
+	
+	struct InfoObjet {
+		
+		string idObjet;
+		EtatObjet etatObjet;
+
+	};
 	
 	interface Transporteur {
 	
@@ -83,18 +102,43 @@ module OperateurDeTransportObjet {
 		
 		Adhesion demandeAdhesion(in DemandeAdhesion demandeAdhesion) raises (AdherentExistantException);
 		InscriptionTrans demandeInscriptionTrans(in DemandeInscriptionTrans demandeInscriptionTrans) raises (TransExistantException);
-		boolean verifierAdherent(in long numeroAdherent, in string motDePasse); //On suppose que le GestionnaireUtilisateur contient les IOR des adhérents
-		boolean verifierTransporteur(in short codeVerif); //On suppose que le GestionnaireUtilisateur contient les IOR des transporteurs
+		boolean verifierAdherent(in long numeroAdherent, in string motDePasse); 
+		boolean verifierTransporteur(in short codeVerif);
 		long getNumAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 		long getZoneAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 		oneway void notifierConnexion(in long numeroTransporteur, in Transporteur transporteur);
 		oneway void notifierDeconnexion(in long numeroTransporteur);
+		oneway void notifierConnexionAdh(in long numeroAdherent, in Adherent adherent);
+		oneway void notifierDeconnexionAdh(in long numeroAdherent);
+		Adherent getAdherentSiConnecte(in long numeroAdherent); // ajouter une exception
 	};
 	
 	interface GestionnairePaiement {
 	
 		short debiter(in CoordBancaire coordonneesBancaires, in long somme); // une seule suffit quelque soit l'entité
 		short crediter(in CoordBancairePro coordonneesBancairesPro, in long somme);
+	};
+	
+
+	
+	interface GestionnaireTransportObjet {
+			
+		exception ObjetInexistantException {
+			string explication;
+		};
+		
+		typedef sequence<InfoObjet> ListeInfoObjet;
+		
+		//retourne le codeTransport à la station
+		string notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee);
+		string notifierOffreAcceptee(in long numeroTransporteur, in string numeroOffre);
+		boolean verifierTransporteur(in long numeroTransporteur, in string codeTransport);
+		oneway void enregistrerObjet(in Objet objet);
+		void notifierEtatObjet(in string idObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
+		ListeInfoObjet consulterEtatObjet(in long numeroAdherent) raises (ObjetInexistantException);
+		oneway void notifierConnexion(in long numeroTransporteur, in Transporteur transporteur);
+		oneway void notifierDeconnexion(in long numeroTransporteur);
+	
 	};
 	
 	interface Station {
@@ -112,34 +156,8 @@ module OperateurDeTransportObjet {
 		};
 	
 
-		long reserverCasier(in string idObjet) raises (AucunCasierDisponibleException);
+		long reserverCasier(in long numeroAdherent) raises (AucunCasierDisponibleException);
 		//signale à la station distante le couple codeTransport/CasierDistant pour assurer la recherche lors de la livraison
 		oneway void notifierCodeTransport(in long numeroCasier, in string codeTransport);
-	};
-	
-	interface GestionnaireTransportObjet {
-	
-		enum EtatObjet {depose, enTransit, livre, delivre}; // delivré signifie que le destinataire l'a récupéré.
-	
-		struct Objet {
-		
-			string idObjet;
-			EtatObjet etatObjet;
-			long numeroCasierDepart;
-			long numeroCasierArrivee;
-		};
-		
-		exception ObjetInexistantException {
-			string explication;
-		};
-		//retourne le codeTransport à la station
-		string notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee);
-		string notifierOffreAcceptee(in long numeroTransporteur, in string numeroOffre);
-		boolean verifierTransporteur(in long numeroTransporteur, in string codeTransport);
-		void notifierEtatObjet(in string idObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
-		EtatObjet consulterEtatObjet(in string idObjet) raises (ObjetInexistantException);
-		oneway void notifierConnexion(in long numeroTransporteur, in Transporteur transporteur);
-		oneway void notifierDeconnexion(in long numeroTransporteur);
-	
 	};
 };

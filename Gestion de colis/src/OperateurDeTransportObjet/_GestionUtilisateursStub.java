@@ -448,4 +448,155 @@ public class _GestionUtilisateursStub extends org.omg.CORBA.portable.ObjectImpl
         }
     }
 
+    /**
+     * Operation notifierConnexionAdh
+     */
+    public void notifierConnexionAdh(int numeroAdherent, OperateurDeTransportObjet.Adherent adherent)
+    {
+        while(true)
+        {
+            if (!this._is_local())
+            {
+                org.omg.CORBA.portable.InputStream _input = null;
+                try
+                {
+                    org.omg.CORBA.portable.OutputStream _output = this._request("notifierConnexionAdh",false);
+                    _output.write_long(numeroAdherent);
+                    OperateurDeTransportObjet.AdherentHelper.write(_output,adherent);
+                    _input = this._invoke(_output);
+                    return;
+                }
+                catch(org.omg.CORBA.portable.RemarshalException _exception)
+                {
+                    continue;
+                }
+                catch(org.omg.CORBA.portable.ApplicationException _exception)
+                {
+                    String _exception_id = _exception.getId();
+                    throw new org.omg.CORBA.UNKNOWN("Unexpected User Exception: "+ _exception_id);
+                }
+                finally
+                {
+                    this._releaseReply(_input);
+                }
+            }
+            else
+            {
+                org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("notifierConnexionAdh",_opsClass);
+                if (_so == null)
+                   continue;
+                OperateurDeTransportObjet.GestionUtilisateursOperations _self = (OperateurDeTransportObjet.GestionUtilisateursOperations) _so.servant;
+                try
+                {
+                    _self.notifierConnexionAdh( numeroAdherent,  adherent);
+                    return;
+                }
+                finally
+                {
+                    _servant_postinvoke(_so);
+                }
+            }
+        }
+    }
+
+    /**
+     * Operation notifierDeconnexionAdh
+     */
+    public void notifierDeconnexionAdh(int numeroAdherent)
+    {
+        while(true)
+        {
+            if (!this._is_local())
+            {
+                org.omg.CORBA.portable.InputStream _input = null;
+                try
+                {
+                    org.omg.CORBA.portable.OutputStream _output = this._request("notifierDeconnexionAdh",false);
+                    _output.write_long(numeroAdherent);
+                    _input = this._invoke(_output);
+                    return;
+                }
+                catch(org.omg.CORBA.portable.RemarshalException _exception)
+                {
+                    continue;
+                }
+                catch(org.omg.CORBA.portable.ApplicationException _exception)
+                {
+                    String _exception_id = _exception.getId();
+                    throw new org.omg.CORBA.UNKNOWN("Unexpected User Exception: "+ _exception_id);
+                }
+                finally
+                {
+                    this._releaseReply(_input);
+                }
+            }
+            else
+            {
+                org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("notifierDeconnexionAdh",_opsClass);
+                if (_so == null)
+                   continue;
+                OperateurDeTransportObjet.GestionUtilisateursOperations _self = (OperateurDeTransportObjet.GestionUtilisateursOperations) _so.servant;
+                try
+                {
+                    _self.notifierDeconnexionAdh( numeroAdherent);
+                    return;
+                }
+                finally
+                {
+                    _servant_postinvoke(_so);
+                }
+            }
+        }
+    }
+
+    /**
+     * Operation getAdherentSiConnecte
+     */
+    public OperateurDeTransportObjet.Adherent getAdherentSiConnecte(int numeroAdherent)
+    {
+        while(true)
+        {
+            if (!this._is_local())
+            {
+                org.omg.CORBA.portable.InputStream _input = null;
+                try
+                {
+                    org.omg.CORBA.portable.OutputStream _output = this._request("getAdherentSiConnecte",true);
+                    _output.write_long(numeroAdherent);
+                    _input = this._invoke(_output);
+                    OperateurDeTransportObjet.Adherent _arg_ret = OperateurDeTransportObjet.AdherentHelper.read(_input);
+                    return _arg_ret;
+                }
+                catch(org.omg.CORBA.portable.RemarshalException _exception)
+                {
+                    continue;
+                }
+                catch(org.omg.CORBA.portable.ApplicationException _exception)
+                {
+                    String _exception_id = _exception.getId();
+                    throw new org.omg.CORBA.UNKNOWN("Unexpected User Exception: "+ _exception_id);
+                }
+                finally
+                {
+                    this._releaseReply(_input);
+                }
+            }
+            else
+            {
+                org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("getAdherentSiConnecte",_opsClass);
+                if (_so == null)
+                   continue;
+                OperateurDeTransportObjet.GestionUtilisateursOperations _self = (OperateurDeTransportObjet.GestionUtilisateursOperations) _so.servant;
+                try
+                {
+                    return _self.getAdherentSiConnecte( numeroAdherent);
+                }
+                finally
+                {
+                    _servant_postinvoke(_so);
+                }
+            }
+        }
+    }
+
 }

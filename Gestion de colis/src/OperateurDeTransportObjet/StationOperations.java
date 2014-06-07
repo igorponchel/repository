@@ -10,7 +10,7 @@ public interface StationOperations
     /**
      * Operation reserverCasier
      */
-    public int reserverCasier(String idObjet)
+    public int reserverCasier(int numeroAdherent)
         throws OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleException;
 
     /**

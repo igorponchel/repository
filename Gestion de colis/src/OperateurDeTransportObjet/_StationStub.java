@@ -23,7 +23,7 @@ public class _StationStub extends org.omg.CORBA.portable.ObjectImpl
     /**
      * Operation reserverCasier
      */
-    public int reserverCasier(String idObjet)
+    public int reserverCasier(int numeroAdherent)
         throws OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleException
     {
         while(true)
@@ -34,7 +34,7 @@ public class _StationStub extends org.omg.CORBA.portable.ObjectImpl
                 try
                 {
                     org.omg.CORBA.portable.OutputStream _output = this._request("reserverCasier",true);
-                    _output.write_string(idObjet);
+                    _output.write_long(numeroAdherent);
                     _input = this._invoke(_output);
                     int _arg_ret = _input.read_long();
                     return _arg_ret;
@@ -66,7 +66,7 @@ public class _StationStub extends org.omg.CORBA.portable.ObjectImpl
                 OperateurDeTransportObjet.StationOperations _self = (OperateurDeTransportObjet.StationOperations) _so.servant;
                 try
                 {
-                    return _self.reserverCasier( idObjet);
+                    return _self.reserverCasier( numeroAdherent);
                 }
                 finally
                 {

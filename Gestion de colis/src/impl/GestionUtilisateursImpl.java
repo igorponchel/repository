@@ -7,6 +7,7 @@ import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
 import utils.RandomStr;
+import OperateurDeTransportObjet.Adherent;
 import OperateurDeTransportObjet.GestionUtilisateursPOA;
 import OperateurDeTransportObjet.GestionnaireTransportObjet;
 import OperateurDeTransportObjet.Transporteur;
@@ -27,6 +28,9 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 	//Contient l'ensemble des liens vers les transporteurs connectés
 	private Map<Integer, Transporteur> mapNumeroTransporteursConnectes;
 
+	//Contient l'ensemble des liens vers les adherents connectés
+	private Map<Integer, Adherent> mapNumeroAdherentConnectes;
+	
 	private Map <Integer, Adhesion> mapAdherent;
 
 	//Contient l'ensemble des transporteurs inscrits
@@ -38,6 +42,7 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 		recupererGestionnaireTransportObjet(args);
 
 		mapNumeroTransporteursConnectes = new HashMap<>();
+		mapNumeroAdherentConnectes = new HashMap<>();
 		
 		mapAdherent = new HashMap<>();
 		mapAdherent.put(1, new Adhesion(1, "toto", "Ponchel", "Igor", 31));
@@ -236,6 +241,20 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 		mapNumeroTransporteursConnectes.remove(numeroTransporteur);
 		gestionnaireTransportObjet.notifierDeconnexion(numeroTransporteur);
 	}
+	
+	@Override
+	public void notifierConnexionAdh(int numeroAdherent, Adherent adherent) {
+
+		mapNumeroAdherentConnectes.put(numeroAdherent, adherent);
+
+	}
+
+	@Override
+	public void notifierDeconnexionAdh(int numeroAdherent) {
+
+		mapNumeroAdherentConnectes.remove(numeroAdherent);
+
+	}
 
 	private void recupererGestionnaireTransportObjet(String args[]) {
 
@@ -273,6 +292,20 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public Adherent getAdherentSiConnecte(int numeroAdherent) {
+		
+		Adherent adherent = mapNumeroAdherentConnectes.get(numeroAdherent);
+		if(adherent != null) {
+			
+			return adherent;
+		}
+		else {
+			
+			return null;
 		}
 	}
 

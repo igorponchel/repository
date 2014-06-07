@@ -23,15 +23,20 @@ public interface GestionnaireTransportObjetOperations
     public boolean verifierTransporteur(int numeroTransporteur, String codeTransport);
 
     /**
+     * Operation enregistrerObjet
+     */
+    public void enregistrerObjet(OperateurDeTransportObjet.Objet objet);
+
+    /**
      * Operation notifierEtatObjet
      */
-    public void notifierEtatObjet(String idObjet, OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet etatObjet)
+    public void notifierEtatObjet(String idObjet, OperateurDeTransportObjet.EtatObjet etatObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
 
     /**
      * Operation consulterEtatObjet
      */
-    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet consulterEtatObjet(String idObjet)
+    public OperateurDeTransportObjet.InfoObjet[] consulterEtatObjet(int numeroAdherent)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
 
     /**

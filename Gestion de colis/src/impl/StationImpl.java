@@ -1,8 +1,9 @@
 package impl;
 
-import entites.ui.StationUI;
+import OperateurDeTransportObjet.Objet;
 import OperateurDeTransportObjet.StationPOA;
 import OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleException;
+import entites.ui.StationUI;
 
 public class StationImpl extends StationPOA {
 
@@ -15,13 +16,13 @@ public class StationImpl extends StationPOA {
 	}
 
 	@Override
-	public int reserverCasier(String idObjet)
+	public int reserverCasier(int numeroAdherent)
 			throws AucunCasierDisponibleException {
 		// TODO Auto-generated method stub
 		
 		int numeroCasier = maStation.getNumeroCasierLibre();
 		
-		if (numeroCasier != 0) {
+		if (numeroCasier < 20 ) {
 			
 			return numeroCasier;
 		}

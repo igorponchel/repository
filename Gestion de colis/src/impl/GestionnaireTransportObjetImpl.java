@@ -1,16 +1,21 @@
 package impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import utils.EtatOffre;
 import utils.EtatOffreTransport;
 import utils.OffreTransport;
 import utils.RandomStr;
+import OperateurDeTransportObjet.Adherent;
+import OperateurDeTransportObjet.EtatObjet;
+import OperateurDeTransportObjet.GestionUtilisateurs;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPOA;
+import OperateurDeTransportObjet.InfoObjet;
+import OperateurDeTransportObjet.Objet;
 import OperateurDeTransportObjet.Transporteur;
-import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -18,11 +23,19 @@ import com.google.common.collect.Multimap;
 
 public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPOA {
 
+	private GestionUtilisateurs gestionnaireUtilisateurs;
+	
 	//Contient l'ensemble des liens vers les transporteurs connectés
 	private Map<Integer, Transporteur> mapNumeroTransporteursConnectes;
 	
 	//Contient les offres de transport associées à leur code de transport
 	private Map <String, OffreTransport> mapCodeTransportOffre;
+	
+	private Multimap<Integer, String> multiMapNumAdherentIdObjet;
+	
+	private Map<String, Objet> mapIdObjetObjet;
+	
+	
 	
 	private Map <Integer, String> mapNumeroNomTransporteurs;
 	private Multimap<Integer, String> multimapNumTransCodeTrans;
@@ -32,10 +45,11 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 	private String args[];
 
 
-	public GestionnaireTransportObjetImpl (String args[]) {
+	public GestionnaireTransportObjetImpl (String args[], GestionUtilisateurs gestionnaireUtilisateurs) {
 
 		this.args = args;
-
+		this.gestionnaireUtilisateurs = gestionnaireUtilisateurs;
+		
 		mapNumeroNomTransporteurs = new HashMap<>();
 		mapNumeroTransporteursConnectes = new HashMap<>();
 		mapCodeTransportOffre = new HashMap<>();
@@ -108,37 +122,24 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		return transporteurOK;
 	}
 
-	@Override
-	public void notifierEtatObjet(String idObjet, EtatObjet etatObjet)
-			throws ObjetInexistantException {
-
-		if (etatObjet == EtatObjet.depose) {
-
-			mapObjetEtat.put(idObjet, etatObjet);
-		}
-		else { 
-			if (mapObjetEtat.get(idObjet) != null) {
-
-				mapObjetEtat.put(idObjet, etatObjet);
-			}
-			else {
-				throw new ObjetInexistantException("L'objet notifié n'existe pas.");
-			}
-		}
-	}
 
 	@Override
-	public EtatObjet consulterEtatObjet(String idObjet)
+	public InfoObjet[] consulterEtatObjet(int numeroAdherent)
 			throws ObjetInexistantException {
 
-		EtatObjet etatObjet = mapObjetEtat.get(idObjet);
+		Collection<String> idObjets = multiMapNumAdherentIdObjet.get(numeroAdherent);
+		List<InfoObjet> infosObjets = new ArrayList<>();
+		for(String idObjet : idObjets) {
+			
+			infosObjets.add(new InfoObjet(idObjet, mapIdObjetObjet.get(idObjet).etatObjet));
+		}
 
-		if (etatObjet != null) {
+		if (!infosObjets.isEmpty()) {
 
-			return etatObjet;
+			return (InfoObjet[])infosObjets.toArray();
 		}
 		else {
-			throw new ObjetInexistantException("L'objet à consulter n'existe pas.");
+			throw new ObjetInexistantException("Aucun objet correspondant.");
 		}
 	}
 
@@ -165,8 +166,6 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 			
 			transporteur.notifierOffreTransport(offre.getNomStationDepart(), offre.getNomStationArrivee(), offre.getNumeroOffre());
 		}
-		
-		
 	}
 
 	@Override
@@ -174,4 +173,44 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		// TODO Auto-generated method stub
 		mapNumeroTransporteursConnectes.remove(numeroTransporteur);
 	}
+
+
+	@Override
+	public void notifierEtatObjet(String idObjet, EtatObjet etatObjet)
+			throws ObjetInexistantException {
+
+		
+		Objet objet = mapIdObjetObjet.get(idObjet);
+		if (objet != null) {
+			objet.etatObjet = etatObjet;
+			
+			if(etatObjet == EtatObjet.delivre) {
+				
+				alerterDestinataire(objet.numDestinataire, idObjet);
+			}
+		}
+		else {
+			throw new ObjetInexistantException("L'objet notifié n'existe pas.");
+		}
+		
+	}
+
+
+	@Override
+	public void enregistrerObjet(Objet objet) {
+		 
+		multiMapNumAdherentIdObjet.put(objet.numExpediteur, objet.idObjet);
+		multiMapNumAdherentIdObjet.put(objet.numDestinataire, objet.idObjet);
+		
+		mapIdObjetObjet.put(objet.idObjet, objet);
+	}
+
+	public void alerterDestinataire(int numeroAdherentDestinataire, String idObjet) {
+		
+		Adherent adherent = gestionnaireUtilisateurs.getAdherentSiConnecte(numeroAdherentDestinataire);
+		
+		adherent.notifierColisArrive(idObjet);
+	}
+
+
 }

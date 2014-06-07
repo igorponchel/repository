@@ -130,4 +130,28 @@ public class GestionUtilisateursPOATie extends GestionUtilisateursPOA
         _tie.notifierDeconnexion( numeroTransporteur);
     }
 
+    /**
+     * Operation notifierConnexionAdh
+     */
+    public void notifierConnexionAdh(int numeroAdherent, OperateurDeTransportObjet.Adherent adherent)
+    {
+        _tie.notifierConnexionAdh( numeroAdherent,  adherent);
+    }
+
+    /**
+     * Operation notifierDeconnexionAdh
+     */
+    public void notifierDeconnexionAdh(int numeroAdherent)
+    {
+        _tie.notifierDeconnexionAdh( numeroAdherent);
+    }
+
+    /**
+     * Operation getAdherentSiConnecte
+     */
+    public OperateurDeTransportObjet.Adherent getAdherentSiConnecte(int numeroAdherent)
+    {
+        return _tie.getAdherentSiConnecte( numeroAdherent);
+    }
+
 }

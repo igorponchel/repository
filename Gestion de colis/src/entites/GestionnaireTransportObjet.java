@@ -15,6 +15,8 @@ import org.omg.PortableServer.POAHelper;
  *******************************/
 public class GestionnaireTransportObjet {
 
+	public static OperateurDeTransportObjet.GestionUtilisateurs monGestionnaireUtilisateurs;
+
 	public static void main(String args[]) {
 		try {
 			// Intialisation de l'ORB
@@ -26,9 +28,33 @@ public class GestionnaireTransportObjet {
 			// Recuperation du POA
 			POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
 
+			
+			//********************* RECUPERATION DU SERVANT GESTIONNAIRE D'UTILISATEURS
+			// Saisie du nom de l'objet (si utilisation du service de nommage)
+			System.out.println("Quel objet Corba voulez-vous contacter ?");
+
+			String idObj = "GUtilisateurs";
+
+			// Recuperation du naming service
+			org.omg.CosNaming.NamingContext nameRoot =
+					org.omg.CosNaming.NamingContextHelper.narrow(orb.resolve_initial_references("NameService"));
+
+			// Construction du nom a rechercher
+			org.omg.CosNaming.NameComponent[] nameToFind = new org.omg.CosNaming.NameComponent[1];
+			nameToFind[0] = new org.omg.CosNaming.NameComponent(idObj,"");
+
+			// Recherche aupres du naming service
+			org.omg.CORBA.Object distantGestionUtilisateurs = nameRoot.resolve(nameToFind);  //BOUCLE DAPPEL
+			System.out.println("Objet '" + idObj + "' trouve aupres du service de noms. IOR de l'objet :");
+			System.out.println(orb.object_to_string(distantGestionUtilisateurs));
+
+			monGestionnaireUtilisateurs = OperateurDeTransportObjet.GestionUtilisateursHelper.narrow(distantGestionUtilisateurs);
+
+			
+			
 			// Creation du servant
 			//*********************
-			GestionnaireTransportObjetImpl monGestionnaireTransportObjet = new GestionnaireTransportObjetImpl(args);
+			GestionnaireTransportObjetImpl monGestionnaireTransportObjet = new GestionnaireTransportObjetImpl(args, monGestionnaireUtilisateurs);
 
 			// Activer le servant au sein du POA et recuperer son ID
 			byte[] monGestionnaireTransportObjetId = rootPOA.activate_object(monGestionnaireTransportObjet);
@@ -39,8 +65,6 @@ public class GestionnaireTransportObjet {
 			
 	        // Enregistrement dans le service de nommage
 	        //*******************************************
-	        // Recuperation du naming service
-	        NamingContext nameRoot=org.omg.CosNaming.NamingContextHelper.narrow(orb.resolve_initial_references("NameService"));
 
 	        // Construction du nom a enregistrer
 	        org.omg.CosNaming.NameComponent[] nameToRegister = new org.omg.CosNaming.NameComponent[1];

@@ -2,13 +2,12 @@ package impl;
 
 import OperateurDeTransportObjet.AdherentPOA;
 import entites.ui.AdherentUI;
-import entites.ui.StationUI;
 
 public class AdherentImpl extends AdherentPOA {
 
 	private AdherentUI adherentUI;
 	
-	public AdherentImpl(StationUI stationUI) {
+	public AdherentImpl(AdherentUI adherentUI) {
 		
 		this.adherentUI = adherentUI;
 	}
