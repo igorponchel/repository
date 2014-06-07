@@ -1,9 +1,15 @@
 package impl;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.POAHelper;
 
 import utils.RandomStr;
 import OperateurDeTransportObjet.GestionUtilisateursPOA;
+import OperateurDeTransportObjet.GestionnaireTransportObjet;
+import OperateurDeTransportObjet.Transporteur;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentExistantException;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.Adhesion;
@@ -16,14 +22,26 @@ import com.google.common.collect.Lists;
 
 public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 
-	private HashMap <Integer, Adhesion> mapAdherent;
-	private HashMap <Integer, InscriptionTrans> mapTransporteur;
-	private HashMap <Integer, List<Integer>> mapRegionZones;
+	private GestionnaireTransportObjet gestionnaireTransportObjet;
 
-	public GestionUtilisateursImpl () {
+	//Contient l'ensemble des liens vers les transporteurs connectés
+	private Map<Integer, Transporteur> mapNumeroTransporteursConnectes;
 
-		mapAdherent = new HashMap<Integer, Adhesion>();
-		mapAdherent.put(1, new Adhesion(1, "toto", "Ponchel", "Igor", 05));
+	private Map <Integer, Adhesion> mapAdherent;
+
+	//Contient l'ensemble des transporteurs inscrits
+	private Map <Integer, InscriptionTrans> mapTransporteur;
+	private Map <Integer, List<Integer>> mapRegionZones;
+
+	public GestionUtilisateursImpl (String args[]) {
+
+		recupererGestionnaireTransportObjet(args);
+
+		mapNumeroTransporteursConnectes = new HashMap<>();
+		
+		mapAdherent = new HashMap<>();
+		mapAdherent.put(1, new Adhesion(1, "toto", "Ponchel", "Igor", 31));
+		mapAdherent.put(2, new Adhesion(2, "toto", "Baadoud", "Kader", 32));
 
 		mapTransporteur = new HashMap<Integer, InscriptionTrans>();
 		mapTransporteur.put(1, new InscriptionTrans(1, "Mory"));	
@@ -33,7 +51,7 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 		List <Integer> zones03 = Lists.newArrayList(2, 8, 10, 21, 25, 39, 51, 52, 54, 55, 57, 58, 59, 60, 62, 67, 68, 70, 71, 80, 88, 89, 90);
 		List <Integer> zones04 = Lists.newArrayList(1, 3, 4, 5, 6, 7, 11, 13, 15, 26, 30, 34, 38, 42, 43, 48, 63, 66, 69, 73, 74, 83, 84);	
 		List <Integer> zones05 = Lists.newArrayList(9, 12, 16, 17, 19, 23, 24, 31, 32, 33, 40, 46, 47, 64, 65, 49, 81, 82, 86, 87);		
-		
+
 		mapRegionZones = new HashMap<Integer, List<Integer>>();
 		mapRegionZones.put(1, zones01);
 		mapRegionZones.put(2, zones02);
@@ -84,15 +102,15 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 
 		return mapAdherent.size() + 1;
 	}
-	
+
 	/**
 	 * Génére un mot de passe aléatoire
 	 */
 	private String genererMotDePasse () {
 
-        RandomStr rand = new RandomStr();
+		RandomStr rand = new RandomStr();
 
-        return rand.get(6);
+		return rand.get(6);
 	}
 
 	/**
@@ -173,31 +191,30 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 
 	@Override
 	public boolean verifierAdherent(int numeroAdherent, String motDePasse) {
-		
+
 		Adhesion adhesion = mapAdherent.get(numeroAdherent);
 		if (adhesion != null) {
 			return adhesion.motDePasse.equals(motDePasse);
 		}
-		
+
 		return false;
 	}
 
 	@Override
 	public int getZoneAdherent(String nomAdherent, String prenomAdherent)
 			throws AdherentInexistantException {
-		
+
 		int zoneAdherent = 0;
-		
+
 		for (Adhesion tempAdhesion : mapAdherent.values()) {
-			
+
 			if(tempAdhesion.nomAdherent.equals(nomAdherent) && tempAdhesion.prenomAdherent.equals(prenomAdherent)) {
-				
+
 				zoneAdherent = tempAdhesion.zoneAdherent;
 				break;
 			}
-			break;
 		}
-		
+
 		if (zoneAdherent != 0) {
 			return zoneAdherent;
 		} 
@@ -205,4 +222,58 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 			throw new AdherentInexistantException("L'adhérent n'existe pas.");
 		}
 	}
+
+	@Override
+	public void notifierConnexion(int numeroTransporteur, Transporteur transporteur) {
+
+		mapNumeroTransporteursConnectes.put(numeroTransporteur, transporteur);
+		gestionnaireTransportObjet.notifierConnexion(numeroTransporteur, transporteur);
+	}
+
+	@Override
+	public void notifierDeconnexion(int numeroTransporteur) {
+
+		mapNumeroTransporteursConnectes.remove(numeroTransporteur);
+		gestionnaireTransportObjet.notifierDeconnexion(numeroTransporteur);
+	}
+
+	private void recupererGestionnaireTransportObjet(String args[]) {
+
+		// Intialisation de l'ORB
+		//************************
+		org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(args,null);
+
+		// Gestion du POA
+		//****************
+		// Recuperation du POA
+		try {
+			POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+
+			// Recuperation du naming service
+			org.omg.CosNaming.NamingContext nameRoot =
+					org.omg.CosNaming.NamingContextHelper.narrow(orb.resolve_initial_references("NameService"));
+
+			//********************* RECUPERATION DU SERVANT GESTIONNAIRE TRANSPORT OBJET
+			// Saisie du nom de l'objet (si utilisation du service de nommage)
+			System.out.println("Quel objet Corba voulez-vous contacter ?");
+
+			String idObj2 = "GTransportObjet";
+
+			// Construction du nom a rechercher
+			org.omg.CosNaming.NameComponent[] nameToFind2 = new org.omg.CosNaming.NameComponent[1];
+			nameToFind2[0] = new org.omg.CosNaming.NameComponent(idObj2,"");
+
+			// Recherche aupres du naming service
+			org.omg.CORBA.Object distantGestionTransportObjet = nameRoot.resolve(nameToFind2);
+			System.out.println("Objet '" + idObj2 + "' trouve aupres du service de noms. IOR de l'objet :");
+			System.out.println(orb.object_to_string(distantGestionTransportObjet));
+
+			gestionnaireTransportObjet = OperateurDeTransportObjet.GestionnaireTransportObjetHelper.narrow(distantGestionTransportObjet);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

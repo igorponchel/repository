@@ -1,19 +1,29 @@
 package entites.ui;
 
+import impl.TransporteurImpl;
+
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Map;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import utils.EtatOffreTransport;
@@ -21,19 +31,24 @@ import utils.OffreTransport;
 import OperateurDeTransportObjet.Adresse;
 import OperateurDeTransportObjet.CoordBancairePro;
 import OperateurDeTransportObjet.GestionUtilisateurs;
+import OperateurDeTransportObjet.GestionnaireTransportObjet;
+import OperateurDeTransportObjet.Transporteur;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeInscriptionTrans;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.TransExistantException;
+
+import com.google.common.collect.Lists;
 
 public class TransporteurUI extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	
 	private OperateurDeTransportObjet.GestionUtilisateurs gestionnaireUtilisateurs;
-
+	private OperateurDeTransportObjet.GestionnaireTransportObjet gestionnaireTransportObjet;
+	private TransporteurImpl transporteur;
 	
-	private Map <String, OffreTransport> mapNumOffreOffre;
-	
+	private ArrayList <OffreTransport> listeOffre;
+	private InscriptionTrans inscription;
 	
 	private boolean initialized = false;
 	private Actions actions = new Actions();
@@ -44,6 +59,8 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	private JButton boutonAccepterOffreTransport;
 	private Container pane;
 	
+	private JMenuItem itemConnection;
+	private JMenuItem itemDeconnection;
 	
 	//Formulaire adhésion
 	private JLabel labelNomTransporteur;
@@ -67,10 +84,28 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	private JLabel labelCleRIB;
 	private JTextField cleRIB;
 	private JButton boutonInscrire;
-
-	public TransporteurUI(GestionUtilisateurs gestionnaireUtilisateurs) {
+	
+	//Vue Offre
+	private JTable tableOffres;
+	private OffreTableModel offreModel;
+	private JScrollPane scrollPane;
+	private JMenuItem prendreEnCharge;
+	
+	
+	private String args[];
+	
+	private TransporteurImpl monTransporteur;
+	
+	public TransporteurUI(GestionUtilisateurs gestionnaireUtilisateurs, GestionnaireTransportObjet gestionnaireTransportObjet, String args[], int numeroTransporteur) {
 		
+		inscription = new InscriptionTrans();
+		inscription.numeroInscritTrans = numeroTransporteur;
 		this.gestionnaireUtilisateurs = gestionnaireUtilisateurs;
+		this.gestionnaireTransportObjet = gestionnaireTransportObjet;
+		
+		this.args = args;
+
+		this.listeOffre = Lists.newArrayList();
 		this.setVisible(true);
 		initialize();
 	}
@@ -99,6 +134,26 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		boutonConsulterOffreTransport.addActionListener(this);
 		pane.add(boutonDemandeInscription);
 		pane.add(boutonConsulterOffreTransport);
+		
+		//Create the menu bar.
+		JMenuBar menuBar = new JMenuBar();
+
+		//Build the first menu.
+		JMenu menu = new JMenu("Menu");
+		menu.setMnemonic(KeyEvent.VK_A);
+
+		//a group of JMenuItems
+		itemConnection = new JMenuItem("Connexion",
+		                         KeyEvent.VK_C);
+		itemConnection.addActionListener(this);
+		itemDeconnection = new JMenuItem("Deconnexion",
+                KeyEvent.VK_D);
+		itemDeconnection.addActionListener(this);
+		
+		menu.add(itemConnection);
+		menu.add(itemDeconnection);		
+		menuBar.add(menu);
+		this.setJMenuBar(menuBar);
 	}
 
 	private void initializeEvents() {
@@ -190,13 +245,36 @@ public class TransporteurUI extends JFrame implements ActionListener{
 				new Adresse(numeroRue.getText(), nomRue.getText(), ville.getText(), Integer.parseInt(departement.getText()), pays.getText()), 
 				new CoordBancairePro(Integer.parseInt(codeBanque.getText()), Integer.parseInt(codeGuichet.getText()), Integer.parseInt(numCompte.getText()), Integer.parseInt(cleRIB.getText())));
 		try {
-			InscriptionTrans inscription = gestionnaireUtilisateurs.demandeInscriptionTrans(demandeInscription);
+			inscription = gestionnaireUtilisateurs.demandeInscriptionTrans(demandeInscription);
 			notifierSucces("Inscription réussie : " + inscription.toString());
+			initVueOffre();
+			gestionnaireTransportObjet.notifierConnexion(inscription.numeroInscritTrans, transporteur._this());
 			
 		} catch (TransExistantException e) {
 
 			notifierErreur("Inscription échouée : " + e.getLocalizedMessage());
 		}
+	}
+	
+	private void initVueOffre() {
+		
+		pane.removeAll();
+		pane.revalidate();
+		pane.repaint();
+		BorderLayout borderLayout = new BorderLayout();
+		pane.setLayout(borderLayout);
+
+		prendreEnCharge = new JMenuItem("Prendre en charge");
+		prendreEnCharge.addActionListener(this);
+		JPopupMenu popupMenu = new JPopupMenu();
+		popupMenu.add(prendreEnCharge);
+		
+		offreModel = new OffreTableModel(listeOffre);
+		tableOffres = new JTable(offreModel);
+		tableOffres.setComponentPopupMenu(popupMenu);
+		scrollPane = new JScrollPane(tableOffres);
+		pane.add(scrollPane, BorderLayout.CENTER);
+		pane.repaint();
 	}
 	
 
@@ -209,6 +287,8 @@ public class TransporteurUI extends JFrame implements ActionListener{
 			initFormulaireAdhesion();
 			
 		} else if (source == boutonConsulterOffreTransport) {
+			
+			initVueOffre();
 
 		} else if (source == boutonInscrire) {
 			
@@ -217,17 +297,39 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		} else if (source == boutonAccepterOffreTransport) {
 			
 		}
+		else if (source == prendreEnCharge) {
+			
+//			String numeroOffre = String.valueOf(tableOffres.getModel().getValueAt(tableOffres.getSelectedRow(), 0));
+			String numeroOffre = listeOffre.get(tableOffres.getSelectedRow()).getNumeroOffre();
+			String codeTransport = gestionnaireTransportObjet.notifierOffreAcceptee(inscription.numeroInscritTrans, numeroOffre);
+			listeOffre.get(tableOffres.getSelectedRow()).setEtatOffreTransport(EtatOffreTransport.priseEnCharge);
+			offreModel.fireTableDataChanged();
+			notifierSucces("Code transport : " + codeTransport);
+		}
+		else if (source == itemConnection) {
+			
+			gestionnaireTransportObjet.notifierConnexion(inscription.numeroInscritTrans, transporteur._this());
+		}
+		else if (source == itemDeconnection) {
+			
+			gestionnaireTransportObjet.notifierDeconnexion(inscription.numeroInscritTrans);
+		}
 	}
 	
 	public void ajouterOffreTransport(String numeroOffre, String nomStationDepart, String nomStationArrivee) {
 		
+		System.out.println("TOTO");
 		OffreTransport nouvelleOffre = new OffreTransport(numeroOffre, nomStationDepart, nomStationArrivee, EtatOffreTransport.aPrendreEnCharge);
-		mapNumOffreOffre.put(numeroOffre, nouvelleOffre);
+		listeOffre.add(nouvelleOffre);
+		offreModel.fireTableDataChanged();
 	}
 	
 	public void alerterOffreDejaPriseEnCharge(String numeroOffre) {
 		
-		mapNumOffreOffre.remove(numeroOffre);
+		listeOffre.remove(numeroOffre);
+		notifierSucces("Vous venez de prendre en charge l'offre " + numeroOffre);
+		offreModel.fireTableDataChanged();
+		//transfert de l'offre prise en charge dans une autre jtable
 	}
 	
 	private void notifierSucces (String message) {
@@ -244,5 +346,10 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		
 		JOptionPane.showMessageDialog(this, message, "Attention", JOptionPane.WARNING_MESSAGE);
 	}
-
+	
+	public void setTransporteur(TransporteurImpl transporteur) {
+		
+		this.transporteur = transporteur;
+	}
+	
 }

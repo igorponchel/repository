@@ -41,4 +41,14 @@ public interface GestionUtilisateursOperations
     public int getZoneAdherent(String nomAdherent, String prenomAdherent)
         throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException;
 
+    /**
+     * Operation notifierConnexion
+     */
+    public void notifierConnexion(int numeroTransporteur, OperateurDeTransportObjet.Transporteur transporteur);
+
+    /**
+     * Operation notifierDeconnexion
+     */
+    public void notifierDeconnexion(int numeroTransporteur);
+
 }

@@ -40,6 +40,7 @@ public class StationUI extends JFrame implements ActionListener{
 
 	private String nomStation;
 	private OperateurDeTransportObjet.GestionUtilisateurs gestionnaireUtilisateurs;
+	private GestionnaireTransportObjet gestionnaireTransportObjetDistant;
 	private String args[];
 
 	private boolean initialized = false;
@@ -47,6 +48,8 @@ public class StationUI extends JFrame implements ActionListener{
 	private JList<DefaultListModel<String>> listeDeEvenements;
 	private DefaultListModel<String> defaultListModel;
 	private JButton boutonEffectuerDepot;
+	//fake
+	private JButton boutonNotifierOffre;
 	private Container pane;
 
 	//Formulaire connexion
@@ -67,10 +70,10 @@ public class StationUI extends JFrame implements ActionListener{
 	private List <Casier> listeCasiers;
 	private Map <String, Casier> mapCodeCasier;
 	
-	private GestionnaireTransportObjet gestionnaireTransportObjetDistant;
+	
 	
 
-	public StationUI(String nomStation, GestionUtilisateurs gestionnaireUtilisateurs, String args[]) {
+	public StationUI(String nomStation, GestionUtilisateurs gestionnaireUtilisateurs, GestionnaireTransportObjet gestionnaireTransportObjetDistant, String args[]) {
 
 
 		listeCasiers = new ArrayList<>();
@@ -79,6 +82,7 @@ public class StationUI extends JFrame implements ActionListener{
 		
 		this.nomStation = nomStation;
 		this.gestionnaireUtilisateurs = gestionnaireUtilisateurs;
+		this.gestionnaireTransportObjetDistant = gestionnaireTransportObjetDistant;
 		this.args = args;
 		this.setVisible(true);
 		initialize();
@@ -104,8 +108,11 @@ public class StationUI extends JFrame implements ActionListener{
 		GridLayout gridLayout = new GridLayout(2, 1);
 		pane.setLayout(gridLayout);
 		boutonEffectuerDepot = new JButton("Effectuer dépôt");
+		boutonNotifierOffre = new JButton("notifier");
+		boutonNotifierOffre.addActionListener(this);
 		boutonEffectuerDepot.addActionListener(this);
 		pane.add(boutonEffectuerDepot);
+		pane.add(boutonNotifierOffre);
 	}
 
 	private void initializeEvents() {
@@ -160,7 +167,7 @@ public class StationUI extends JFrame implements ActionListener{
 					
 					Casier casierDepot = listeCasiers.get(numeroCasierDepart);
 									
-					String codeTransport = gestionnaireTransportObjetDistant.notifierOffreTransport(nomStation, "S" + zoneDestinataire) ;
+					String codeTransport = gestionnaireTransportObjetDistant.notifierOffreTransport(nomStation, "Station" + zoneDestinataire) ;
 					mapCodeCasier.put(codeTransport, casierDepot);
 					
 					//signale à la station distante le couple codeTransport/CasierDistant pour assurer la recherche lors de la livraison
@@ -198,6 +205,10 @@ public class StationUI extends JFrame implements ActionListener{
 				notifierErreur("Les informations saisies n'ont pas permis de vous authentifier.");
 				saisieLogin();
 			}
+		}
+		else if (source == boutonNotifierOffre) {
+			
+			String codeTransport = gestionnaireTransportObjetDistant.notifierOffreTransport("Station01", "Station02");
 		}
 	}
 
@@ -268,7 +279,7 @@ public class StationUI extends JFrame implements ActionListener{
 
 		// Saisie du nom de l'objet (si utilisation du service de nommage)
 		System.out.println("Quel objet Corba voulez-vous contacter ?");
-		String idObj = "S" + zoneDestinataire;
+		String idObj = "Station" + zoneDestinataire;
 
 		// Recuperation du naming service
 		org.omg.CosNaming.NamingContext nameRoot;
@@ -286,19 +297,10 @@ public class StationUI extends JFrame implements ActionListener{
 			
 			maStationDistante = OperateurDeTransportObjet.StationHelper.narrow(stationDestinataire);
 
-		} catch (InvalidName e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (NotFound e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (CannotProceed e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (org.omg.CosNaming.NamingContextPackage.InvalidName e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
-		}
+		} 
 		
 		return maStationDistante;
 	}

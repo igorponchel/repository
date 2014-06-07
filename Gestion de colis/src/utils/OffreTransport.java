@@ -47,4 +47,14 @@ public class OffreTransport {
 	public void setEtatOffreTransport(EtatOffreTransport etatOffreTransport) {
 		this.etatOffreTransport = etatOffreTransport;
 	}
+
+	@Override
+	public String toString() {
+		return "OffreTransport [numeroOffre=" + numeroOffre
+				+ ", nomStationDepart=" + nomStationDepart
+				+ ", nomStationArrivee=" + nomStationArrivee
+				+ ", etatOffreTransport=" + etatOffreTransport + "]";
+	}
+	
+	
 }

@@ -12,11 +12,12 @@ public class EtatOffre {
     public static final EtatOffre terminee = new EtatOffre(_terminee);
 	
 
-    private final int _EtatOffre_value;
+    private int _EtatOffre_value;
 
 
     private EtatOffre( final int value )
     {
     	_EtatOffre_value = value;
     }
+
 }

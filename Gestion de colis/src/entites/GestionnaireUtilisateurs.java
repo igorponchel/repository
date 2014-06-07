@@ -12,8 +12,6 @@ import org.omg.PortableServer.POAHelper;
  *******************************/
 public class GestionnaireUtilisateurs {
 
-	public static OperateurDeTransportObjet.GestionUtilisateurs monGestionnaireUtilisateurs;
-
 	public static void main(String args[]) {
 		try {
 			// Intialisation de l'ORB
@@ -27,7 +25,7 @@ public class GestionnaireUtilisateurs {
 
 			// Creation du servant
 			//*********************
-			GestionUtilisateursImpl monGestionnaireUtilisateurs = new GestionUtilisateursImpl();
+			GestionUtilisateursImpl monGestionnaireUtilisateurs = new GestionUtilisateursImpl(args);
 
 			// Activer le servant au sein du POA et recuperer son ID
 			byte[] monGestionnaireUtilisateursId = rootPOA.activate_object(monGestionnaireUtilisateurs);

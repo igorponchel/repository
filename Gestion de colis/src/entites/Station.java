@@ -14,6 +14,7 @@ import entites.ui.StationUI;
 public class Station {
 
 	public static OperateurDeTransportObjet.GestionUtilisateurs monGestionnaireUtilisateurs;
+	public static OperateurDeTransportObjet.GestionnaireTransportObjet monGestionnaireTransportObjet;
 	
 	public static void main(String args[]) {
 
@@ -27,22 +28,6 @@ public class Station {
 			//****************
 			// Recuperation du POA
 			POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
-
-
-			//********************* ENREGISTREMENT DU SERVANT STATION 
-			// Appel de l'interface graphique
-			StationUI frame = new StationUI("S1", monGestionnaireUtilisateurs, args);
-			frame.setTitle("Fenetre Station");
-			frame.setVisible(true);
-
-			// Creation du servant			
-			StationImpl maStation = new StationImpl(frame);
-
-			// Activer le servant au sein du POA et recuperer son ID
-			byte[] maStationId = rootPOA.activate_object(maStation);
-
-			// Activer le POA manager
-			rootPOA.the_POAManager().activate();
 
 
 			//********************* RECUPERATION DU SERVANT GESTIONNAIRE D'UTILISATEURS
@@ -64,12 +49,53 @@ public class Station {
 			System.out.println("Objet '" + idObj + "' trouve aupres du service de noms. IOR de l'objet :");
 			System.out.println(orb.object_to_string(distantGestionUtilisateurs));
 
-//			// Utilisation directe de l'IOR (SAUF utilisation du service de nommage)
-//			org.omg.CORBA.Object distantGestionUtilisateurs = orb.string_to_object("IOR:000000000000003649444C3A4F706572617465757244655472616E73706F72744F626A65742F47657374696F6E5574696C69736174657572733A312E30000000000000010000000000000060000102000000000D3139322E3136382E312E31330000EAE000000014004F4F01B86A016646010000504F41FE620FFC4200000001000000010000002400000000100204E4000000030001000F0001000100010020000101090000000100010100");
-			//         Casting de l'objet CORBA au type Ad
 			monGestionnaireUtilisateurs = OperateurDeTransportObjet.GestionUtilisateursHelper.narrow(distantGestionUtilisateurs);
 
 			
+			//********************* RECUPERATION DU SERVANT GESTIONNAIRE TRANSPORT OBJET
+			// Saisie du nom de l'objet (si utilisation du service de nommage)
+			System.out.println("Quel objet Corba voulez-vous contacter ?");
+
+			String idObj2 = "GTransportObjet";
+
+			// Construction du nom a rechercher
+			org.omg.CosNaming.NameComponent[] nameToFind2 = new org.omg.CosNaming.NameComponent[1];
+			nameToFind2[0] = new org.omg.CosNaming.NameComponent(idObj2,"");
+
+			// Recherche aupres du naming service
+			org.omg.CORBA.Object distantGestionTransportObjet = nameRoot.resolve(nameToFind2);
+			System.out.println("Objet '" + idObj2 + "' trouve aupres du service de noms. IOR de l'objet :");
+			System.out.println(orb.object_to_string(distantGestionTransportObjet));
+
+			monGestionnaireTransportObjet = OperateurDeTransportObjet.GestionnaireTransportObjetHelper.narrow(distantGestionTransportObjet);
+			
+			//********************* ENREGISTREMENT DU SERVANT STATION 
+			// Appel de l'interface graphique
+			StationUI frame = new StationUI("Station31", monGestionnaireUtilisateurs, monGestionnaireTransportObjet, args);
+			frame.setTitle("Fenetre Station");
+			frame.setVisible(true);
+
+			// Creation du servant			
+			StationImpl maStation = new StationImpl(frame);
+
+			// Activer le servant au sein du POA et recuperer son ID
+			byte[] maStationId = rootPOA.activate_object(maStation);
+
+			// Activer le POA manager
+			rootPOA.the_POAManager().activate();
+
+			org.omg.CosNaming.NameComponent[] nameToRegister = new org.omg.CosNaming.NameComponent[1];
+	        System.out.println("Sous quel nom voulez-vous enregistrer l'objet Corba ?");
+	        String nomObj = "Station31";
+	        nameToRegister[0] = new org.omg.CosNaming.NameComponent(nomObj,"");
+
+	        // Enregistrement de l'objet CORBA dans le service de noms
+	        nameRoot.rebind(nameToRegister,rootPOA.servant_to_reference(maStation));
+	        System.out.println("==> Nom '"+ nomObj + "' est enregistre dans le service de noms.");
+			 
+			String IORServant = orb.object_to_string(rootPOA.servant_to_reference(maStation));
+			
+			orb.run();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

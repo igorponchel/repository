@@ -16,6 +16,7 @@ public class TransporteurImpl extends TransporteurPOA {
 	public void notifierOffreTransport(String nomStationDepart,
 			String nomStationArrivee, String numeroOffre) {
 		
+		System.out.println("SD : " + nomStationDepart + "  SA : " + nomStationArrivee + "  numOffre : " + numeroOffre);
 		transporteurUI.ajouterOffreTransport(numeroOffre, nomStationDepart, nomStationArrivee);
 		
 	}
@@ -25,5 +26,4 @@ public class TransporteurImpl extends TransporteurPOA {
 		
 		transporteurUI.alerterOffreDejaPriseEnCharge(numeroOffre);
 	}
-
 }

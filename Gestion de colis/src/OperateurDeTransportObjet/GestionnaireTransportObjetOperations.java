@@ -34,4 +34,14 @@ public interface GestionnaireTransportObjetOperations
     public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.EtatObjet consulterEtatObjet(String idObjet)
         throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
 
+    /**
+     * Operation notifierConnexion
+     */
+    public void notifierConnexion(int numeroTransporteur, OperateurDeTransportObjet.Transporteur transporteur);
+
+    /**
+     * Operation notifierDeconnexion
+     */
+    public void notifierDeconnexion(int numeroTransporteur);
+
 }

@@ -114,4 +114,20 @@ public class GestionUtilisateursPOATie extends GestionUtilisateursPOA
         return _tie.getZoneAdherent( nomAdherent,  prenomAdherent);
     }
 
+    /**
+     * Operation notifierConnexion
+     */
+    public void notifierConnexion(int numeroTransporteur, OperateurDeTransportObjet.Transporteur transporteur)
+    {
+        _tie.notifierConnexion( numeroTransporteur,  transporteur);
+    }
+
+    /**
+     * Operation notifierDeconnexion
+     */
+    public void notifierDeconnexion(int numeroTransporteur)
+    {
+        _tie.notifierDeconnexion( numeroTransporteur);
+    }
+
 }

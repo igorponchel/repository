@@ -104,4 +104,20 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
         return _tie.consulterEtatObjet( idObjet);
     }
 
+    /**
+     * Operation notifierConnexion
+     */
+    public void notifierConnexion(int numeroTransporteur, OperateurDeTransportObjet.Transporteur transporteur)
+    {
+        _tie.notifierConnexion( numeroTransporteur,  transporteur);
+    }
+
+    /**
+     * Operation notifierDeconnexion
+     */
+    public void notifierDeconnexion(int numeroTransporteur)
+    {
+        _tie.notifierDeconnexion( numeroTransporteur);
+    }
+
 }

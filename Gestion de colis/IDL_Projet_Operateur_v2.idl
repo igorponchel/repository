@@ -25,6 +25,17 @@ module OperateurDeTransportObjet {
 		string pays;
 	};
 	
+	interface Transporteur {
+	
+		oneway void notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee, in string numeroOffre);
+		oneway void notifierOffrePriseEnCharge(in string numeroOffre);
+	};
+		
+	interface Adherent {
+	
+		oneway void notifierColisArrive(in string idObjet);
+	};
+	
 	interface GestionUtilisateurs {
 	
 		struct DemandeInscriptionTrans {
@@ -76,6 +87,8 @@ module OperateurDeTransportObjet {
 		boolean verifierTransporteur(in short codeVerif); //On suppose que le GestionnaireUtilisateur contient les IOR des transporteurs
 		long getNumAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 		long getZoneAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
+		oneway void notifierConnexion(in long numeroTransporteur, in Transporteur transporteur);
+		oneway void notifierDeconnexion(in long numeroTransporteur);
 	};
 	
 	interface GestionnairePaiement {
@@ -125,16 +138,8 @@ module OperateurDeTransportObjet {
 		boolean verifierTransporteur(in long numeroTransporteur, in string codeTransport);
 		void notifierEtatObjet(in string idObjet, in EtatObjet etatObjet) raises (ObjetInexistantException);
 		EtatObjet consulterEtatObjet(in string idObjet) raises (ObjetInexistantException);
-	};
+		oneway void notifierConnexion(in long numeroTransporteur, in Transporteur transporteur);
+		oneway void notifierDeconnexion(in long numeroTransporteur);
 	
-	interface Adherent {
-	
-		oneway void notifierColisArrive(in string idObjet);
-	};
-	
-	interface Transporteur {
-	
-		oneway void notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee, in string numeroOffre);
-		oneway void notifierOffrePriseEnCharge(in string numeroOffre);
 	};
 };
