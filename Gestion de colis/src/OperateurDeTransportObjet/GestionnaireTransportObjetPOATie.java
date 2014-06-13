@@ -63,6 +63,15 @@ public class GestionnaireTransportObjetPOATie extends GestionnaireTransportObjet
     }
 
     /**
+     * Operation demandeInscriptionTrans
+     */
+    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans demandeInscriptionTrans(OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans demandeInscriptionTrans)
+        throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantException
+    {
+        return _tie.demandeInscriptionTrans( demandeInscriptionTrans);
+    }
+
+    /**
      * Operation notifierOffreTransport
      */
     public String notifierOffreTransport(String nomStationDepart, String nomStationArrivee)

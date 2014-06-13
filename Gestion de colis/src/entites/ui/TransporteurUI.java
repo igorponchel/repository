@@ -30,12 +30,10 @@ import utils.EtatOffreTransport;
 import utils.OffreTransport;
 import OperateurDeTransportObjet.Adresse;
 import OperateurDeTransportObjet.CoordBancairePro;
-import OperateurDeTransportObjet.GestionUtilisateurs;
 import OperateurDeTransportObjet.GestionnaireTransportObjet;
-import OperateurDeTransportObjet.Transporteur;
-import OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeInscriptionTrans;
-import OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans;
-import OperateurDeTransportObjet.GestionUtilisateursPackage.TransExistantException;
+import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans;
+import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans;
+import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantException;
 
 import com.google.common.collect.Lists;
 
@@ -43,7 +41,6 @@ public class TransporteurUI extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	
-	private OperateurDeTransportObjet.GestionUtilisateurs gestionnaireUtilisateurs;
 	private OperateurDeTransportObjet.GestionnaireTransportObjet gestionnaireTransportObjet;
 	private TransporteurImpl transporteur;
 	
@@ -62,7 +59,7 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	private JMenuItem itemConnection;
 	private JMenuItem itemDeconnection;
 	
-	//Formulaire adhésion
+	//Formulaire inscription
 	private JLabel labelNomTransporteur;
 	private JTextField nomTransporteur;
 	private JLabel labelNumeroRue;
@@ -96,11 +93,10 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	
 	private TransporteurImpl monTransporteur;
 	
-	public TransporteurUI(GestionUtilisateurs gestionnaireUtilisateurs, GestionnaireTransportObjet gestionnaireTransportObjet, String args[], int numeroTransporteur) {
+	public TransporteurUI(GestionnaireTransportObjet gestionnaireTransportObjet, String args[], int numeroTransporteur) {
 		
 		inscription = new InscriptionTrans();
 		inscription.numeroInscritTrans = numeroTransporteur;
-		this.gestionnaireUtilisateurs = gestionnaireUtilisateurs;
 		this.gestionnaireTransportObjet = gestionnaireTransportObjet;
 		
 		this.args = args;
@@ -245,7 +241,7 @@ public class TransporteurUI extends JFrame implements ActionListener{
 				new Adresse(numeroRue.getText(), nomRue.getText(), ville.getText(), Integer.parseInt(departement.getText()), pays.getText()), 
 				new CoordBancairePro(Integer.parseInt(codeBanque.getText()), Integer.parseInt(codeGuichet.getText()), Integer.parseInt(numCompte.getText()), Integer.parseInt(cleRIB.getText())));
 		try {
-			inscription = gestionnaireUtilisateurs.demandeInscriptionTrans(demandeInscription);
+			inscription = gestionnaireTransportObjet.demandeInscriptionTrans(demandeInscription);
 			notifierSucces("Inscription réussie : " + inscription.toString());
 			initVueOffre();
 			gestionnaireTransportObjet.notifierConnexion(inscription.numeroInscritTrans, transporteur._this());

@@ -16,7 +16,10 @@ import OperateurDeTransportObjet.GestionnaireTransportObjetPOA;
 import OperateurDeTransportObjet.InfoObjet;
 import OperateurDeTransportObjet.Objet;
 import OperateurDeTransportObjet.Transporteur;
+import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans;
+import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
+import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantException;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -24,19 +27,22 @@ import com.google.common.collect.Multimap;
 public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPOA {
 
 	private GestionUtilisateurs gestionnaireUtilisateurs;
-	
+
 	//Contient l'ensemble des liens vers les transporteurs connectés
 	private Map<Integer, Transporteur> mapNumeroTransporteursConnectes;
-	
+
+	//Contient l'ensemble des transporteurs inscrits
+	private Map <Integer, InscriptionTrans> mapTransporteur;
+
 	//Contient les offres de transport associées à leur code de transport
 	private Map <String, OffreTransport> mapCodeTransportOffre;
-	
+
 	private Multimap<Integer, String> multiMapNumAdherentIdObjet;
-	
+
 	private Map<String, Objet> mapIdObjetObjet;
-	
-	
-	
+
+
+
 	private Map <Integer, String> mapNumeroNomTransporteurs;
 	private Multimap<Integer, String> multimapNumTransCodeTrans;
 	private Map <String, EtatObjet> mapObjetEtat;
@@ -49,6 +55,9 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 
 		this.args = args;
 		this.gestionnaireUtilisateurs = gestionnaireUtilisateurs;
+
+		mapTransporteur = new HashMap<Integer, InscriptionTrans>();
+		mapTransporteur.put(1, new InscriptionTrans(1, "Mory"));	
 		
 		mapNumeroNomTransporteurs = new HashMap<>();
 		mapNumeroTransporteursConnectes = new HashMap<>();
@@ -130,7 +139,7 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		Collection<String> idObjets = multiMapNumAdherentIdObjet.get(numeroAdherent);
 		List<InfoObjet> infosObjets = new ArrayList<>();
 		for(String idObjet : idObjets) {
-			
+
 			infosObjets.add(new InfoObjet(idObjet, mapIdObjetObjet.get(idObjet).etatObjet));
 		}
 
@@ -161,9 +170,9 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 	public void notifierConnexion(int numeroTransporteur, Transporteur transporteur) {
 
 		mapNumeroTransporteursConnectes.put(numeroTransporteur, transporteur);	
-		
+
 		for(OffreTransport offre : mapCodeTransportOffre.values()) {
-			
+
 			transporteur.notifierOffreTransport(offre.getNomStationDepart(), offre.getNomStationArrivee(), offre.getNumeroOffre());
 		}
 	}
@@ -179,38 +188,82 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 	public void notifierEtatObjet(String idObjet, EtatObjet etatObjet)
 			throws ObjetInexistantException {
 
-		
+
 		Objet objet = mapIdObjetObjet.get(idObjet);
 		if (objet != null) {
 			objet.etatObjet = etatObjet;
-			
+
 			if(etatObjet == EtatObjet.delivre) {
-				
+
 				alerterDestinataire(objet.numDestinataire, idObjet);
 			}
 		}
 		else {
 			throw new ObjetInexistantException("L'objet notifié n'existe pas.");
 		}
-		
+
 	}
 
 
 	@Override
 	public void enregistrerObjet(Objet objet) {
-		 
+
 		multiMapNumAdherentIdObjet.put(objet.numExpediteur, objet.idObjet);
 		multiMapNumAdherentIdObjet.put(objet.numDestinataire, objet.idObjet);
-		
+
 		mapIdObjetObjet.put(objet.idObjet, objet);
 	}
 
 	public void alerterDestinataire(int numeroAdherentDestinataire, String idObjet) {
-		
+
 		Adherent adherent = gestionnaireUtilisateurs.getAdherentSiConnecte(numeroAdherentDestinataire);
-		
+
 		adherent.notifierColisArrive(idObjet);
 	}
 
+	@Override
+	public InscriptionTrans demandeInscriptionTrans(DemandeInscriptionTrans demandeInscriptionTrans) 
+			throws TransExistantException {
 
+		//vérifier existance transporteur
+		boolean isNouveauTransporteur = verifierTransporteurExistant(demandeInscriptionTrans);
+
+		if (isNouveauTransporteur) {
+			//Si nouveau transporteur alors retourner information d'inscription
+			InscriptionTrans inscription = new InscriptionTrans(genererNumeroTransporteur(), demandeInscriptionTrans.nomTransporteur);
+			return inscription;
+
+		} else {
+			//sinon lever exception
+			throw new TransExistantException("Un transporteur avec ces informations existe déjà. Inscription impossible.");
+		}
+	}
+
+
+
+	/**
+	 * Vérifie l'existance d'un transporteur
+	 */
+	private boolean verifierTransporteurExistant (DemandeInscriptionTrans demandeInscription) {
+
+		boolean isNouveauTransporteur = true;
+		String nomTransporteur = demandeInscription.nomTransporteur;
+		for (InscriptionTrans tempInscription : mapTransporteur.values()) {
+			if (tempInscription.nomTransporteur.equals(nomTransporteur)) {	
+				isNouveauTransporteur = false;
+				break;
+			}
+			break;
+		}
+		return isNouveauTransporteur;
+	}
+	
+
+	/**
+	 * Génére un nouveau numéro de transporteur
+	 */
+	private int genererNumeroTransporteur () {
+
+		return mapTransporteur.size() + 1;
+	}
 }

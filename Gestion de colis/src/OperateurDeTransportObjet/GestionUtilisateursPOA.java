@@ -28,45 +28,28 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
         return _ids_list;
     }
 
-    private static final java.util.Map operationMap = new java.util.HashMap();
-
-    static {
-            operationMap.put("demandeAdhesion",
-                    new Operation_demandeAdhesion());
-            operationMap.put("demandeInscriptionTrans",
-                    new Operation_demandeInscriptionTrans());
-            operationMap.put("getAdherentSiConnecte",
-                    new Operation_getAdherentSiConnecte());
-            operationMap.put("getNumAdherent",
-                    new Operation_getNumAdherent());
-            operationMap.put("getZoneAdherent",
-                    new Operation_getZoneAdherent());
-            operationMap.put("notifierConnexion",
-                    new Operation_notifierConnexion());
-            operationMap.put("notifierConnexionAdh",
-                    new Operation_notifierConnexionAdh());
-            operationMap.put("notifierDeconnexion",
-                    new Operation_notifierDeconnexion());
-            operationMap.put("notifierDeconnexionAdh",
-                    new Operation_notifierDeconnexionAdh());
-            operationMap.put("verifierAdherent",
-                    new Operation_verifierAdherent());
-            operationMap.put("verifierTransporteur",
-                    new Operation_verifierTransporteur());
-    }
-
     public final org.omg.CORBA.portable.OutputStream _invoke(final String opName,
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler)
     {
 
-        final AbstractOperation operation = (AbstractOperation)operationMap.get(opName);
-
-        if (null == operation) {
+        if (opName.equals("demandeAdhesion")) {
+                return _invoke_demandeAdhesion(_is, handler);
+        } else if (opName.equals("getAdherentSiConnecte")) {
+                return _invoke_getAdherentSiConnecte(_is, handler);
+        } else if (opName.equals("getNumAdherent")) {
+                return _invoke_getNumAdherent(_is, handler);
+        } else if (opName.equals("getZoneAdherent")) {
+                return _invoke_getZoneAdherent(_is, handler);
+        } else if (opName.equals("notifierConnexionAdh")) {
+                return _invoke_notifierConnexionAdh(_is, handler);
+        } else if (opName.equals("notifierDeconnexionAdh")) {
+                return _invoke_notifierDeconnexionAdh(_is, handler);
+        } else if (opName.equals("verifierAdherent")) {
+                return _invoke_verifierAdherent(_is, handler);
+        } else {
             throw new org.omg.CORBA.BAD_OPERATION(opName);
         }
-
-        return operation.invoke(this, _is, handler);
     }
 
     // helper methods
@@ -92,28 +75,6 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
         return _output;
     }
 
-    private org.omg.CORBA.portable.OutputStream _invoke_demandeInscriptionTrans(
-            final org.omg.CORBA.portable.InputStream _is,
-            final org.omg.CORBA.portable.ResponseHandler handler) {
-        org.omg.CORBA.portable.OutputStream _output;
-        OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeInscriptionTrans arg0_in = OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeInscriptionTransHelper.read(_is);
-
-        try
-        {
-            OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans _arg_result = demandeInscriptionTrans(arg0_in);
-
-            _output = handler.createReply();
-            OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTransHelper.write(_output,_arg_result);
-
-        }
-        catch (OperateurDeTransportObjet.GestionUtilisateursPackage.TransExistantException _exception)
-        {
-            _output = handler.createExceptionReply();
-            OperateurDeTransportObjet.GestionUtilisateursPackage.TransExistantExceptionHelper.write(_output,_exception);
-        }
-        return _output;
-    }
-
     private org.omg.CORBA.portable.OutputStream _invoke_verifierAdherent(
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
@@ -122,20 +83,6 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
         String arg1_in = _is.read_string();
 
         boolean _arg_result = verifierAdherent(arg0_in, arg1_in);
-
-        _output = handler.createReply();
-        _output.write_boolean(_arg_result);
-
-        return _output;
-    }
-
-    private org.omg.CORBA.portable.OutputStream _invoke_verifierTransporteur(
-            final org.omg.CORBA.portable.InputStream _is,
-            final org.omg.CORBA.portable.ResponseHandler handler) {
-        org.omg.CORBA.portable.OutputStream _output;
-        short arg0_in = _is.read_short();
-
-        boolean _arg_result = verifierTransporteur(arg0_in);
 
         _output = handler.createReply();
         _output.write_boolean(_arg_result);
@@ -189,33 +136,6 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
         return _output;
     }
 
-    private org.omg.CORBA.portable.OutputStream _invoke_notifierConnexion(
-            final org.omg.CORBA.portable.InputStream _is,
-            final org.omg.CORBA.portable.ResponseHandler handler) {
-        org.omg.CORBA.portable.OutputStream _output;
-        int arg0_in = _is.read_long();
-        OperateurDeTransportObjet.Transporteur arg1_in = OperateurDeTransportObjet.TransporteurHelper.read(_is);
-
-        notifierConnexion(arg0_in, arg1_in);
-
-        _output = handler.createReply();
-
-        return _output;
-    }
-
-    private org.omg.CORBA.portable.OutputStream _invoke_notifierDeconnexion(
-            final org.omg.CORBA.portable.InputStream _is,
-            final org.omg.CORBA.portable.ResponseHandler handler) {
-        org.omg.CORBA.portable.OutputStream _output;
-        int arg0_in = _is.read_long();
-
-        notifierDeconnexion(arg0_in);
-
-        _output = handler.createReply();
-
-        return _output;
-    }
-
     private org.omg.CORBA.portable.OutputStream _invoke_notifierConnexionAdh(
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
@@ -255,124 +175,6 @@ public abstract class GestionUtilisateursPOA extends org.omg.PortableServer.Serv
         OperateurDeTransportObjet.AdherentHelper.write(_output,_arg_result);
 
         return _output;
-    }
-
-    // operation classes
-    private abstract static class AbstractOperation {
-        protected abstract org.omg.CORBA.portable.OutputStream invoke(
-                GestionUtilisateursPOA target,
-                org.omg.CORBA.portable.InputStream _is,
-                org.omg.CORBA.portable.ResponseHandler handler);
-    }
-
-    private static final class Operation_demandeAdhesion extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_demandeAdhesion(_is, handler);
-        }
-    }
-
-    private static final class Operation_demandeInscriptionTrans extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_demandeInscriptionTrans(_is, handler);
-        }
-    }
-
-    private static final class Operation_verifierAdherent extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_verifierAdherent(_is, handler);
-        }
-    }
-
-    private static final class Operation_verifierTransporteur extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_verifierTransporteur(_is, handler);
-        }
-    }
-
-    private static final class Operation_getNumAdherent extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_getNumAdherent(_is, handler);
-        }
-    }
-
-    private static final class Operation_getZoneAdherent extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_getZoneAdherent(_is, handler);
-        }
-    }
-
-    private static final class Operation_notifierConnexion extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_notifierConnexion(_is, handler);
-        }
-    }
-
-    private static final class Operation_notifierDeconnexion extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_notifierDeconnexion(_is, handler);
-        }
-    }
-
-    private static final class Operation_notifierConnexionAdh extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_notifierConnexionAdh(_is, handler);
-        }
-    }
-
-    private static final class Operation_notifierDeconnexionAdh extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_notifierDeconnexionAdh(_is, handler);
-        }
-    }
-
-    private static final class Operation_getAdherentSiConnecte extends AbstractOperation
-    {
-        protected org.omg.CORBA.portable.OutputStream invoke(
-                final GestionUtilisateursPOA target,
-                final org.omg.CORBA.portable.InputStream _is,
-                final org.omg.CORBA.portable.ResponseHandler handler) {
-            return target._invoke_getAdherentSiConnecte(_is, handler);
-        }
     }
 
 }

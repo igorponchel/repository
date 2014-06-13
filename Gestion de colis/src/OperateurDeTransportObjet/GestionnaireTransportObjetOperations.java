@@ -8,6 +8,12 @@ package OperateurDeTransportObjet;
 public interface GestionnaireTransportObjetOperations
 {
     /**
+     * Operation demandeInscriptionTrans
+     */
+    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans demandeInscriptionTrans(OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans demandeInscriptionTrans)
+        throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantException;
+
+    /**
      * Operation notifierOffreTransport
      */
     public String notifierOffreTransport(String nomStationDepart, String nomStationArrivee);

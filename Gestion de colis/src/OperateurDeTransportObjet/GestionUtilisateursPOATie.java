@@ -72,28 +72,11 @@ public class GestionUtilisateursPOATie extends GestionUtilisateursPOA
     }
 
     /**
-     * Operation demandeInscriptionTrans
-     */
-    public OperateurDeTransportObjet.GestionUtilisateursPackage.InscriptionTrans demandeInscriptionTrans(OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeInscriptionTrans demandeInscriptionTrans)
-        throws OperateurDeTransportObjet.GestionUtilisateursPackage.TransExistantException
-    {
-        return _tie.demandeInscriptionTrans( demandeInscriptionTrans);
-    }
-
-    /**
      * Operation verifierAdherent
      */
     public boolean verifierAdherent(int numeroAdherent, String motDePasse)
     {
         return _tie.verifierAdherent( numeroAdherent,  motDePasse);
-    }
-
-    /**
-     * Operation verifierTransporteur
-     */
-    public boolean verifierTransporteur(short codeVerif)
-    {
-        return _tie.verifierTransporteur( codeVerif);
     }
 
     /**
@@ -112,22 +95,6 @@ public class GestionUtilisateursPOATie extends GestionUtilisateursPOA
         throws OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException
     {
         return _tie.getZoneAdherent( nomAdherent,  prenomAdherent);
-    }
-
-    /**
-     * Operation notifierConnexion
-     */
-    public void notifierConnexion(int numeroTransporteur, OperateurDeTransportObjet.Transporteur transporteur)
-    {
-        _tie.notifierConnexion( numeroTransporteur,  transporteur);
-    }
-
-    /**
-     * Operation notifierDeconnexion
-     */
-    public void notifierDeconnexion(int numeroTransporteur)
-    {
-        _tie.notifierDeconnexion( numeroTransporteur);
     }
 
     /**

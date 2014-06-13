@@ -57,13 +57,6 @@ module OperateurDeTransportObjet {
 	
 	interface GestionUtilisateurs {
 	
-		struct DemandeInscriptionTrans {
-	
-			string nomTransporteur;
-			Adresse adresseTransporteur;
-			CoordBancairePro coordonneesBancairesPro;
-		};
-	
 		struct DemandeAdhesion {
 			
 			string prenomAdherent;
@@ -80,17 +73,8 @@ module OperateurDeTransportObjet {
 			string prenomAdherent;
 			long zoneAdherent;
 		};
-		
-		struct InscriptionTrans {
-		
-			long numeroInscritTrans;
-			string nomTransporteur;
-		};
-	
+
 		exception AdherentExistantException {
-			string explication;
-		};
-		exception TransExistantException {
 			string explication;
 		};
 		exception AdherentInexistantException {
@@ -101,13 +85,9 @@ module OperateurDeTransportObjet {
 		};
 		
 		Adhesion demandeAdhesion(in DemandeAdhesion demandeAdhesion) raises (AdherentExistantException);
-		InscriptionTrans demandeInscriptionTrans(in DemandeInscriptionTrans demandeInscriptionTrans) raises (TransExistantException);
 		boolean verifierAdherent(in long numeroAdherent, in string motDePasse); 
-		boolean verifierTransporteur(in short codeVerif);
 		long getNumAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 		long getZoneAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
-		oneway void notifierConnexion(in long numeroTransporteur, in Transporteur transporteur);
-		oneway void notifierDeconnexion(in long numeroTransporteur);
 		oneway void notifierConnexionAdh(in long numeroAdherent, in Adherent adherent);
 		oneway void notifierDeconnexionAdh(in long numeroAdherent);
 		Adherent getAdherentSiConnecte(in long numeroAdherent); // ajouter une exception
@@ -119,16 +99,33 @@ module OperateurDeTransportObjet {
 		short crediter(in CoordBancairePro coordonneesBancairesPro, in long somme);
 	};
 	
-
-	
 	interface GestionnaireTransportObjet {
-			
+				
+	
+		struct DemandeInscriptionTrans {
+	
+			string nomTransporteur;
+			Adresse adresseTransporteur;
+			CoordBancairePro coordonneesBancairesPro;
+		};
+		
+		struct InscriptionTrans {
+		
+			long numeroInscritTrans;
+			string nomTransporteur;
+		};
+		
 		exception ObjetInexistantException {
+			string explication;
+		};
+		
+		exception TransExistantException {
 			string explication;
 		};
 		
 		typedef sequence<InfoObjet> ListeInfoObjet;
 		
+		InscriptionTrans demandeInscriptionTrans(in DemandeInscriptionTrans demandeInscriptionTrans) raises (TransExistantException);
 		//retourne le codeTransport à la station
 		string notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee);
 		string notifierOffreAcceptee(in long numeroTransporteur, in string numeroOffre);

@@ -1,5 +1,7 @@
 package impl;
 
+import javax.swing.SwingUtilities;
+
 import OperateurDeTransportObjet.TransporteurPOA;
 import entites.ui.TransporteurUI;
 
@@ -22,8 +24,14 @@ public class TransporteurImpl extends TransporteurPOA {
 	}
 
 	@Override
-	public void notifierOffrePriseEnCharge(String numeroOffre) {
-		
-		transporteurUI.alerterOffreDejaPriseEnCharge(numeroOffre);
+	public void notifierOffrePriseEnCharge(final String numeroOffre) {
+		// ne pas bloquer le thread du service CORBA
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				transporteurUI.alerterOffreDejaPriseEnCharge(numeroOffre);
+				
+			}
+		});
 	}
 }

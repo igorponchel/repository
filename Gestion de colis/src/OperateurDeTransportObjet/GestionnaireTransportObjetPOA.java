@@ -28,33 +28,66 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
         return _ids_list;
     }
 
+    private static final java.util.Map operationMap = new java.util.HashMap();
+
+    static {
+            operationMap.put("consulterEtatObjet",
+                    new Operation_consulterEtatObjet());
+            operationMap.put("demandeInscriptionTrans",
+                    new Operation_demandeInscriptionTrans());
+            operationMap.put("enregistrerObjet",
+                    new Operation_enregistrerObjet());
+            operationMap.put("notifierConnexion",
+                    new Operation_notifierConnexion());
+            operationMap.put("notifierDeconnexion",
+                    new Operation_notifierDeconnexion());
+            operationMap.put("notifierEtatObjet",
+                    new Operation_notifierEtatObjet());
+            operationMap.put("notifierOffreAcceptee",
+                    new Operation_notifierOffreAcceptee());
+            operationMap.put("notifierOffreTransport",
+                    new Operation_notifierOffreTransport());
+            operationMap.put("verifierTransporteur",
+                    new Operation_verifierTransporteur());
+    }
+
     public final org.omg.CORBA.portable.OutputStream _invoke(final String opName,
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler)
     {
 
-        if (opName.equals("consulterEtatObjet")) {
-                return _invoke_consulterEtatObjet(_is, handler);
-        } else if (opName.equals("enregistrerObjet")) {
-                return _invoke_enregistrerObjet(_is, handler);
-        } else if (opName.equals("notifierConnexion")) {
-                return _invoke_notifierConnexion(_is, handler);
-        } else if (opName.equals("notifierDeconnexion")) {
-                return _invoke_notifierDeconnexion(_is, handler);
-        } else if (opName.equals("notifierEtatObjet")) {
-                return _invoke_notifierEtatObjet(_is, handler);
-        } else if (opName.equals("notifierOffreAcceptee")) {
-                return _invoke_notifierOffreAcceptee(_is, handler);
-        } else if (opName.equals("notifierOffreTransport")) {
-                return _invoke_notifierOffreTransport(_is, handler);
-        } else if (opName.equals("verifierTransporteur")) {
-                return _invoke_verifierTransporteur(_is, handler);
-        } else {
+        final AbstractOperation operation = (AbstractOperation)operationMap.get(opName);
+
+        if (null == operation) {
             throw new org.omg.CORBA.BAD_OPERATION(opName);
         }
+
+        return operation.invoke(this, _is, handler);
     }
 
     // helper methods
+    private org.omg.CORBA.portable.OutputStream _invoke_demandeInscriptionTrans(
+            final org.omg.CORBA.portable.InputStream _is,
+            final org.omg.CORBA.portable.ResponseHandler handler) {
+        org.omg.CORBA.portable.OutputStream _output;
+        OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans arg0_in = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTransHelper.read(_is);
+
+        try
+        {
+            OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans _arg_result = demandeInscriptionTrans(arg0_in);
+
+            _output = handler.createReply();
+            OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTransHelper.write(_output,_arg_result);
+
+        }
+        catch (OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantException _exception)
+        {
+            _output = handler.createExceptionReply();
+            OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantExceptionHelper.write(_output,_exception);
+        }
+        return _output;
+    }
+
     private org.omg.CORBA.portable.OutputStream _invoke_notifierOffreTransport(
             final org.omg.CORBA.portable.InputStream _is,
             final org.omg.CORBA.portable.ResponseHandler handler) {
@@ -182,6 +215,104 @@ public abstract class GestionnaireTransportObjetPOA extends org.omg.PortableServ
         _output = handler.createReply();
 
         return _output;
+    }
+
+    // operation classes
+    private abstract static class AbstractOperation {
+        protected abstract org.omg.CORBA.portable.OutputStream invoke(
+                GestionnaireTransportObjetPOA target,
+                org.omg.CORBA.portable.InputStream _is,
+                org.omg.CORBA.portable.ResponseHandler handler);
+    }
+
+    private static final class Operation_demandeInscriptionTrans extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_demandeInscriptionTrans(_is, handler);
+        }
+    }
+
+    private static final class Operation_notifierOffreTransport extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_notifierOffreTransport(_is, handler);
+        }
+    }
+
+    private static final class Operation_notifierOffreAcceptee extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_notifierOffreAcceptee(_is, handler);
+        }
+    }
+
+    private static final class Operation_verifierTransporteur extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_verifierTransporteur(_is, handler);
+        }
+    }
+
+    private static final class Operation_enregistrerObjet extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_enregistrerObjet(_is, handler);
+        }
+    }
+
+    private static final class Operation_notifierEtatObjet extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_notifierEtatObjet(_is, handler);
+        }
+    }
+
+    private static final class Operation_consulterEtatObjet extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_consulterEtatObjet(_is, handler);
+        }
+    }
+
+    private static final class Operation_notifierConnexion extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_notifierConnexion(_is, handler);
+        }
+    }
+
+    private static final class Operation_notifierDeconnexion extends AbstractOperation
+    {
+        protected org.omg.CORBA.portable.OutputStream invoke(
+                final GestionnaireTransportObjetPOA target,
+                final org.omg.CORBA.portable.InputStream _is,
+                final org.omg.CORBA.portable.ResponseHandler handler) {
+            return target._invoke_notifierDeconnexion(_is, handler);
+        }
     }
 
 }

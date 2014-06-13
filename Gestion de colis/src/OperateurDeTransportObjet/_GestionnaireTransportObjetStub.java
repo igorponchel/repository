@@ -21,6 +21,62 @@ public class _GestionnaireTransportObjetStub extends org.omg.CORBA.portable.Obje
     private final static Class _opsClass = OperateurDeTransportObjet.GestionnaireTransportObjetOperations.class;
 
     /**
+     * Operation demandeInscriptionTrans
+     */
+    public OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans demandeInscriptionTrans(OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans demandeInscriptionTrans)
+        throws OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantException
+    {
+        while(true)
+        {
+            if (!this._is_local())
+            {
+                org.omg.CORBA.portable.InputStream _input = null;
+                try
+                {
+                    org.omg.CORBA.portable.OutputStream _output = this._request("demandeInscriptionTrans",true);
+                    OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTransHelper.write(_output,demandeInscriptionTrans);
+                    _input = this._invoke(_output);
+                    OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans _arg_ret = OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTransHelper.read(_input);
+                    return _arg_ret;
+                }
+                catch(org.omg.CORBA.portable.RemarshalException _exception)
+                {
+                    continue;
+                }
+                catch(org.omg.CORBA.portable.ApplicationException _exception)
+                {
+                    String _exception_id = _exception.getId();
+                    if (_exception_id.equals(OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantExceptionHelper.id()))
+                    {
+                        throw OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantExceptionHelper.read(_exception.getInputStream());
+                    }
+
+                    throw new org.omg.CORBA.UNKNOWN("Unexpected User Exception: "+ _exception_id);
+                }
+                finally
+                {
+                    this._releaseReply(_input);
+                }
+            }
+            else
+            {
+                org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke("demandeInscriptionTrans",_opsClass);
+                if (_so == null)
+                   continue;
+                OperateurDeTransportObjet.GestionnaireTransportObjetOperations _self = (OperateurDeTransportObjet.GestionnaireTransportObjetOperations) _so.servant;
+                try
+                {
+                    return _self.demandeInscriptionTrans( demandeInscriptionTrans);
+                }
+                finally
+                {
+                    _servant_postinvoke(_so);
+                }
+            }
+        }
+    }
+
+    /**
      * Operation notifierOffreTransport
      */
     public String notifierOffreTransport(String nomStationDepart, String nomStationArrivee)

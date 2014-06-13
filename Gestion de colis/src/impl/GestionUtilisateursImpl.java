@@ -25,31 +25,22 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 
 	private GestionnaireTransportObjet gestionnaireTransportObjet;
 
-	//Contient l'ensemble des liens vers les transporteurs connectés
-	private Map<Integer, Transporteur> mapNumeroTransporteursConnectes;
-
 	//Contient l'ensemble des liens vers les adherents connectés
 	private Map<Integer, Adherent> mapNumeroAdherentConnectes;
 	
 	private Map <Integer, Adhesion> mapAdherent;
 
-	//Contient l'ensemble des transporteurs inscrits
-	private Map <Integer, InscriptionTrans> mapTransporteur;
 	private Map <Integer, List<Integer>> mapRegionZones;
 
 	public GestionUtilisateursImpl (String args[]) {
 
 		recupererGestionnaireTransportObjet(args);
 
-		mapNumeroTransporteursConnectes = new HashMap<>();
 		mapNumeroAdherentConnectes = new HashMap<>();
 		
 		mapAdherent = new HashMap<>();
 		mapAdherent.put(1, new Adhesion(1, "toto", "Ponchel", "Igor", 31));
 		mapAdherent.put(2, new Adhesion(2, "toto", "Baadoud", "Kader", 32));
-
-		mapTransporteur = new HashMap<Integer, InscriptionTrans>();
-		mapTransporteur.put(1, new InscriptionTrans(1, "Mory"));	
 
 		List <Integer> zones01 = Lists.newArrayList(75, 77, 78, 91, 92, 93, 94, 95);
 		List <Integer> zones02 = Lists.newArrayList(14, 18, 22, 27, 28, 29, 35, 36, 37, 41, 44, 45, 49, 50, 53, 56, 61, 72, 76, 85);
@@ -136,58 +127,6 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 	}
 
 	@Override
-	public InscriptionTrans demandeInscriptionTrans(DemandeInscriptionTrans demandeInscriptionTrans) 
-			throws TransExistantException {
-
-		//vérifier existance transporteur
-		boolean isNouveauTransporteur = verifierTransporteurExistant(demandeInscriptionTrans);
-		//débiter paiement
-
-		if (isNouveauTransporteur) {
-			//Si nouvel adherent alors retourner information d'adhésion
-			InscriptionTrans inscription = new InscriptionTrans(genererNumeroTransporteur(), demandeInscriptionTrans.nomTransporteur);
-			return inscription;
-
-		} else {
-			//sinon lever exception
-			throw new TransExistantException("Un transporteur avec ces informations existe déjà. Inscription impossible.");
-		}
-
-	}
-
-	/**
-	 * Vérifie l'existance d'un transporteur
-	 */
-	private boolean verifierTransporteurExistant (DemandeInscriptionTrans demandeInscription) {
-
-		boolean isNouveauTransporteur = true;
-		String nomTransporteur = demandeInscription.nomTransporteur;
-		for (InscriptionTrans tempInscription : mapTransporteur.values()) {
-			if (tempInscription.nomTransporteur.equals(nomTransporteur)) {	
-				isNouveauTransporteur = false;
-				break;
-			}
-			break;
-		}
-		return isNouveauTransporteur;
-	}
-
-	/**
-	 * Génére un nouveau numéro de transporteur
-	 */
-	private int genererNumeroTransporteur () {
-
-		return mapTransporteur.size() + 1;
-	}
-
-
-	@Override
-	public boolean verifierTransporteur(short codeVerif) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public int getNumAdherent(String nomAdherent, String prenom)
 			throws AdherentInexistantException {
 		// TODO Auto-generated method stub
@@ -226,20 +165,6 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 		else {
 			throw new AdherentInexistantException("L'adhérent n'existe pas.");
 		}
-	}
-
-	@Override
-	public void notifierConnexion(int numeroTransporteur, Transporteur transporteur) {
-
-		mapNumeroTransporteursConnectes.put(numeroTransporteur, transporteur);
-		gestionnaireTransportObjet.notifierConnexion(numeroTransporteur, transporteur);
-	}
-
-	@Override
-	public void notifierDeconnexion(int numeroTransporteur) {
-
-		mapNumeroTransporteursConnectes.remove(numeroTransporteur);
-		gestionnaireTransportObjet.notifierDeconnexion(numeroTransporteur);
 	}
 	
 	@Override
