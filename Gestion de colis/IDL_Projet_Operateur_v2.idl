@@ -21,8 +21,7 @@ module OperateurDeTransportObjet {
 		string numeroRue;
 		string nomRue;
 		string ville;
-		long departement;
-		string pays;
+		long codePostale;
 	};
 
 	enum EtatObjet {depose, enTransit, livre, delivre}; // delivré signifie que le destinataire l'a récupéré.
@@ -85,18 +84,19 @@ module OperateurDeTransportObjet {
 		};
 		
 		Adhesion demandeAdhesion(in DemandeAdhesion demandeAdhesion) raises (AdherentExistantException);
-		boolean verifierAdherent(in long numeroAdherent, in string motDePasse); 
+		//retourn la zone de l'adherent s'il existe, 0 sinon
+		long verifierAdherent(in long numeroAdherent, in string motDePasse) ; 
 		long getNumAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 		long getZoneAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 		oneway void notifierConnexionAdh(in long numeroAdherent, in Adherent adherent);
 		oneway void notifierDeconnexionAdh(in long numeroAdherent);
-		Adherent getAdherentSiConnecte(in long numeroAdherent); // ajouter une exception
+		oneway void notifierColisArrive(in long numeroAdherent, in string idObjet); // ajouter une exception
 	};
 	
 	interface GestionnairePaiement {
 	
-		short debiter(in CoordBancaire coordonneesBancaires, in long somme); // une seule suffit quelque soit l'entité
-		short crediter(in CoordBancairePro coordonneesBancairesPro, in long somme);
+		short debiter(in CoordBancaire coordonneesBancaires, in string stationDepart, in string stationArrivee);
+		short crediter(in CoordBancairePro coordonneesBancairesPro, in string stationDepart, in string stationArrivee);
 	};
 	
 	interface GestionnaireTransportObjet {
@@ -127,7 +127,7 @@ module OperateurDeTransportObjet {
 		
 		InscriptionTrans demandeInscriptionTrans(in DemandeInscriptionTrans demandeInscriptionTrans) raises (TransExistantException);
 		//retourne le codeTransport à la station
-		string notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee);
+		string notifierOffreTransport(in string idObjet, in string nomStationDepart, in string nomStationArrivee);
 		string notifierOffreAcceptee(in long numeroTransporteur, in string numeroOffre);
 		boolean verifierTransporteur(in long numeroTransporteur, in string codeTransport);
 		oneway void enregistrerObjet(in Objet objet);
@@ -155,6 +155,7 @@ module OperateurDeTransportObjet {
 
 		long reserverCasier(in long numeroAdherent) raises (AucunCasierDisponibleException);
 		//signale à la station distante le couple codeTransport/CasierDistant pour assurer la recherche lors de la livraison
-		oneway void notifierCodeTransport(in long numeroCasier, in string codeTransport);
+		oneway void notifierInfoTransportObjet(in string codeTransport, in Objet objet);
+		oneway void notifierNumTransporteurObjet(in long numTransporteur, in string idObjet);
 	};
 };
