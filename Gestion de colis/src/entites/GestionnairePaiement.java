@@ -1,6 +1,7 @@
 package entites;
 
 import impl.GestionUtilisateursImpl;
+import impl.GestionnairePaiementImpl;
 
 import org.omg.CosNaming.NamingContext;
 import org.omg.PortableServer.POA;
@@ -8,7 +9,7 @@ import org.omg.PortableServer.POAHelper;
 
 
 /*******************************
- * Gestionnaire des utilisateurs - partie serveur
+ * Gestionnaire des paiements - partie serveur
  *******************************/
 public class GestionnairePaiement {
 
@@ -25,10 +26,10 @@ public class GestionnairePaiement {
 
 			// Creation du servant
 			//*********************
-			GestionUtilisateursImpl monGestionnaireUtilisateurs = new GestionUtilisateursImpl(args);
+			GestionnairePaiementImpl monGestionnairePaiement = new GestionnairePaiementImpl();
 
 			// Activer le servant au sein du POA et recuperer son ID
-			byte[] monGestionnaireUtilisateursId = rootPOA.activate_object(monGestionnaireUtilisateurs);
+			byte[] monGestionnairePaiementId = rootPOA.activate_object(monGestionnairePaiement);
 
 			// Activer le POA manager
 			rootPOA.the_POAManager().activate();
@@ -42,14 +43,14 @@ public class GestionnairePaiement {
 	        // Construction du nom a enregistrer
 	        org.omg.CosNaming.NameComponent[] nameToRegister = new org.omg.CosNaming.NameComponent[1];
 	        System.out.println("Sous quel nom voulez-vous enregistrer l'objet Corba ?");
-	        String nomObj = "GUtilisateurs";
+	        String nomObj = "GPaiement";
 	        nameToRegister[0] = new org.omg.CosNaming.NameComponent(nomObj,"");
 
 	        // Enregistrement de l'objet CORBA dans le service de noms
-	        nameRoot.rebind(nameToRegister,rootPOA.servant_to_reference(monGestionnaireUtilisateurs));
+	        nameRoot.rebind(nameToRegister,rootPOA.servant_to_reference(monGestionnairePaiement));
 	        System.out.println("==> Nom '"+ nomObj + "' est enregistre dans le service de noms.");
 			 
-			String IORServant = orb.object_to_string(rootPOA.servant_to_reference(monGestionnaireUtilisateurs));
+			String IORServant = orb.object_to_string(rootPOA.servant_to_reference(monGestionnairePaiement));
 			System.out.println("L'objet possede la reference suivante :");
 			System.out.println(IORServant);
 
