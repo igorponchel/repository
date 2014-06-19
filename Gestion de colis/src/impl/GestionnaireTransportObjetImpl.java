@@ -3,18 +3,20 @@ package impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import utils.EtatOffreTransport;
 import utils.OffreTransport;
 import utils.RandomStr;
-import OperateurDeTransportObjet.Adherent;
 import OperateurDeTransportObjet.EtatObjet;
 import OperateurDeTransportObjet.GestionUtilisateurs;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPOA;
 import OperateurDeTransportObjet.InfoObjet;
 import OperateurDeTransportObjet.Objet;
+import OperateurDeTransportObjet.Station;
 import OperateurDeTransportObjet.Transporteur;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans;
@@ -41,11 +43,7 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 
 	private Map<String, Objet> mapIdObjetObjet;
 
-
-
-	private Map <Integer, String> mapNumeroNomTransporteurs;
 	private Multimap<Integer, String> multimapNumTransCodeTrans;
-	private Map <String, EtatObjet> mapObjetEtat;
 	private Map <String, String> mapNumOffreCodeTransport;
 
 	private String args[];
@@ -55,27 +53,29 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 
 		this.args = args;
 		this.gestionnaireUtilisateurs = gestionnaireUtilisateurs;
+		
+		multiMapNumAdherentIdObjet = ArrayListMultimap.create();
+		mapIdObjetObjet = new HashMap<>();
 
 		mapTransporteur = new HashMap<Integer, InscriptionTrans>();
 		mapTransporteur.put(1, new InscriptionTrans(1, "Mory"));	
+		mapTransporteur.put(2, new InscriptionTrans(2, "Ducros"));	
 		
-		mapNumeroNomTransporteurs = new HashMap<>();
 		mapNumeroTransporteursConnectes = new HashMap<>();
 		mapCodeTransportOffre = new HashMap<>();
 		multimapNumTransCodeTrans = ArrayListMultimap.create();
-		mapObjetEtat = new HashMap<>();
 		mapNumOffreCodeTransport = new HashMap<>();
 	}
 
 
 	@Override
-	public String notifierOffreTransport(String nomStationDepart,
+	public String notifierOffreTransport(String idObjet, String nomStationDepart,
 			String nomStationArrivee) {
 
 		String codeTransport = genererCodeTransport();
 		String numeroOffre = genererNumeroOffre();
 		mapNumOffreCodeTransport.put(numeroOffre, codeTransport);
-		mapCodeTransportOffre.put(codeTransport, new OffreTransport(numeroOffre, nomStationDepart, nomStationArrivee, EtatOffreTransport.aPrendreEnCharge));
+		mapCodeTransportOffre.put(codeTransport, new OffreTransport(numeroOffre, idObjet, nomStationDepart, nomStationArrivee, EtatOffreTransport.aPrendreEnCharge));
 
 		//notifier tous les transporteurs
 		for (Transporteur transporteur : mapNumeroTransporteursConnectes.values()) {
@@ -93,16 +93,25 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 
 		String codeTransport = mapNumOffreCodeTransport.get(numeroOffre);
 
-		if (mapCodeTransportOffre.get(codeTransport).getEtatOffreTransport() == EtatOffreTransport.aPrendreEnCharge) {
+		OffreTransport offreTransport = mapCodeTransportOffre.get(codeTransport);
+		
+		if (offreTransport.getEtatOffreTransport() == EtatOffreTransport.aPrendreEnCharge) {
 
-			mapCodeTransportOffre.get(codeTransport).setEtatOffreTransport(EtatOffreTransport.priseEnCharge);
+			offreTransport.setEtatOffreTransport(EtatOffreTransport.priseEnCharge);
 
-			//notifier tous les transporteurs (même celui qui a pris en charge l'offre => confirmation)
-			for (Transporteur transporteur : mapNumeroTransporteursConnectes.values()) {
-
-				transporteur.notifierOffrePriseEnCharge(codeTransport);
+			//récupére les numero de transporteur connectés
+			Set<Integer> numerosTransporteurConnectes = new HashSet<>(mapNumeroTransporteursConnectes.keySet());
+			//enleve le numero de transporteur qui vient d'accepter l'offre
+			numerosTransporteurConnectes.remove(numeroTransporteur);
+			
+			for (Integer numTransCo : numerosTransporteurConnectes) {
+				
+				mapNumeroTransporteursConnectes.get(numTransCo).notifierOffrePriseEnCharge(numeroOffre);
 			}
-
+			
+			Station stationDestinataire = getStationDestinataireViaNamingService(offreTransport.getNomStationArrivee());
+			stationDestinataire.notifierNumTransporteurObjet(numeroTransporteur, offreTransport.getIdObjet());
+			
 			multimapNumTransCodeTrans.put(numeroTransporteur, codeTransport);
 			//on enlève l'offre vu qu'elle vient d'être acceptée
 			mapNumOffreCodeTransport.remove(numeroOffre);
@@ -133,8 +142,7 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 
 
 	@Override
-	public InfoObjet[] consulterEtatObjet(int numeroAdherent)
-			throws ObjetInexistantException {
+	public InfoObjet[] consulterEtatObjet(int numeroAdherent) {
 
 		Collection<String> idObjets = multiMapNumAdherentIdObjet.get(numeroAdherent);
 		List<InfoObjet> infosObjets = new ArrayList<>();
@@ -143,15 +151,13 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 			infosObjets.add(new InfoObjet(idObjet, mapIdObjetObjet.get(idObjet).etatObjet));
 		}
 
-		if (!infosObjets.isEmpty()) {
-
-			return (InfoObjet[])infosObjets.toArray();
-		}
-		else {
-			throw new ObjetInexistantException("Aucun objet correspondant.");
-		}
+		return (infosObjets.toArray(new InfoObjet[]{}));
 	}
 
+	/**
+	 * Génère un code de transport unique aléatoire
+	 * @return
+	 */
 	private String genererCodeTransport() {
 
 		RandomStr rand = new RandomStr();
@@ -159,6 +165,10 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		return rand.get(5);
 	}
 
+	/**
+	 * Génère un numero d'offre unique aléatoire
+	 * @return
+	 */
 	private String genererNumeroOffre() {
 
 		RandomStr rand = new RandomStr();
@@ -167,7 +177,7 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 	}
 
 	@Override
-	public void notifierConnexion(int numeroTransporteur, Transporteur transporteur) {
+	public void notifierConnexion(int numeroTransporteur, Transporteur transporteur) { //régler cas reconnexion => toujours à A PRENDRE EN CHARGe
 
 		mapNumeroTransporteursConnectes.put(numeroTransporteur, transporteur);	
 
@@ -193,9 +203,12 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		if (objet != null) {
 			objet.etatObjet = etatObjet;
 
-			if(etatObjet == EtatObjet.delivre) {
-
+			if(etatObjet == EtatObjet.livre) {
+				//Cas spécial dans lequel on notifie le destinataire que l'objet est arrivé
 				alerterDestinataire(objet.numDestinataire, idObjet);
+				
+				//Créditer transport
+				
 			}
 		}
 		else {
@@ -216,9 +229,7 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 
 	public void alerterDestinataire(int numeroAdherentDestinataire, String idObjet) {
 
-		Adherent adherent = gestionnaireUtilisateurs.getAdherentSiConnecte(numeroAdherentDestinataire);
-
-		adherent.notifierColisArrive(idObjet);
+		gestionnaireUtilisateurs.notifierColisArrive(numeroAdherentDestinataire, idObjet);
 	}
 
 	@Override
@@ -265,5 +276,40 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 	private int genererNumeroTransporteur () {
 
 		return mapTransporteur.size() + 1;
+	}
+	
+	private Station getStationDestinataireViaNamingService (String nomStation) {
+
+		OperateurDeTransportObjet.Station maStationDistante = null;
+
+		// Intialisation de l'orb
+		org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(args, null);
+
+		// Saisie du nom de l'objet (si utilisation du service de nommage)
+		System.out.println("Quel objet Corba voulez-vous contacter ?");
+		String idObj = nomStation;
+
+		// Recuperation du naming service
+		org.omg.CosNaming.NamingContext nameRoot;
+		try {
+			nameRoot = org.omg.CosNaming.NamingContextHelper.narrow(orb.resolve_initial_references("NameService"));
+
+			// Construction du nom a rechercher
+			org.omg.CosNaming.NameComponent[] nameToFind = new org.omg.CosNaming.NameComponent[1];
+			nameToFind[0] = new org.omg.CosNaming.NameComponent(idObj,"");
+
+			// Recherche aupres du naming service
+			org.omg.CORBA.Object stationDestinataire = nameRoot.resolve(nameToFind);
+			System.out.println("Objet '" + idObj + "' trouve aupres du service de noms. IOR de l'objet :");
+			System.out.println(orb.object_to_string(stationDestinataire));			
+
+			maStationDistante = OperateurDeTransportObjet.StationHelper.narrow(stationDestinataire);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+
+		return maStationDistante;
 	}
 }

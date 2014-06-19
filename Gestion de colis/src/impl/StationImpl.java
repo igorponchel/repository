@@ -12,13 +12,11 @@ public class StationImpl extends StationPOA {
 	public StationImpl(StationUI station) {
 		
 		this.maStation = station;
-		
 	}
 
 	@Override
 	public int reserverCasier(int numeroAdherent)
 			throws AucunCasierDisponibleException {
-		// TODO Auto-generated method stub
 		
 		int numeroCasier = maStation.getNumeroCasierLibre();
 		
@@ -32,11 +30,17 @@ public class StationImpl extends StationPOA {
 	}
 
 	@Override
-	public void notifierCodeTransport(int numeroCasier, String codeTransport) {
-		// TODO Auto-generated method stub
-		
-		maStation.ajouterCoupleCodeTransportCasier(codeTransport, numeroCasier);
+	public void notifierInfoTransportObjet(String codeTransport, Objet objet) {
+
+		maStation.ajouterCoupleCodeTransportCasier(codeTransport, objet.numeroCasierArrivee);
+		maStation.ajouterCoupleNumCasierIdObjet(objet.numeroCasierArrivee, objet.idObjet);
+		maStation.ajouterCoupleNumAdherentObjet(objet.numDestinataire, objet);
 	}
-	
-	
+
+	@Override
+	public void notifierNumTransporteurObjet(int numTransporteur, String idObjet) {
+		// TODO Auto-generated method stub
+		maStation.ajouterCoupleNumTransporteurCasier(numTransporteur, idObjet);
+	}
+
 }

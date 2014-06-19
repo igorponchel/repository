@@ -2,7 +2,6 @@ package entites.ui;
 
 import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.table.AbstractTableModel;
 
 import utils.OffreTransport;

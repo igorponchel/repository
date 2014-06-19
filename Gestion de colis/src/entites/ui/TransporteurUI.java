@@ -2,8 +2,6 @@ package entites.ui;
 
 import impl.TransporteurImpl;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -13,10 +11,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -24,16 +19,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import utils.EtatOffreTransport;
 import utils.OffreTransport;
-import OperateurDeTransportObjet.Adresse;
-import OperateurDeTransportObjet.CoordBancairePro;
 import OperateurDeTransportObjet.GestionnaireTransportObjet;
-import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans;
-import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantException;
 
 import com.google.common.collect.Lists;
 
@@ -45,63 +37,40 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	private TransporteurImpl transporteur;
 	
 	private ArrayList <OffreTransport> listeOffre;
+	private ArrayList <OffreTransport> listeOffrePrisesEnCharge;
 	private InscriptionTrans inscription;
 	
 	private boolean initialized = false;
-	private Actions actions = new Actions();
-	private JList<DefaultListModel<String>> listeDeEvenements;
 	private DefaultListModel<String> defaultListModel;
-	private JButton boutonDemandeInscription;
-	private JButton boutonConsulterOffreTransport;
-	private JButton boutonAccepterOffreTransport;
-	private Container pane;
-	
+
 	private JMenuItem itemConnection;
 	private JMenuItem itemDeconnection;
-	
-	//Formulaire inscription
-	private JLabel labelNomTransporteur;
-	private JTextField nomTransporteur;
-	private JLabel labelNumeroRue;
-	private JTextField numeroRue;
-	private JLabel labelNomRue;
-	private JTextField nomRue;
-	private JLabel labelVille;
-	private JTextField ville;
-	private JLabel labelDepartement;
-	private JTextField departement;
-	private JLabel labelPays;
-	private JTextField pays;
-	private JLabel labelCodeBanque;
-	private JTextField codeBanque;
-	private JLabel labelCodeGuichet;
-	private JTextField codeGuichet;
-	private JLabel labelNumCompte;
-	private JTextField numCompte;
-	private JLabel labelCleRIB;
-	private JTextField cleRIB;
-	private JButton boutonInscrire;
-	
+
 	//Vue Offre
 	private JTable tableOffres;
+	private JTable tableOffresPrisesEnCharge;
 	private OffreTableModel offreModel;
+	private OffreTableModel offrePrisesEnChargeModel;
 	private JScrollPane scrollPane;
+	private JScrollPane scrollPane2;
 	private JMenuItem prendreEnCharge;
+	
+	//session
+	private int sessionON = 0;
 	
 	
 	private String args[];
-	
-	private TransporteurImpl monTransporteur;
-	
+		
 	public TransporteurUI(GestionnaireTransportObjet gestionnaireTransportObjet, String args[], int numeroTransporteur) {
 		
 		inscription = new InscriptionTrans();
 		inscription.numeroInscritTrans = numeroTransporteur;
 		this.gestionnaireTransportObjet = gestionnaireTransportObjet;
-		
+		this.sessionON = 0;
 		this.args = args;
 
 		this.listeOffre = Lists.newArrayList();
+		this.listeOffrePrisesEnCharge = Lists.newArrayList();
 		this.setVisible(true);
 		initialize();
 	}
@@ -114,6 +83,18 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	}
 
 	private void initializeGui() {
+		
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (Exception e) {
+			// If Nimbus is not available, you can set the GUI to another look and feel.
+		}
+		
 		if (initialized)
 			return;
 		initialized = true;
@@ -121,15 +102,6 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		Dimension windowSize = this.getSize();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(screenSize.width/2 - windowSize.width/2, screenSize.height/2 - windowSize.height/2);
-		pane = this.getContentPane();
-		GridLayout gridLayout = new GridLayout(2, 1);
-		pane.setLayout(gridLayout);
-		boutonDemandeInscription = new JButton("Demande d'inscription");
-		boutonDemandeInscription.addActionListener(this);
-		boutonConsulterOffreTransport = new JButton("Consulter offre transport");
-		boutonConsulterOffreTransport.addActionListener(this);
-		pane.add(boutonDemandeInscription);
-		pane.add(boutonConsulterOffreTransport);
 		
 		//Create the menu bar.
 		JMenuBar menuBar = new JMenuBar();
@@ -145,9 +117,10 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		itemDeconnection = new JMenuItem("Deconnexion",
                 KeyEvent.VK_D);
 		itemDeconnection.addActionListener(this);
+		itemDeconnection.setEnabled(false);
 		
 		menu.add(itemConnection);
-		menu.add(itemDeconnection);		
+//		menu.add(itemDeconnection);		
 		menuBar.add(menu);
 		this.setJMenuBar(menuBar);
 	}
@@ -166,8 +139,9 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	}
 
 	public void dispose() {
-		// TODO: Save settings
-		//super.dispose();
+
+		gestionnaireTransportObjet.notifierDeconnexion(this.inscription.numeroInscritTrans);
+		
 		System.exit(0);
 	}
 
@@ -180,85 +154,11 @@ public class TransporteurUI extends JFrame implements ActionListener{
 
 		defaultListModel.addElement(texte);
 	}
-	
-	private void initFormulaireAdhesion() {
 		
-		labelNomTransporteur = new JLabel("Nom entreprise");
-		nomTransporteur = new JTextField();
-		labelNumeroRue= new JLabel("Numero rue ");
-		numeroRue = new JTextField();
-		labelNomRue= new JLabel("Nom rue ");
-		nomRue = new JTextField();
-		labelVille= new JLabel("Ville ");
-		ville = new JTextField();
-		labelDepartement= new JLabel("Departement ");
-		departement = new JTextField();
-		labelPays= new JLabel("Pays ");
-		pays = new JTextField();
-		labelCodeBanque = new JLabel("Code banque ");
-		codeBanque = new JTextField();
-		labelCodeGuichet = new JLabel("Code guichet ");
-		codeGuichet = new JTextField();
-		labelNumCompte = new JLabel("Numero compte");
-		numCompte = new JTextField();
-		labelCleRIB = new JLabel("Clé RIB");
-		cleRIB = new JTextField();
-		boutonInscrire = new JButton("S'inscrire");
-		boutonInscrire.addActionListener(this);
-		
-		pane.removeAll();
-		pane.revalidate();
-		pane.repaint();
-		GridLayout gridLayout = new GridLayout(11, 2);
-		pane.setLayout(gridLayout);
-		pane.add(labelNomTransporteur);
-		pane.add(nomTransporteur);
-		pane.add(labelNumeroRue);
-		pane.add(numeroRue);
-		pane.add(labelNomRue);
-		pane.add(nomRue);
-		pane.add(labelVille);
-		pane.add(ville);
-		pane.add(labelDepartement);
-		pane.add(departement);
-		pane.add(labelPays);
-		pane.add(pays);
-		pane.add(labelCodeBanque);
-		pane.add(codeBanque);
-		pane.add(labelCodeGuichet);
-		pane.add(codeGuichet);
-		pane.add(labelNumCompte);
-		pane.add(numCompte);
-		pane.add(labelCleRIB);
-		pane.add(cleRIB);
-		pane.add(boutonInscrire);
-		pane.repaint();
-	}
-	
-	private void envoyerFormulaireInscription() {
-		
-		DemandeInscriptionTrans demandeInscription = new DemandeInscriptionTrans(nomTransporteur.getText(), 
-				new Adresse(numeroRue.getText(), nomRue.getText(), ville.getText(), Integer.parseInt(departement.getText()), pays.getText()), 
-				new CoordBancairePro(Integer.parseInt(codeBanque.getText()), Integer.parseInt(codeGuichet.getText()), Integer.parseInt(numCompte.getText()), Integer.parseInt(cleRIB.getText())));
-		try {
-			inscription = gestionnaireTransportObjet.demandeInscriptionTrans(demandeInscription);
-			notifierSucces("Inscription réussie : " + inscription.toString());
-			initVueOffre();
-			gestionnaireTransportObjet.notifierConnexion(inscription.numeroInscritTrans, transporteur._this());
-			
-		} catch (TransExistantException e) {
-
-			notifierErreur("Inscription échouée : " + e.getLocalizedMessage());
-		}
-	}
-	
 	private void initVueOffre() {
 		
-		pane.removeAll();
-		pane.revalidate();
-		pane.repaint();
-		BorderLayout borderLayout = new BorderLayout();
-		pane.setLayout(borderLayout);
+		GridLayout gridLayout = new GridLayout(2, 1);
+		this.setLayout(gridLayout);
 
 		prendreEnCharge = new JMenuItem("Prendre en charge");
 		prendreEnCharge.addActionListener(this);
@@ -266,64 +166,72 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		popupMenu.add(prendreEnCharge);
 		
 		offreModel = new OffreTableModel(listeOffre);
+		offrePrisesEnChargeModel = new OffreTableModel(listeOffrePrisesEnCharge);
 		tableOffres = new JTable(offreModel);
 		tableOffres.setComponentPopupMenu(popupMenu);
+		tableOffresPrisesEnCharge = new JTable(offrePrisesEnChargeModel);
 		scrollPane = new JScrollPane(tableOffres);
-		pane.add(scrollPane, BorderLayout.CENTER);
-		pane.repaint();
+		scrollPane2 = new JScrollPane(tableOffresPrisesEnCharge);
+		this.add(scrollPane);
+		this.add(scrollPane2);
+		this.revalidate();
+		this.repaint();
 	}
 	
 
 	public void actionPerformed(ActionEvent evt) {
 
 		Object source = evt.getSource();
-
-		if (source == boutonDemandeInscription) {
-			//Afficher formulaire adhésion
-			initFormulaireAdhesion();
+		
+		if (source == prendreEnCharge) {
 			
-		} else if (source == boutonConsulterOffreTransport) {
-			
-			initVueOffre();
-
-		} else if (source == boutonInscrire) {
-			
-			envoyerFormulaireInscription();
-			
-		} else if (source == boutonAccepterOffreTransport) {
-			
-		}
-		else if (source == prendreEnCharge) {
-			
-//			String numeroOffre = String.valueOf(tableOffres.getModel().getValueAt(tableOffres.getSelectedRow(), 0));
 			String numeroOffre = listeOffre.get(tableOffres.getSelectedRow()).getNumeroOffre();
 			String codeTransport = gestionnaireTransportObjet.notifierOffreAcceptee(inscription.numeroInscritTrans, numeroOffre);
 			listeOffre.get(tableOffres.getSelectedRow()).setEtatOffreTransport(EtatOffreTransport.priseEnCharge);
-			offreModel.fireTableDataChanged();
+			
+			
+			OffreTransport offre = listeOffre.get(tableOffres.getSelectedRow());
+			offre.setEtatOffreTransport(EtatOffreTransport.priseEnCharge);
+			listeOffrePrisesEnCharge.add(offre);
+			offrePrisesEnChargeModel.fireTableDataChanged();
 			notifierSucces("Code transport : " + codeTransport);
 		}
 		else if (source == itemConnection) {
 			
 			gestionnaireTransportObjet.notifierConnexion(inscription.numeroInscritTrans, transporteur._this());
+			initVueOffre();
+			itemConnection.setEnabled(false);
+			itemDeconnection.setEnabled(true);
 		}
 		else if (source == itemDeconnection) {
 			
 			gestionnaireTransportObjet.notifierDeconnexion(inscription.numeroInscritTrans);
+			this.remove(scrollPane);
+			this.repaint();
+			itemConnection.setEnabled(true);
+			itemDeconnection.setEnabled(false);
+			
+			listeOffre.clear();
 		}
 	}
 	
 	public void ajouterOffreTransport(String numeroOffre, String nomStationDepart, String nomStationArrivee) {
-		
-		System.out.println("TOTO");
-		OffreTransport nouvelleOffre = new OffreTransport(numeroOffre, nomStationDepart, nomStationArrivee, EtatOffreTransport.aPrendreEnCharge);
+
+		OffreTransport nouvelleOffre = new OffreTransport(numeroOffre, "", nomStationDepart, nomStationArrivee, EtatOffreTransport.aPrendreEnCharge);
 		listeOffre.add(nouvelleOffre);
 		offreModel.fireTableDataChanged();
 	}
 	
 	public void alerterOffreDejaPriseEnCharge(String numeroOffre) {
 		
-		listeOffre.remove(numeroOffre);
-		notifierSucces("Vous venez de prendre en charge l'offre " + numeroOffre);
+		
+		for (OffreTransport offreTemp : listeOffre) {
+			
+			if (offreTemp.getNumeroOffre().equals(numeroOffre)) {
+				
+				offreTemp.setEtatOffreTransport(EtatOffreTransport.priseEnCharge);
+			}
+		}
 		offreModel.fireTableDataChanged();
 		//transfert de l'offre prise en charge dans une autre jtable
 	}

@@ -2,7 +2,7 @@ module OperateurDeTransportObjet {
 
 	struct CoordBancaire {
 	
-		long numeroCarte;
+		long long numeroCarte;
 		string proprietaire;
 		string date;
 		long numDos;
@@ -22,6 +22,7 @@ module OperateurDeTransportObjet {
 		string nomRue;
 		string ville;
 		long codePostale;
+		string quartier;
 	};
 
 	enum EtatObjet {depose, enTransit, livre, delivre}; // delivré signifie que le destinataire l'a récupéré.
@@ -70,7 +71,7 @@ module OperateurDeTransportObjet {
 			string motDePasse;
 			string nomAdherent;
 			string prenomAdherent;
-			long zoneAdherent;
+			string zoneAdherent;
 		};
 
 		exception AdherentExistantException {
@@ -85,9 +86,9 @@ module OperateurDeTransportObjet {
 		
 		Adhesion demandeAdhesion(in DemandeAdhesion demandeAdhesion) raises (AdherentExistantException);
 		//retourn la zone de l'adherent s'il existe, 0 sinon
-		long verifierAdherent(in long numeroAdherent, in string motDePasse) ; 
+		string verifierAdherent(in long numeroAdherent, in string motDePasse) ; 
 		long getNumAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
-		long getZoneAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
+		string getZoneAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 		oneway void notifierConnexionAdh(in long numeroAdherent, in Adherent adherent);
 		oneway void notifierDeconnexionAdh(in long numeroAdherent);
 		oneway void notifierColisArrive(in long numeroAdherent, in string idObjet); // ajouter une exception
@@ -95,8 +96,12 @@ module OperateurDeTransportObjet {
 	
 	interface GestionnairePaiement {
 	
-		short debiter(in CoordBancaire coordonneesBancaires, in string stationDepart, in string stationArrivee);
-		short crediter(in CoordBancairePro coordonneesBancairesPro, in string stationDepart, in string stationArrivee);
+		typedef sequence<string> ListZones;
+	
+		double debiter(in CoordBancaire coordonneesBancaires, in string stationDepart, in string stationArrivee);
+		double crediter(in CoordBancairePro coordonneesBancairesPro, in string stationDepart, in string stationArrivee);
+		ListZones getListZones(in string codePostale);
+		double getCoutAdhesion();
 	};
 	
 	interface GestionnaireTransportObjet {

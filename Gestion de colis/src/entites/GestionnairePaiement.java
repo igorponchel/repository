@@ -1,6 +1,5 @@
 package entites;
 
-import impl.GestionUtilisateursImpl;
 import impl.GestionnairePaiementImpl;
 
 import org.omg.CosNaming.NamingContext;

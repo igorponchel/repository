@@ -3,18 +3,14 @@ package entites;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 
-import impl.AdherentImpl;
-import entites.ui.AdherentUI;
+import entites.ui.GestionColisUI;
 
-
-/*******************************
- * Client CORBA de l'objet Adherent *
- *******************************/
-public class Adherent {
-
+public class GestionColis {
+	
 	public static OperateurDeTransportObjet.GestionUtilisateurs monGestionnaireUtilisateurs;
 	private static OperateurDeTransportObjet.GestionnaireTransportObjet monGestionnaireTransportObjet;
-
+	private static OperateurDeTransportObjet.GestionnairePaiement monGestionnairePaiement;
+	
 	public static void main(String args[]) {
 
 		try {
@@ -27,6 +23,8 @@ public class Adherent {
 			// Recuperation du POA
 			POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
 			
+			
+			//********************* RECUPERATION DU SERVANT GESTIONNAIRE UTILISATEURS
 			// Saisie du nom de l'objet (si utilisation du service de nommage)
 			System.out.println("Quel objet Corba voulez-vous contacter ?");
 			String idObj = "GUtilisateurs";
@@ -57,38 +55,30 @@ public class Adherent {
 			nameToFind2[0] = new org.omg.CosNaming.NameComponent(idObj2,"");
 
 			// Recherche aupres du naming service
-			org.omg.CORBA.Object distantGestionTransportObjet = nameRoot.resolve(nameToFind2);
+			org.omg.CORBA.Object distantGestionnaireTransport = nameRoot.resolve(nameToFind2);
 			System.out.println("Objet '" + idObj2 + "' trouve aupres du service de noms. IOR de l'objet :");
-			System.out.println(orb.object_to_string(distantGestionTransportObjet));
+			System.out.println(orb.object_to_string(distantGestionnaireTransport));
 
-			monGestionnaireTransportObjet = OperateurDeTransportObjet.GestionnaireTransportObjetHelper.narrow(distantGestionTransportObjet);
+			monGestionnaireTransportObjet = OperateurDeTransportObjet.GestionnaireTransportObjetHelper.narrow(distantGestionnaireTransport);
+			
+			//********************* RECUPERATION DU SERVANT GESTIONNAIRE PAIEMENT
+			String idObj3 = "GPaiement";
 
-			// Appel de l'interface graphique
-			AdherentUI frame = new AdherentUI(monGestionnaireUtilisateurs, monGestionnaireTransportObjet);
-			frame.setTitle("Fenetre Adherent");
+			// Construction du nom a rechercher
+			nameToFind2 = new org.omg.CosNaming.NameComponent[1];
+			nameToFind2[0] = new org.omg.CosNaming.NameComponent(idObj3,"");
+
+			// Recherche aupres du naming service
+			org.omg.CORBA.Object distantGestionPaiement = nameRoot.resolve(nameToFind2);
+			System.out.println("Objet '" + idObj3 + "' trouve aupres du service de noms. IOR de l'objet :");
+			System.out.println(orb.object_to_string(distantGestionPaiement));
+
+			monGestionnairePaiement = OperateurDeTransportObjet.GestionnairePaiementHelper.narrow(distantGestionPaiement);
+
+			//FRAME
+			GestionColisUI frame = new GestionColisUI(monGestionnaireTransportObjet, monGestionnaireUtilisateurs, monGestionnairePaiement, args);
 			frame.setVisible(true);
 
-			// Creation du servant			
-			AdherentImpl monAdherent = new AdherentImpl(frame);
-
-			// Activer le servant au sein du POA et recuperer son ID
-			byte[] monAdherentId = rootPOA.activate_object(monAdherent);
-
-			// Activer le POA manager
-			rootPOA.the_POAManager().activate();
-
-			org.omg.CosNaming.NameComponent[] nameToRegister = new org.omg.CosNaming.NameComponent[1];
-			System.out.println("Sous quel nom voulez-vous enregistrer l'objet Corba ?");
-			String nomObj = "Adherent1";
-			nameToRegister[0] = new org.omg.CosNaming.NameComponent(nomObj,"");
-
-			// Enregistrement de l'objet CORBA dans le service de noms
-			nameRoot.rebind(nameToRegister,rootPOA.servant_to_reference(monAdherent));
-			System.out.println("==> Nom '"+ nomObj + "' est enregistre dans le service de noms.");
-
-			String IORServant = orb.object_to_string(rootPOA.servant_to_reference(monAdherent));
-
-			orb.run();
 		}
 		catch (Exception e) {
 			e.printStackTrace();

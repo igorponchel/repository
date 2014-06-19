@@ -27,25 +27,25 @@ public class GestionnaireTransportObjet {
 			
 //			//********************* RECUPERATION DU SERVANT GESTIONNAIRE D'UTILISATEURS
 //			// Saisie du nom de l'objet (si utilisation du service de nommage)
-//			System.out.println("Quel objet Corba voulez-vous contacter ?");
-//
-//			String idObj = "GUtilisateurs";
-//
+			System.out.println("Quel objet Corba voulez-vous contacter ?");
+
+			String idObj = "GUtilisateurs";
+
 //			// Recuperation du naming service
 			org.omg.CosNaming.NamingContext nameRoot =
 					org.omg.CosNaming.NamingContextHelper.narrow(orb.resolve_initial_references("NameService"));
-//
-//			// Construction du nom a rechercher
-//			org.omg.CosNaming.NameComponent[] nameToFind = new org.omg.CosNaming.NameComponent[1];
-//			nameToFind[0] = new org.omg.CosNaming.NameComponent(idObj,"");
-//
-//			// Recherche aupres du naming service
-//			org.omg.CORBA.Object distantGestionUtilisateurs = nameRoot.resolve(nameToFind);  //BOUCLE DAPPEL
-//			System.out.println("Objet '" + idObj + "' trouve aupres du service de noms. IOR de l'objet :");
-//			System.out.println(orb.object_to_string(distantGestionUtilisateurs));
 
-//			monGestionnaireUtilisateurs = OperateurDeTransportObjet.GestionUtilisateursHelper.narrow(distantGestionUtilisateurs);
-			monGestionnaireUtilisateurs = null;
+//			// Construction du nom a rechercher
+			org.omg.CosNaming.NameComponent[] nameToFind = new org.omg.CosNaming.NameComponent[1];
+			nameToFind[0] = new org.omg.CosNaming.NameComponent(idObj,"");
+
+//			// Recherche aupres du naming service
+			org.omg.CORBA.Object distantGestionUtilisateurs = nameRoot.resolve(nameToFind);  //BOUCLE DAPPEL
+			System.out.println("Objet '" + idObj + "' trouve aupres du service de noms. IOR de l'objet :");
+			System.out.println(orb.object_to_string(distantGestionUtilisateurs));
+
+			monGestionnaireUtilisateurs = OperateurDeTransportObjet.GestionUtilisateursHelper.narrow(distantGestionUtilisateurs);
+//			monGestionnaireUtilisateurs = null;
 			
 			
 			// Creation du servant

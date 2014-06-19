@@ -15,6 +15,7 @@ public class Station {
 
 	public static OperateurDeTransportObjet.GestionUtilisateurs monGestionnaireUtilisateurs;
 	public static OperateurDeTransportObjet.GestionnaireTransportObjet monGestionnaireTransportObjet;
+	public static OperateurDeTransportObjet.GestionnairePaiement monGestionnairePaiement;
 	
 	public static void main(String args[]) {
 
@@ -22,6 +23,7 @@ public class Station {
 			
 			// Intialisation de l'ORB
 			//************************
+			
 			org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(args,null);
 
 			// Gestion du POA
@@ -69,10 +71,26 @@ public class Station {
 
 			monGestionnaireTransportObjet = OperateurDeTransportObjet.GestionnaireTransportObjetHelper.narrow(distantGestionTransportObjet);
 			
+			//********************* RECUPERATION DU SERVANT GESTIONNAIRE PAIEMENT
+			// Saisie du nom de l'objet (si utilisation du service de nommage)
+			System.out.println("Quel objet Corba voulez-vous contacter ?");
+
+			idObj2 = "GPaiement";
+
+			// Construction du nom a rechercher
+			nameToFind2 = new org.omg.CosNaming.NameComponent[1];
+			nameToFind2[0] = new org.omg.CosNaming.NameComponent(idObj2,"");
+
+			// Recherche aupres du naming service
+			org.omg.CORBA.Object distantGestionPaiement = nameRoot.resolve(nameToFind2);
+			System.out.println("Objet '" + idObj2 + "' trouve aupres du service de noms. IOR de l'objet :");
+			System.out.println(orb.object_to_string(distantGestionPaiement));
+
+			monGestionnairePaiement = OperateurDeTransportObjet.GestionnairePaiementHelper.narrow(distantGestionPaiement);
+			
 			//********************* ENREGISTREMENT DU SERVANT STATION 
 			// Appel de l'interface graphique
-			StationUI frame = new StationUI("Station31", monGestionnaireUtilisateurs, monGestionnaireTransportObjet, args);
-			frame.setTitle("Fenetre Station");
+			StationUI frame = new StationUI(args[0], monGestionnaireUtilisateurs, monGestionnaireTransportObjet, monGestionnairePaiement, args);
 			frame.setVisible(true);
 
 			// Creation du servant			
@@ -86,7 +104,7 @@ public class Station {
 
 			org.omg.CosNaming.NameComponent[] nameToRegister = new org.omg.CosNaming.NameComponent[1];
 	        System.out.println("Sous quel nom voulez-vous enregistrer l'objet Corba ?");
-	        String nomObj = "Station31";
+	        String nomObj = args[0];
 	        nameToRegister[0] = new org.omg.CosNaming.NameComponent(nomObj,"");
 
 	        // Enregistrement de l'objet CORBA dans le service de noms

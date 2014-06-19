@@ -1,22 +1,21 @@
 package impl;
 
 import OperateurDeTransportObjet.AdherentPOA;
-import entites.ui.AdherentUI;
+import entites.ui.GestionColisUI;
 
 public class AdherentImpl extends AdherentPOA {
 
-	private AdherentUI adherentUI;
+	private GestionColisUI gestionColisUI;
 	
-	public AdherentImpl(AdherentUI adherentUI) {
+	public AdherentImpl(GestionColisUI gestionColisUI) {
 		
-		this.adherentUI = adherentUI;
+		this.gestionColisUI = gestionColisUI;
 	}
 
 	@Override
 	public void notifierColisArrive(String idObjet) {
 
-		adherentUI.notifierColisArrive(idObjet);
-		
+		gestionColisUI.notifierColisArrive(idObjet);
 	}
 
 }
