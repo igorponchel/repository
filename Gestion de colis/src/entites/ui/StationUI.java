@@ -310,6 +310,15 @@ public class StationUI extends JFrame implements ActionListener{
 					String idObjet = mapNumCasierIdObjet.get(numCasier);
 
 					sb.append("  Objet " + idObjet + " à déposer dans le casier " + numCasier + "\n");
+					
+					//Maj des états d'objets de la station
+					for (Objet objet : multiMapNumAdherentObjet.values()) {
+						
+						if (objet.idObjet.equals(idObjet)) {
+							
+							objet.etatObjet = EtatObjet.livre;
+						}
+					}
 
 					listeCasiers.get(numCasier).etatCasier = EtatCasier.occupe;
 					try {
@@ -347,20 +356,30 @@ public class StationUI extends JFrame implements ActionListener{
 				if (listObjet.size() > 0) {
 
 					for (Objet objetTemp : listObjet) {
+						
+						if (objetTemp.etatObjet == EtatObjet.livre) {
 
-						casiers = casiers + "\nNuméro " + objetTemp.numeroCasierArrivee;
+							casiers = casiers + "\nNuméro " + objetTemp.numeroCasierArrivee;
 
-						try {
-							gestionnaireTransportObjetDistant.notifierEtatObjet(objetTemp.idObjet, EtatObjet.delivre);
-							listeCasiers.get(objetTemp.numeroCasierArrivee).etatCasier = EtatCasier.vide;
-						} catch (ObjetInexistantException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							try {
+								gestionnaireTransportObjetDistant.notifierEtatObjet(objetTemp.idObjet, EtatObjet.delivre);
+								listeCasiers.get(objetTemp.numeroCasierArrivee).etatCasier = EtatCasier.vide;
+								multiMapNumAdherentObjet.get(numeroAdherentSaisi).remove(objetTemp);
+							} catch (ObjetInexistantException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
+
 					}
 
-					notifierSucces("Vous pouvez récupérer votre colis dans le(s) casier(s) :" + casiers);
-					multiMapNumAdherentObjet.removeAll(numeroAdherentSaisi);
+					if (!casiers.equals("")) {
+						notifierSucces("Vous pouvez récupérer votre colis dans le(s) casier(s) :" + casiers);	
+					}
+					else {
+						notifierErreur("Aucun colis pour vous.");
+					}
+					
 				}
 				else {
 					notifierErreur("Aucun colis pour vous.");
