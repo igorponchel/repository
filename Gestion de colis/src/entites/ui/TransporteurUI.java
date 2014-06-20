@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -41,9 +40,8 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	private InscriptionTrans inscription;
 	
 	private boolean initialized = false;
-	private DefaultListModel<String> defaultListModel;
 
-	private JMenuItem itemConnection;
+	private JMenuItem itemConnexion;
 	private JMenuItem itemDeconnection;
 
 	//Vue Offre
@@ -54,20 +52,12 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	private JScrollPane scrollPane;
 	private JScrollPane scrollPane2;
 	private JMenuItem prendreEnCharge;
-	
-	//session
-	private int sessionON = 0;
-	
-	
-	private String args[];
-		
-	public TransporteurUI(GestionnaireTransportObjet gestionnaireTransportObjet, String args[], int numeroTransporteur) {
+
+	public TransporteurUI(GestionnaireTransportObjet gestionnaireTransportObjet, int numeroTransporteur) {
 		
 		inscription = new InscriptionTrans();
 		inscription.numeroInscritTrans = numeroTransporteur;
 		this.gestionnaireTransportObjet = gestionnaireTransportObjet;
-		this.sessionON = 0;
-		this.args = args;
 
 		this.listeOffre = Lists.newArrayList();
 		this.listeOffrePrisesEnCharge = Lists.newArrayList();
@@ -108,19 +98,14 @@ public class TransporteurUI extends JFrame implements ActionListener{
 
 		//Build the first menu.
 		JMenu menu = new JMenu("Menu");
-		menu.setMnemonic(KeyEvent.VK_A);
+		menu.setMnemonic(KeyEvent.VK_M);
 
 		//a group of JMenuItems
-		itemConnection = new JMenuItem("Connexion",
+		itemConnexion = new JMenuItem("Connexion",
 		                         KeyEvent.VK_C);
-		itemConnection.addActionListener(this);
-		itemDeconnection = new JMenuItem("Deconnexion",
-                KeyEvent.VK_D);
-		itemDeconnection.addActionListener(this);
-		itemDeconnection.setEnabled(false);
+		itemConnexion.addActionListener(this);
 		
-		menu.add(itemConnection);
-//		menu.add(itemDeconnection);		
+		menu.add(itemConnexion);
 		menuBar.add(menu);
 		this.setJMenuBar(menuBar);
 	}
@@ -133,8 +118,6 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			String command = e.getActionCommand();
 			command = command == null ? "" : command;
-			// TODO: add if...if else... for action commands
-
 		}
 	}
 
@@ -145,16 +128,9 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		System.exit(0);
 	}
 
-	public void setVisible(boolean b) {
-		initialize();
-		super.setVisible(b);
-	}
-
-	public void ajouterContenu(String texte) {
-
-		defaultListModel.addElement(texte);
-	}
-		
+	/**
+	 * Initialise la vue offre, vue principale de la fenêtre
+	 */
 	private void initVueOffre() {
 		
 		GridLayout gridLayout = new GridLayout(2, 1);
@@ -186,35 +162,41 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		if (source == prendreEnCharge) {
 			
 			String numeroOffre = listeOffre.get(tableOffres.getSelectedRow()).getNumeroOffre();
+			//Notifie auprès du gestionnaire de transport de la prise en charge de l'offre de transport
 			String codeTransport = gestionnaireTransportObjet.notifierOffreAcceptee(inscription.numeroInscritTrans, numeroOffre);
 			listeOffre.get(tableOffres.getSelectedRow()).setEtatOffreTransport(EtatOffreTransport.priseEnCharge);
-			
-			
 			OffreTransport offre = listeOffre.get(tableOffres.getSelectedRow());
 			offre.setEtatOffreTransport(EtatOffreTransport.priseEnCharge);
+			//Ajoute l'offre prise en  charge dans la JList contenant exclusivement les offre prises en charge par le transporteur
 			listeOffrePrisesEnCharge.add(offre);
 			offrePrisesEnChargeModel.fireTableDataChanged();
 			notifierSucces("Code transport : " + codeTransport);
 		}
-		else if (source == itemConnection) {
+		else if (source == itemConnexion) {
 			
+			//Notifie la connexion du transporteur auprès du gestionnaire de transport
 			gestionnaireTransportObjet.notifierConnexion(inscription.numeroInscritTrans, transporteur._this());
 			initVueOffre();
-			itemConnection.setEnabled(false);
-			itemDeconnection.setEnabled(true);
+			itemConnexion.setEnabled(false);
 		}
 		else if (source == itemDeconnection) {
 			
+			//Notifie la deconnexion du transporteur auprès du gestionnaire de transport
 			gestionnaireTransportObjet.notifierDeconnexion(inscription.numeroInscritTrans);
 			this.remove(scrollPane);
 			this.repaint();
-			itemConnection.setEnabled(true);
-			itemDeconnection.setEnabled(false);
+			itemConnexion.setEnabled(true);
 			
 			listeOffre.clear();
 		}
 	}
 	
+	/**
+	 * Ajoute une offre de transport dans la JList 
+	 * @param numeroOffre
+	 * @param nomStationDepart
+	 * @param nomStationArrivee
+	 */
 	public void ajouterOffreTransport(String numeroOffre, String nomStationDepart, String nomStationArrivee) {
 
 		OffreTransport nouvelleOffre = new OffreTransport(numeroOffre, "", nomStationDepart, nomStationArrivee, EtatOffreTransport.aPrendreEnCharge);
@@ -222,6 +204,10 @@ public class TransporteurUI extends JFrame implements ActionListener{
 		offreModel.fireTableDataChanged();
 	}
 	
+	/**
+	 * Alerte qu'une offre de transport a été prise par un autre transporteur
+	 * @param numeroOffre
+	 */
 	public void alerterOffreDejaPriseEnCharge(String numeroOffre) {
 		
 		
@@ -233,7 +219,6 @@ public class TransporteurUI extends JFrame implements ActionListener{
 			}
 		}
 		offreModel.fireTableDataChanged();
-		//transfert de l'offre prise en charge dans une autre jtable
 	}
 	
 	private void notifierSucces (String message) {
@@ -254,6 +239,12 @@ public class TransporteurUI extends JFrame implements ActionListener{
 	public void setTransporteur(TransporteurImpl transporteur) {
 		
 		this.transporteur = transporteur;
+	}
+
+
+	public void notifierCredit(double sommeCreditee, String numeroOffre) {
+		notifierSucces("Un montant de " + sommeCreditee + "€ vous a été crédité pour la livraison " + numeroOffre + ".");
+		
 	}
 	
 }

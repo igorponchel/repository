@@ -6,6 +6,11 @@ import javax.swing.table.AbstractTableModel;
 
 import utils.OffreTransport;
 
+/**
+ * Modèle utilisé pour afficher les offres proposées aux transporteurs
+ * @author Igor
+ *
+ */
 public class OffreTableModel extends AbstractTableModel{
 
     private static final long serialVersionUID = 1L;

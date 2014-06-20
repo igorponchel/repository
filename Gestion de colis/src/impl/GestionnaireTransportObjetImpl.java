@@ -11,8 +11,10 @@ import java.util.Set;
 import utils.EtatOffreTransport;
 import utils.OffreTransport;
 import utils.RandomStr;
+import OperateurDeTransportObjet.CoordBancairePro;
 import OperateurDeTransportObjet.EtatObjet;
 import OperateurDeTransportObjet.GestionUtilisateurs;
+import OperateurDeTransportObjet.GestionnairePaiement;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPOA;
 import OperateurDeTransportObjet.InfoObjet;
 import OperateurDeTransportObjet.Objet;
@@ -26,9 +28,13 @@ import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistant
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import exception.GestionnairePaiementPasEnServiceException;
+import exception.StationPasEnServiceException;
+
 public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPOA {
 
 	private GestionUtilisateurs gestionnaireUtilisateurs;
+	private GestionnairePaiement gestionnairePaiement;
 
 	//Contient l'ensemble des liens vers les transporteurs connectés
 	private Map<Integer, Transporteur> mapNumeroTransporteursConnectes;
@@ -39,12 +45,20 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 	//Contient les offres de transport associées à leur code de transport
 	private Map <String, OffreTransport> mapCodeTransportOffre;
 
+	//Contient pour chaque numéro d'adhérent l'ensemble des idObjet qui lui sont liés (expédiés et destinés)
 	private Multimap<Integer, String> multiMapNumAdherentIdObjet;
 
+	//Contient pour chaque idObjet l'objet correspondant
 	private Map<String, Objet> mapIdObjetObjet;
 
+	//Contient pour chaque numéro de transporteur l'ensemble des codes de transport qui lui sont liés
 	private Multimap<Integer, String> multimapNumTransCodeTrans;
+	
+	//Contient l'ensemble des couples numéro d'offre / code transport
 	private Map <String, String> mapNumOffreCodeTransport;
+	
+	//Contient pour chaque idObjet le transporteur qui l'a pris en charge.
+	private Map <String, Integer> mapIdObjetNumTransporteur;
 
 	private String args[];
 
@@ -58,16 +72,20 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		mapIdObjetObjet = new HashMap<>();
 
 		mapTransporteur = new HashMap<Integer, InscriptionTrans>();
-		mapTransporteur.put(1, new InscriptionTrans(1, "Mory"));	
-		mapTransporteur.put(2, new InscriptionTrans(2, "Ducros"));	
+		mapTransporteur.put(1, new InscriptionTrans(1, "Mory", new CoordBancairePro(1311, 07145, 12123651, 95)));	
+		mapTransporteur.put(2, new InscriptionTrans(2, "Ducros", new CoordBancairePro(1512, 04045, 1274741, 98)));
 		
 		mapNumeroTransporteursConnectes = new HashMap<>();
 		mapCodeTransportOffre = new HashMap<>();
 		multimapNumTransCodeTrans = ArrayListMultimap.create();
 		mapNumOffreCodeTransport = new HashMap<>();
+		mapIdObjetNumTransporteur = new HashMap<>();
 	}
 
 
+	/**
+	 * Notifie le gestionnaire de transport qu'un colis doit être transporté d'une station à une autre
+	 */
 	@Override
 	public String notifierOffreTransport(String idObjet, String nomStationDepart,
 			String nomStationArrivee) {
@@ -83,10 +101,12 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 			transporteur.notifierOffreTransport(nomStationDepart, nomStationArrivee, numeroOffre);
 		}
 
-
 		return codeTransport;
 	}
 
+	/**
+	 * Notifie le gestionnaire de transport qu'un transporteur a accepté une offre de transport publiée
+	 */
 	@Override
 	public String notifierOffreAcceptee(int numeroTransporteur,
 			String numeroOffre) {
@@ -94,6 +114,7 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		String codeTransport = mapNumOffreCodeTransport.get(numeroOffre);
 
 		OffreTransport offreTransport = mapCodeTransportOffre.get(codeTransport);
+		mapIdObjetNumTransporteur.put(offreTransport.getIdObjet(), numeroTransporteur);
 		
 		if (offreTransport.getEtatOffreTransport() == EtatOffreTransport.aPrendreEnCharge) {
 
@@ -101,7 +122,7 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 
 			//récupére les numero de transporteur connectés
 			Set<Integer> numerosTransporteurConnectes = new HashSet<>(mapNumeroTransporteursConnectes.keySet());
-			//enleve le numero de transporteur qui vient d'accepter l'offre
+			//enlève le numero de transporteur qui vient d'accepter l'offre
 			numerosTransporteurConnectes.remove(numeroTransporteur);
 			
 			for (Integer numTransCo : numerosTransporteurConnectes) {
@@ -125,6 +146,9 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		}
 	}
 
+	/**
+	 * Vérifier qu'une transporteur est associé à un code de transport
+	 */
 	@Override
 	public boolean verifierTransporteur(int numeroTransporteur,
 			String codeTransport) {
@@ -140,7 +164,9 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		return transporteurOK;
 	}
 
-
+	/**
+	 * Permet de consulter l'ensemble des états des objets qui concernent un adhérent
+	 */
 	@Override
 	public InfoObjet[] consulterEtatObjet(int numeroAdherent) {
 
@@ -176,6 +202,9 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		return rand.get(6);
 	}
 
+	/**
+	 * Notifie le gestionnaire de transport de la connexion d'un transporteur
+	 */
 	@Override
 	public void notifierConnexion(int numeroTransporteur, Transporteur transporteur) { //régler cas reconnexion => toujours à A PRENDRE EN CHARGe
 
@@ -186,14 +215,19 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 			transporteur.notifierOffreTransport(offre.getNomStationDepart(), offre.getNomStationArrivee(), offre.getNumeroOffre());
 		}
 	}
-
+	
+	/**
+	 * Notifie le gestionnaire de transport de la deconnexion d'un transporteur
+	 */
 	@Override
 	public void notifierDeconnexion(int numeroTransporteur) {
 		// TODO Auto-generated method stub
 		mapNumeroTransporteursConnectes.remove(numeroTransporteur);
 	}
 
-
+	/**
+	 * Notifier le gestionnaire de transport d'un changement d'état pour un objet suite à un mouvement de transporteur
+	 */
 	@Override
 	public void notifierEtatObjet(String idObjet, EtatObjet etatObjet)
 			throws ObjetInexistantException {
@@ -207,17 +241,76 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 				//Cas spécial dans lequel on notifie le destinataire que l'objet est arrivé
 				alerterDestinataire(objet.numDestinataire, idObjet);
 				
-				//Créditer transport
+				//Créditer transporteur
+				int numTransporteur = mapIdObjetNumTransporteur.get(idObjet);
+				Transporteur transporterADebiter = mapNumeroTransporteursConnectes.get(numTransporteur);
+				if (gestionnairePaiement == null) {
+					
+					try {
+						gestionnairePaiement = getGestionnairePaiementViaNamingService();
+					} catch (GestionnairePaiementPasEnServiceException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				
+				OffreTransport offre = null;
+				for (OffreTransport offreTemp : mapCodeTransportOffre.values()) {
+					
+					if (offreTemp.getIdObjet().equals(idObjet)) {
+						
+						offre = offreTemp;
+					}
+				}
+				String stationDepart = offre.getNomStationDepart();
+				String stationArrivee = offre.getNomStationArrivee();
+				double montantCredit = gestionnairePaiement.crediter(mapTransporteur.get(numTransporteur).coordonneesBancairesPro, stationDepart, stationArrivee);
+			
+				transporterADebiter.notifierCreditTransport(montantCredit, offre.getNumeroOffre());
 			}
 		}
 		else {
 			throw new ObjetInexistantException("L'objet notifié n'existe pas.");
 		}
-
 	}
 
+	private GestionnairePaiement getGestionnairePaiementViaNamingService() throws GestionnairePaiementPasEnServiceException {
+		
+		OperateurDeTransportObjet.GestionnairePaiement gestionnairePaiementDistant = null;
 
+		// Intialisation de l'orb
+		org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init(args, null);
+
+		// Saisie du nom de l'objet (si utilisation du service de nommage)
+		System.out.println("Quel objet Corba voulez-vous contacter ?");
+		String idObj = "GPaiement";
+
+		// Recuperation du naming service
+		org.omg.CosNaming.NamingContext nameRoot;
+		try {
+			nameRoot = org.omg.CosNaming.NamingContextHelper.narrow(orb.resolve_initial_references("NameService"));
+
+			// Construction du nom a rechercher
+			org.omg.CosNaming.NameComponent[] nameToFind = new org.omg.CosNaming.NameComponent[1];
+			nameToFind[0] = new org.omg.CosNaming.NameComponent(idObj,"");
+
+			// Recherche aupres du naming service
+			org.omg.CORBA.Object gestionnairePaiementDestinataire = nameRoot.resolve(nameToFind);
+			System.out.println("Objet '" + idObj + "' trouve aupres du service de noms. IOR de l'objet :");
+			System.out.println(orb.object_to_string(gestionnairePaiementDestinataire));			
+
+			gestionnairePaiementDistant = OperateurDeTransportObjet.GestionnairePaiementHelper.narrow(gestionnairePaiementDestinataire);
+
+		} catch (Exception e) {
+			throw new GestionnairePaiementPasEnServiceException();
+		} 
+
+		return gestionnairePaiementDistant;
+	}
+
+	/**
+	 * Enregistre un nouvel objet auprès du gestionnaire de transport. Action réalisée lors du dépôt initial d'un colis
+	 */
 	@Override
 	public void enregistrerObjet(Objet objet) {
 
@@ -232,6 +325,9 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		gestionnaireUtilisateurs.notifierColisArrive(numeroAdherentDestinataire, idObjet);
 	}
 
+	/** 
+	 * Permet à un trnasporteur de s'inscrire auprès du gestionnaire de transport
+	 */
 	@Override
 	public InscriptionTrans demandeInscriptionTrans(DemandeInscriptionTrans demandeInscriptionTrans) 
 			throws TransExistantException {
@@ -241,7 +337,7 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 
 		if (isNouveauTransporteur) {
 			//Si nouveau transporteur alors retourner information d'inscription
-			InscriptionTrans inscription = new InscriptionTrans(genererNumeroTransporteur(), demandeInscriptionTrans.nomTransporteur);
+			InscriptionTrans inscription = new InscriptionTrans(genererNumeroTransporteur(), demandeInscriptionTrans.nomTransporteur, demandeInscriptionTrans.coordonneesBancairesPro);
 			return inscription;
 
 		} else {
@@ -249,8 +345,6 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 			throw new TransExistantException("Un transporteur avec ces informations existe déjà. Inscription impossible.");
 		}
 	}
-
-
 
 	/**
 	 * Vérifie l'existance d'un transporteur
@@ -278,6 +372,11 @@ public class GestionnaireTransportObjetImpl extends GestionnaireTransportObjetPO
 		return mapTransporteur.size() + 1;
 	}
 	
+	/**
+	 * Récupère la référence d'une station destinatrice à partir de son nom
+	 * @param nomStation
+	 * @return
+	 */
 	private Station getStationDestinataireViaNamingService (String nomStation) {
 
 		OperateurDeTransportObjet.Station maStationDistante = null;

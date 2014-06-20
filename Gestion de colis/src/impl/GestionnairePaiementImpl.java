@@ -2,6 +2,7 @@ package impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import OperateurDeTransportObjet.CoordBancaire;
 import OperateurDeTransportObjet.CoordBancairePro;
@@ -12,6 +13,9 @@ import com.google.common.collect.Multimap;
 
 public class GestionnairePaiementImpl extends GestionnairePaiementPOA {
 
+	//Contient pour chaque région, l'ensemble des zones correspondantes
+	//Ici on a choisit 6 régions (correspondants aux 6 codes postaux de Toulouse centre)
+	//et les zones sont les quartiers correspondant
 	private Multimap<String, String> multiMapRegionZones;
 	private ArrayList<String> q31000;
 	private ArrayList<String> q31100;
@@ -25,8 +29,12 @@ public class GestionnairePaiementImpl extends GestionnairePaiementPOA {
 	private ArrayList<String> v31300;
 	private ArrayList<String> v31400;
 	private ArrayList<String> v31500;
+	
+	//Contient pour chaque région la liste de ses régions voisines
 	private Multimap<String, String> voisins;
 
+	//cout d'adhésion
+	private static double COUT_ADHESION = 10.00;
 
 	public GestionnairePaiementImpl () {
 		q31000 = new ArrayList<>();
@@ -35,7 +43,6 @@ public class GestionnairePaiementImpl extends GestionnairePaiementPOA {
 		q31000.add("Caffarelli");
 		q31000.add("St-Aubin");
 
-		
 		q31100 = new ArrayList<>();
 		q31100.add("Arènes Romaines");
 		q31100.add("Saint-Martin-du-Touch");
@@ -83,36 +90,39 @@ public class GestionnairePaiementImpl extends GestionnairePaiementPOA {
 		v31000.add("31300");
 		v31000.add("31400");
 		v31000.add("31500");
-
-		
+	
 		v31100 = new ArrayList<>();
 		v31100.add("31000");
 		v31100.add("31300");
 		v31100.add("31400");
-
 		
 		v31200 = new ArrayList<>();
 		v31200.add("31000");
 		v31200.add("31300");
 		v31200.add("31500");
-
 		
 		v31300 = new ArrayList<>();
 		v31300.add("31000");
 		v31300.add("31100");
 		v31300.add("31200");
-
-		
+	
 		v31400 = new ArrayList<>();
 		v31400.add("31000");
 		v31400.add("31100");
 		v31400.add("31500");
-
 		
 		v31500 = new ArrayList<>();
 		v31500.add("31000");
 		v31500.add("31200");
 		v31500.add("31400");
+		
+		voisins = ArrayListMultimap.create();
+		voisins.putAll("31000",v31000);
+		voisins.putAll("31100",v31100);
+		voisins.putAll("31200",v31200);
+		voisins.putAll("31300",v31300);
+		voisins.putAll("31400",v31400);
+		voisins.putAll("31500",v31500);
 
 		multiMapRegionZones = ArrayListMultimap.create();
 		multiMapRegionZones.putAll("31000",q31000);
@@ -136,45 +146,70 @@ public class GestionnairePaiementImpl extends GestionnairePaiementPOA {
 		return (zones.toArray(new String[]{}));
 	}
 
-
-	public String getCP(String station)
+	/**
+	 * Retourne la région à laquelle appartient une station
+	 * @param station
+	 * @return
+	 */
+	private String getCP(String station)
 	{
-		return(station.substring(0,5));		
+		for (String cp : multiMapRegionZones.keySet()) {
+			
+			if(multiMapRegionZones.get(cp).contains(station)) {
+				return cp;
+			}
+		}
+		return "";		
 	}
-
-	public boolean estVoisin (String stationD, String stationA)
+	
+	/**
+	 * Détermine si deux stations sont voisines
+	 * @param stationD
+	 * @param stationA
+	 * @return
+	 */
+	private boolean estVoisin (String stationD, String stationA)
 	{
 		boolean estvoisin = false;
-		Collection<String> vois;
-		String k = getCP(stationD);
-		vois = voisins.get(k);
-		for(String tmp: vois)
-		{
-			if(getCP(stationA).equals(tmp));
+
+		String cpStationD = getCP(stationD);
+		Collection<String> lesVoisins = voisins.get(cpStationD);
+		if(lesVoisins.contains(getCP(stationA))) {
 			estvoisin = true;
 		}
-
+		
 		return(estvoisin);
 	}
 
-	public double getTarif (String stationD, String stationA)
+	/**
+	 * Retourne le prix que l'adhérent doit payer pour la prise en charge de son colis
+	 * @param stationD
+	 * @param stationA
+	 * @return
+	 */
+	private double getTarif (String stationD, String stationA)
 	{
 		double tar;
+		//Si les deux stations sont dans la même région alors prix 1
 		if(getCP(stationD).equals(getCP(stationA)))
 		{
-			tar = 5.99;
+			tar = 3.00;
 		}
 		else
 		{
+			//Si les deux stations sont dans deux régions différentes voisines alors prix 2
 			if(estVoisin(stationD, stationA))
-				tar = 10.99;
-			else
-				tar = 20.50;
+				tar = 4.00;
+			else //Si les deux stations sont dans deux régions différentes non voisines alors prix 3
+				tar = 5.50;
 		}
 
 		return(tar);
 	}
 
+	/**
+	 * Débite l'adhérent et retourne le prix de la prise en charge de son objet
+	 */
 	@Override
 	public double debiter(CoordBancaire coordonneesBancaires,
 			String stationDepart, String stationArrivee) {
@@ -184,19 +219,25 @@ public class GestionnairePaiementImpl extends GestionnairePaiementPOA {
 		return montant;
 	}
 
+	/**
+	 * Crédite le transporteur à la fin de chaque transport
+	 */
 	@Override
 	public double crediter(CoordBancairePro coordonneesBancairesPro,
 			String stationDepart, String stationArrivee) {
 
-		double montant = getTarif(stationDepart,stationArrivee);
+		double montant = getTarif(stationDepart,stationArrivee) * 0.9;
 
 		return montant;
 	}
 
+	/**
+	 * Retourne le prix qu'un adhérent devra s'acquitter lors de son adhésion au service
+	 */
 	@Override
 	public double getCoutAdhesion() {
 		// TODO Auto-generated method stub
-		return 10.00;
+		return COUT_ADHESION;
 	}
 
 }

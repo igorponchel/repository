@@ -22,6 +22,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import utils.OffreTransportStation;
 import utils.RandomStr;
+import OperateurDeTransportObjet.CoordBancaire;
 import OperateurDeTransportObjet.EtatObjet;
 import OperateurDeTransportObjet.GestionUtilisateurs;
 import OperateurDeTransportObjet.GestionnairePaiement;
@@ -36,6 +37,9 @@ import OperateurDeTransportObjet.StationPackage.EtatCasier;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
+import exception.AucunCasierLibreException;
+import exception.StationPasEnServiceException;
 
 public class StationUI extends JFrame implements ActionListener{
 
@@ -121,7 +125,7 @@ public class StationUI extends JFrame implements ActionListener{
 	}
 
 	private void initializeGui() {
-		
+
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -132,7 +136,7 @@ public class StationUI extends JFrame implements ActionListener{
 		} catch (Exception e) {
 			// If Nimbus is not available, you can set the GUI to another look and feel.
 		}
-		
+
 		if (initialized)
 			return;
 		initialized = true;
@@ -202,7 +206,10 @@ public class StationUI extends JFrame implements ActionListener{
 					String codeTransport = gestionnaireTransportObjetDistant.notifierOffreTransport(idObjet, nomStation, nomStationArrivee) ;
 					mapCodeOffreTransport.put(codeTransport, new OffreTransportStation(codeTransport, nomStation, nomStationArrivee, casierDepot));
 
-					notifierSucces("Vous pouvez effectuer votre dépot dans le casier : " + numeroCasierDepart);
+					CoordBancaire coordonneesBancaires = gestionnaireUtilisateurs.getCoordBancairesAdherent(numAdherentDestinataire);
+
+					double sommeDebitee = gestionnairePaiement.debiter(coordonneesBancaires, nomStation, nomStationArrivee);
+					notifierSucces("Vous pouvez effectuer votre dépot dans le casier : " + numeroCasierDepart + "\nLa somme de " + sommeDebitee + "€ a été débité de votre compte.");
 
 					mapNumCasierIdObjet.put(numeroCasierDepart, idObjet);
 					Objet objet = new Objet(idObjet, EtatObjet.depose, numAdherentExpediteur, numAdherentDestinataire, numeroCasierDepart, numeroCasierArrivee);
@@ -221,17 +228,29 @@ public class StationUI extends JFrame implements ActionListener{
 			} catch (AucunCasierDisponibleException e) {
 
 				notifierErreur("Aucun casier n'est disponible pour le moment dans la station destinataire. Veuillez re-essayer plus tard.");
-			}
+			} catch (StationPasEnServiceException e) {
+
+				notifierErreur("La station du destinataire est hors service. \nDépôt impossible.");
+			} catch (AucunCasierLibreException e) {
+
+				notifierErreur("Aucun casier libre dans notre station. \nDépôt impossible.");
+			} 
+
 
 		} else if (source == boutonLogin) {
 
-			String zone = gestionnaireUtilisateurs.verifierAdherent(Integer.parseInt(numAdherent.getText()), motDePasse.getText());
+			String zone;
+			try {
+				zone = gestionnaireUtilisateurs.verifierAdherent(Integer.parseInt(numAdherent.getText()), motDePasse.getText());
 
-			if (zone.equals(this.nomStation)) {
+				if (zone.equals(this.nomStation)) {
 
-				initFormulaireDestination();
-			}
-			else {
+					initFormulaireDestination();
+				}
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (AdherentInexistantException e) {
 				notifierErreur("Les informations saisies n'ont pas permis de vous authentifier.");
 				saisieLogin();
 			}
@@ -248,15 +267,20 @@ public class StationUI extends JFrame implements ActionListener{
 			if (transporteurOK) {
 
 				OffreTransportStation offre = mapCodeOffreTransport.get(leCodeTransport);
-				int numeroCasier = offre.getCasierLocal().numeroCasier;
-				notifierSucces("Rappel des information de retrait \nStation destinataire : " + offre.getNomStationArrivee() + "\nNuméro casier local : " + numeroCasier);
-				mapCodeOffreTransport.remove(codeTransport);
-				listeCasiers.get(numeroCasier).etatCasier = EtatCasier.vide;
-				try {
-					gestionnaireTransportObjetDistant.notifierEtatObjet(mapNumCasierIdObjet.get(numeroCasier), EtatObjet.enTransit);
-				} catch (ObjetInexistantException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (offre != null) {
+					int numeroCasier = offre.getCasierLocal().numeroCasier;
+					notifierSucces("Rappel des information de retrait \nStation destinataire : " + offre.getNomStationArrivee() + "\nNuméro casier local : " + numeroCasier);
+					mapCodeOffreTransport.remove(leCodeTransport);
+					listeCasiers.get(numeroCasier).etatCasier = EtatCasier.vide;
+					try {
+						gestionnaireTransportObjetDistant.notifierEtatObjet(mapNumCasierIdObjet.get(numeroCasier), EtatObjet.enTransit);
+					} catch (ObjetInexistantException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else {
+					notifierErreur("Votre code transport est incorrect.");
 				}
 			}
 			else { 
@@ -270,35 +294,35 @@ public class StationUI extends JFrame implements ActionListener{
 		else if (source == boutonValiderDeposerApresTransport) {
 
 			int numeroTransporteur = Integer.parseInt(numTransporteur.getText());
-			
+
 			Collection <Integer> listeCasierPourTransporteur;
 			listeCasierPourTransporteur = multimapNumTransporteurCasier.get(numeroTransporteur);
-			
+
 			if (!listeCasierPourTransporteur.isEmpty()) {
-				
+
 				StringBuilder sb = new StringBuilder();
-				
+
 				for (int numCasier : listeCasierPourTransporteur) {
-					
+
 					String idObjet = mapNumCasierIdObjet.get(numCasier);
-					
+
 					sb.append("  Objet " + idObjet + " à déposer dans le casier " + numCasier + "\n");
-					
+
 					listeCasiers.get(numCasier).etatCasier = EtatCasier.occupe;
 					try {
-						
+
 						gestionnaireTransportObjetDistant.notifierEtatObjet(idObjet, EtatObjet.livre);
-						
+
 					} catch (ObjetInexistantException e) {
 						e.printStackTrace();
 					}
 				}	
-				
+
 				notifierSucces("Détails des objets à déposer : \n" + sb.toString());	
 				multimapNumTransporteurCasier.removeAll(numeroTransporteur);
 			}
 			else {
-				
+
 				notifierErreur("Vous n'êtes pas autorisé à déposer d'objet dans notre station.");
 			}
 		}
@@ -310,19 +334,19 @@ public class StationUI extends JFrame implements ActionListener{
 
 			int numeroAdherentSaisi = Integer.parseInt(numAdherent.getText());
 			String motDePasseSaisi = motDePasse.getText();
-			String zone = gestionnaireUtilisateurs.verifierAdherent(numeroAdherentSaisi, motDePasseSaisi);
 
-			if (zone.equals(this.nomStation)) {
+			try {
+				String zone = gestionnaireUtilisateurs.verifierAdherent(numeroAdherentSaisi, motDePasseSaisi);
 
 				Collection<Objet> listObjet = multiMapNumAdherentObjet.get(numeroAdherentSaisi);
 				String casiers = "";
-				
+
 				if (listObjet.size() > 0) {
-					
+
 					for (Objet objetTemp : listObjet) {
-						
+
 						casiers = casiers + "\nNuméro " + objetTemp.numeroCasierArrivee;
-						
+
 						try {
 							gestionnaireTransportObjetDistant.notifierEtatObjet(objetTemp.idObjet, EtatObjet.delivre);
 							listeCasiers.get(objetTemp.numeroCasierArrivee).etatCasier = EtatCasier.vide;
@@ -331,17 +355,15 @@ public class StationUI extends JFrame implements ActionListener{
 							e.printStackTrace();
 						}
 					}
-					
+
 					notifierSucces("Vous pouvez récupérer votre colis dans le(s) casier(s) :" + casiers);
 					multiMapNumAdherentObjet.removeAll(numeroAdherentSaisi);
 				}
 				else {
-					
 					notifierErreur("Aucun colis pour vous.");
 				}
 
-			}
-			else {
+			} catch (AdherentInexistantException e1) {
 				notifierErreur("Les informations saisies n'ont pas permis de vous authentifier.");
 				saisieLogin();
 			}
@@ -471,7 +493,7 @@ public class StationUI extends JFrame implements ActionListener{
 		pane.add(boutonLogin);
 	}
 
-	private Station getStationDestinataireViaNamingService (String zoneDestinataire) {
+	private Station getStationDestinataireViaNamingService (String zoneDestinataire) throws StationPasEnServiceException{
 
 		OperateurDeTransportObjet.Station maStationDistante = null;
 
@@ -499,8 +521,7 @@ public class StationUI extends JFrame implements ActionListener{
 			maStationDistante = OperateurDeTransportObjet.StationHelper.narrow(stationDestinataire);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new StationPasEnServiceException();
 		} 
 
 		return maStationDistante;
@@ -521,7 +542,7 @@ public class StationUI extends JFrame implements ActionListener{
 		}
 	}
 
-	public int getNumeroCasierLibre() {
+	public int getNumeroCasierLibre() throws AucunCasierLibreException {
 
 		for (int i = 0; i < 20; i++) {
 
@@ -532,24 +553,24 @@ public class StationUI extends JFrame implements ActionListener{
 			}
 		}
 
-		return 0;
+		throw new AucunCasierLibreException();
 	}
 
 	public void ajouterCoupleNumTransporteurCasier(int numTransporteur, String idObjet) {
-		
+
 		int numCasier;
 		try {
-			
+
 			numCasier = getNumCasierViaIdObjet(idObjet);
 			multimapNumTransporteurCasier.put(numTransporteur, numCasier);
-			
-			
+
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void ajouterCoupleCodeTransportCasier(String codeTransport, int numeroCasier) {
 
 		Casier casier = listeCasiers.get(numeroCasier);
@@ -567,19 +588,19 @@ public class StationUI extends JFrame implements ActionListener{
 
 		multiMapNumAdherentObjet.put(numeroAdherent, objet);
 	}
-	
+
 	private int getNumCasierViaIdObjet(String idObjet) throws Exception {
-		
+
 		for (int i = 0; i < mapNumCasierIdObjet.size(); i++) {
-			
+
 			if (mapNumCasierIdObjet.get(i).equals(idObjet)) {
-				
+
 				return i;
 			}
 		}
-		
+
 		throw new Exception("L'objet n'existe pas");
-		
+
 	}
 
 	// others

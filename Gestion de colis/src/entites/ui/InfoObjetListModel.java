@@ -6,6 +6,11 @@ import javax.swing.AbstractListModel;
 
 import OperateurDeTransportObjet.InfoObjet;
 
+/**
+ * Modèle utilisé pour afficher les informations des objets concernant un adhérent
+ * @author Igor
+ *
+ */
 public class InfoObjetListModel extends AbstractListModel<String>{
 
     private static final long serialVersionUID = 1L;

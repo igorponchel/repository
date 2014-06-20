@@ -24,9 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import utils.OffreTransport;
 import utils.OrbAdherent;
-import OperateurDeTransportObjet.Adherent;
 import OperateurDeTransportObjet.Adresse;
 import OperateurDeTransportObjet.CoordBancaire;
 import OperateurDeTransportObjet.CoordBancairePro;
@@ -35,13 +33,13 @@ import OperateurDeTransportObjet.GestionnairePaiement;
 import OperateurDeTransportObjet.GestionnaireTransportObjet;
 import OperateurDeTransportObjet.InfoObjet;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentExistantException;
+import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.DemandeAdhesion;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.DemandeInscriptionTrans;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.InscriptionTrans;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.ObjetInexistantException;
 import OperateurDeTransportObjet.GestionnaireTransportObjetPackage.TransExistantException;
 
-import com.google.common.collect.Lists;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -51,13 +49,18 @@ public class GestionColisUI extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 
+	private static String ACCUEIL = "Accueil";
+	private static String ADHESION = "Adhesion";
+	private static String CONNEXION = "Connexion";
+	private static String CONSULTATION = "Consultation";
+	private static String INSCRIPTION = "Inscription";
+
 	private OperateurDeTransportObjet.GestionnaireTransportObjet gestionnaireTransportObjet;
 	private OperateurDeTransportObjet.GestionUtilisateurs gestionnaireUtilisateurs;
 	private OperateurDeTransportObjet.GestionnairePaiement gestionnairePaiement;
 	private OrbAdherent orbAdherent = null;
 	private int numAdherent = 0;
 
-	private ArrayList <OffreTransport> listeOffre;
 	private InscriptionTrans inscription;
 
 	private boolean initialized = false;
@@ -71,7 +74,6 @@ public class GestionColisUI extends JFrame implements ActionListener{
 	private JPanel panelContenu;
 	private JPanel panelAccueil;
 	private JPanel panelConsultationEtat;
-	private JPanel panelConnexion;
 	private CardLayout cardLayout;
 
 	private JMenuItem itemConnection;
@@ -131,7 +133,6 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		this.gestionnairePaiement = gestionnairePaiement;
 		this.args = args;
 
-		this.listeOffre = Lists.newArrayList();
 		this.setVisible(true);
 		initialize();
 	}
@@ -167,19 +168,15 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		boutonDemandeAdhesion = new JButton("Demande d'adhésion");
 		boutonDemandeAdhesion.setFocusPainted(false);
 		boutonDemandeAdhesion.addActionListener(this);
-//		boutonDemandeAdhesion.setBackground(new Color(250, 220, 70, 10));
 		boutonConsulterEtatObjet = new JButton("Consulter état objet");
 		boutonConsulterEtatObjet.setFocusPainted(false);
 		boutonConsulterEtatObjet.addActionListener(this);
-//		boutonConsulterEtatObjet.setBackground(new Color(250, 220, 70, 10));
 		boutonDemandeInscription = new JButton("Demande inscription");
-//		boutonDemandeInscription.setBackground(new Color(220, 250, 70, 10));
 		boutonDemandeInscription.setFocusPainted(false);
 		boutonDemandeInscription.addActionListener(this);
 		boutonAccueil = new JButton("Accueil");
 		boutonAccueil.setFocusPainted(false);
 		boutonAccueil.addActionListener(this);
-//		boutonAccueil.setBackground(new Color(250, 180, 80, 10));
 
 		//init des panel
 		cardLayout = new CardLayout();
@@ -200,11 +197,11 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		builder.addGlue();
 		panelMenu = builder.getPanel();
 
-		panelContenu.add(panelAccueil, "Accueil");
-		panelContenu.add(getFormulaireAdhesion(), "Adhesion");
-		panelContenu.add(getFormulaireConnexion(), "Connexion");
-		panelContenu.add(getVueConsultation(), "Consultation");
-		panelContenu.add(getFormulaireInscription(), "Inscription");
+		panelContenu.add(panelAccueil, ACCUEIL);
+		panelContenu.add(getFormulaireAdhesion(), ADHESION);
+		panelContenu.add(getFormulaireConnexion(), CONNEXION);
+		panelContenu.add(getVueConsultation(), CONSULTATION);
+		panelContenu.add(getFormulaireInscription(), INSCRIPTION);
 
 		//main layout
 		BorderLayout mainLayout = new BorderLayout();
@@ -222,16 +219,16 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			String command = e.getActionCommand();
 			command = command == null ? "" : command;
-			// TODO: add if...if else... for action commands
-
 		}
 	}
 
 	public void dispose() {
 
+		//Arrêt de l'orb lors de la fermeture d'une fenêtre
 		if (orbAdherent != null) {
 			orbAdherent.shutdown();
 		}
+		//notification de deconnexion de l'adhérent
 		if (numAdherent != 0) {
 			gestionnaireUtilisateurs.notifierDeconnexionAdh(numAdherent);
 		}
@@ -239,11 +236,10 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		System.exit(0);
 	}
 
-	public void setVisible(boolean b) {
-		initialize();
-		super.setVisible(b);
-	}
-
+	/**
+	 * Création du formulaire d'adhésion
+	 * @return
+	 */
 	private JPanel getFormulaireAdhesion() {
 
 		prenomAdherent = new JTextField();
@@ -267,13 +263,9 @@ public class GestionColisUI extends JFrame implements ActionListener{
 				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");      // rows
 
 		PanelBuilder builder = new PanelBuilder(layout);
-		builder.setDefaultDialogBorder();
 
 		// Obtain a reusable constraints object to place components in the grid.
 		CellConstraints cc = new CellConstraints();
-
-		// Fill the grid with components; the builder can create
-		// frequently used components, e.g. separators and labels.
 
 		// Add a titled separator to cell (1, 1) that spans 7 columns.
 		builder.addSeparator("Informations personnelles",   cc.xyw(1,  1, 7));
@@ -307,6 +299,10 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		return builder.getPanel();
 	}
 
+	/**
+	 * Vérifie que tous les champs du formulaire ont étés renseignés
+	 * @return
+	 */
 	private boolean checkFormulaireAdhesion() {
 
 		StringBuilder sb = new StringBuilder();
@@ -351,6 +347,10 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		return true;
 	}
 
+	/**
+	 * Crée le formulaire d'inscription d'un transporteur
+	 * @return
+	 */
 	private JPanel getFormulaireInscription() {
 
 		nomTransporteur = new JTextField();
@@ -389,7 +389,7 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		builder.add(nomRue,         cc.xyw(3,  7, 5));
 		builder.addLabel("Ville",       cc.xy (1,  9));
 		builder.add(ville,         cc.xyw(3,  9, 3));
-		builder.addLabel("Code postale",       cc.xy (1,  11));
+		builder.addLabel("Code postal",       cc.xy (1,  11));
 		builder.add(codePostalT,         cc.xyw(3,  11, 3));
 
 
@@ -408,6 +408,9 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		return builder.getPanel();
 	}
 
+	/**Vérifie que les champs du formulaire d'inscription ont étés renseignés
+	 * @return
+	 */
 	private boolean checkFormulaireInscription() {
 
 		StringBuilder sb = new StringBuilder();
@@ -445,9 +448,12 @@ public class GestionColisUI extends JFrame implements ActionListener{
 
 		return true;
 	}
-	
+
+	/**
+	 * Ré-initialise les champs du formulaire d'adhésion
+	 */
 	private void cleanFormulaireAdhesion() {
-				
+
 		prenomAdherent.setText("");
 		nomAdherent.setText("");
 		numeroRueAdh.setText("");
@@ -458,9 +464,12 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		date.setText("");
 		numDos.setText("");
 	}
-	
+
+	/**
+	 * Ré-initialise les champs du formulaire d'inscription trnasporteur
+	 */
 	private void cleanFormulaireInscription() {
-		
+
 		nomTransporteur.setText("");
 		numeroRue.setText("");
 		nomRue.setText("");
@@ -471,6 +480,10 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		cleRIB.setText("");
 	}
 
+	/**
+	 * Crée le formulaire de connexion
+	 * @return
+	 */
 	private JPanel getFormulaireConnexion() {
 
 		numeroAdherent = new JTextField();
@@ -489,9 +502,6 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		// Obtain a reusable constraints object to place components in the grid.
 		CellConstraints cc = new CellConstraints();
 
-		// Fill the grid with components; the builder can create
-		// frequently used components, e.g. separators and labels.
-
 		// Add a titled separator to cell (1, 1) that spans 7 columns.
 		builder.addSeparator("Informations de connexion",   cc.xyw(1,  1, 7));
 		builder.addLabel("Numéro adhérent",     		      cc.xy (1,  3));
@@ -509,13 +519,16 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		panelConsultationEtat = new JPanel();
 		panelConsultationEtat.setLayout(new BorderLayout());
 		listModel = new InfoObjetListModel(new ArrayList<InfoObjet>());
-		listeInfoObjet = new JList(listModel);
+		listeInfoObjet = new JList<>(listModel);
 		scrollPane = new JScrollPane(listeInfoObjet);
 		panelConsultationEtat.add(scrollPane, BorderLayout.CENTER);		
 
 		return panelConsultationEtat;
 	}
 
+	/**
+	 * Charge la liste des états des objets de l'adhérent 
+	 */
 	private void loadListeEtatObjets() {
 
 		InfoObjet[] infosObjet;
@@ -533,6 +546,9 @@ public class GestionColisUI extends JFrame implements ActionListener{
 
 	}
 
+	/**
+	 * Envoie le formulaire d'inscription une fois sa saisie terminée
+	 */
 	private void envoyerFormulaireInscription() {
 
 		DemandeInscriptionTrans demandeInscription = new DemandeInscriptionTrans(nomTransporteur.getText(), 
@@ -540,7 +556,7 @@ public class GestionColisUI extends JFrame implements ActionListener{
 				new CoordBancairePro(Integer.parseInt(codeBanque.getText()), Integer.parseInt(codeGuichet.getText()), Integer.parseInt(numCompte.getText()), Integer.parseInt(cleRIB.getText())));
 		try {
 			inscription = gestionnaireTransportObjet.demandeInscriptionTrans(demandeInscription);
-			notifierSucces("Inscription réussie.");
+			notifierSucces("Inscription réussie. Votre numéro de transporteur est le suivante : " + inscription.numeroInscritTrans);
 
 
 		} catch (TransExistantException e) {
@@ -549,6 +565,9 @@ public class GestionColisUI extends JFrame implements ActionListener{
 		}
 	}
 
+	/**
+	 * Envoie le formulaire d'adhésion une fois sa saisie terminée
+	 */
 	private void envoyerFormulaireAdhesion() {
 
 		DemandeAdhesion demandeAdhesion = new DemandeAdhesion(prenomAdherent.getText(), nomAdherent.getText(), 
@@ -567,6 +586,10 @@ public class GestionColisUI extends JFrame implements ActionListener{
 	}
 
 
+	/**
+	 * Affiche un des panels disponibles
+	 * @param nomCard
+	 */
 	private void displayCard(String nomCard) {
 
 		CardLayout cl = (CardLayout)(panelContenu.getLayout());
@@ -574,25 +597,28 @@ public class GestionColisUI extends JFrame implements ActionListener{
 	}
 
 
+	/**
+	 * Gère les évènements liés aux boutons de l'ihm
+	 */
 	public void actionPerformed(ActionEvent evt) {
 
 		Object source = evt.getSource();
 
 		if (source == boutonDemandeInscription) {
 
-			displayCard("Inscription");
+			displayCard(INSCRIPTION);
 		}
 		else if (source == boutonDemandeAdhesion) {
 
-			displayCard("Adhesion");
+			displayCard(ADHESION);
 		} 
 		else if (source == boutonConsulterEtatObjet) {
 
-			displayCard("Connexion");
+			displayCard(CONNEXION);
 		}
 		else if (source == boutonAccueil) {
 
-			displayCard("Accueil");
+			displayCard(ACCUEIL);
 		}
 		else if (source == boutonConnexion) {
 
@@ -604,9 +630,8 @@ public class GestionColisUI extends JFrame implements ActionListener{
 			}
 			numAdherent = Integer.parseInt(numeroAdherent.getText());
 
-			String authentifie = gestionnaireUtilisateurs.verifierAdherent(Integer.parseInt(numeroAdherent.getText()), motDePasse.getText());
-
-			if(!authentifie.equals("")) {
+			try {
+				gestionnaireUtilisateurs.verifierAdherent(Integer.parseInt(numeroAdherent.getText()), motDePasse.getText());
 
 				//Enregistre l'adherent connecté dans le naming service et attend dans un thread
 				orbAdherent = new OrbAdherent(args, numAdherent, this);
@@ -616,11 +641,14 @@ public class GestionColisUI extends JFrame implements ActionListener{
 				//charge la liste des états des objets
 				loadListeEtatObjets();
 				//affiche la vue Consultation contenant la liste des états des objets
-				displayCard("Consultation");
-			}
-			else {
+				displayCard(CONSULTATION);
+
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (AdherentInexistantException e) {
+
 				notifierErreur("Les informations saisies n'ont pas permis de vous authentifier.");
-			}
+			}			
 		}
 		else if (source == boutonInscription) {
 
@@ -628,7 +656,7 @@ public class GestionColisUI extends JFrame implements ActionListener{
 			if (ok) {
 				envoyerFormulaireInscription();
 				cleanFormulaireInscription();
-				displayCard("Accueil");
+				displayCard(ACCUEIL);
 			}
 
 		}
@@ -638,16 +666,15 @@ public class GestionColisUI extends JFrame implements ActionListener{
 			if (ok) {
 				envoyerFormulaireAdhesion();
 				cleanFormulaireAdhesion();
-				displayCard("Accueil");
+				displayCard(ACCUEIL);
 			}
 		}
 		else if (source == codePostalAdh) {
 
+			//Charge la combobox des zones en fonction du code postal saisi
 			String[] listeZones = gestionnairePaiement.getListZones((String)codePostalAdh.getSelectedItem());
 			comboZones.removeAllItems();
-
 			for(String zone : listeZones) {
-
 				comboZones.addItem(zone);
 			}
 		}

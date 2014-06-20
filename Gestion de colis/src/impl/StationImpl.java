@@ -4,27 +4,29 @@ import OperateurDeTransportObjet.Objet;
 import OperateurDeTransportObjet.StationPOA;
 import OperateurDeTransportObjet.StationPackage.AucunCasierDisponibleException;
 import entites.ui.StationUI;
+import exception.AucunCasierLibreException;
 
 public class StationImpl extends StationPOA {
 
 	private StationUI maStation;
-	
+
 	public StationImpl(StationUI station) {
-		
+
 		this.maStation = station;
 	}
 
 	@Override
 	public int reserverCasier(int numeroAdherent)
 			throws AucunCasierDisponibleException {
-		
-		int numeroCasier = maStation.getNumeroCasierLibre();
-		
-		if (numeroCasier < 20 ) {
-			
+
+		int numeroCasier;
+		try {
+			numeroCasier = maStation.getNumeroCasierLibre();
+
 			return numeroCasier;
-		}
-		else {
+			
+		} catch (AucunCasierLibreException e) {
+			// TODO Auto-generated catch block
 			throw new AucunCasierDisponibleException("Aucun casier n'est disponible");
 		}
 	}

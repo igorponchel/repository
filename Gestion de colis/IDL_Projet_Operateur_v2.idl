@@ -48,6 +48,7 @@ module OperateurDeTransportObjet {
 	
 		oneway void notifierOffreTransport(in string nomStationDepart, in string nomStationArrivee, in string numeroOffre);
 		oneway void notifierOffrePriseEnCharge(in string numeroOffre);
+		oneway void notifierCreditTransport(in double sommeCreditee, in string numeroOffre);
 	};
 		
 	interface Adherent {
@@ -72,6 +73,7 @@ module OperateurDeTransportObjet {
 			string nomAdherent;
 			string prenomAdherent;
 			string zoneAdherent;
+			CoordBancaire coordonnesBancaires;
 		};
 
 		exception AdherentExistantException {
@@ -86,9 +88,10 @@ module OperateurDeTransportObjet {
 		
 		Adhesion demandeAdhesion(in DemandeAdhesion demandeAdhesion) raises (AdherentExistantException);
 		//retourn la zone de l'adherent s'il existe, 0 sinon
-		string verifierAdherent(in long numeroAdherent, in string motDePasse) ; 
+		string verifierAdherent(in long numeroAdherent, in string motDePasse) raises(AdherentInexistantException); 
 		long getNumAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
 		string getZoneAdherent(in string nomAdherent, in string prenomAdherent) raises(AdherentInexistantException);
+		CoordBancaire getCoordBancairesAdherent(in long numAdherent) raises(AdherentInexistantException);
 		oneway void notifierConnexionAdh(in long numeroAdherent, in Adherent adherent);
 		oneway void notifierDeconnexionAdh(in long numeroAdherent);
 		oneway void notifierColisArrive(in long numeroAdherent, in string idObjet); // ajouter une exception
@@ -118,6 +121,7 @@ module OperateurDeTransportObjet {
 		
 			long numeroInscritTrans;
 			string nomTransporteur;
+			CoordBancairePro coordonneesBancairesPro;
 		};
 		
 		exception ObjetInexistantException {

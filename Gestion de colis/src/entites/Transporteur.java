@@ -54,7 +54,7 @@ public class Transporteur {
 
 
 			// Appel de l'interface graphique
-			TransporteurUI frame = new TransporteurUI(monGestionnaireTransportObjet, args, 1);
+			TransporteurUI frame = new TransporteurUI(monGestionnaireTransportObjet, 1);
 			frame.setTitle("Fenetre Transporteur");
 			frame.setVisible(true);
 			
@@ -74,7 +74,7 @@ public class Transporteur {
 	        // Construction du nom a enregistrer
 	        org.omg.CosNaming.NameComponent[] nameToRegister = new org.omg.CosNaming.NameComponent[1];
 	        System.out.println("Sous quel nom voulez-vous enregistrer l'objet Corba ?");
-	        String nomObj = "Transporteur1";
+	        String nomObj = "Transporteur" + args[0];
 	        nameToRegister[0] = new org.omg.CosNaming.NameComponent(nomObj,"");
 
 	        // Enregistrement de l'objet CORBA dans le service de noms

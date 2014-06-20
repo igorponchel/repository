@@ -34,4 +34,10 @@ public class TransporteurImpl extends TransporteurPOA {
 			}
 		});
 	}
+
+	@Override
+	public void notifierCreditTransport(double sommeCreditee, String numeroOffre) {
+		transporteurUI.notifierCredit(sommeCreditee, numeroOffre);
+		
+	}
 }

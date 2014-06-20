@@ -25,7 +25,7 @@ public class GestionnaireUtilisateurs {
 
 			// Creation du servant
 			//*********************
-			GestionUtilisateursImpl monGestionnaireUtilisateurs = new GestionUtilisateursImpl(args);
+			GestionUtilisateursImpl monGestionnaireUtilisateurs = new GestionUtilisateursImpl();
 
 			// Activer le servant au sein du POA et recuperer son ID
 			byte[] monGestionnaireUtilisateursId = rootPOA.activate_object(monGestionnaireUtilisateurs);

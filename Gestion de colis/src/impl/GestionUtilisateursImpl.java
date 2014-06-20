@@ -2,11 +2,11 @@ package impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import utils.RandomStr;
 import OperateurDeTransportObjet.Adherent;
+import OperateurDeTransportObjet.CoordBancaire;
 import OperateurDeTransportObjet.GestionUtilisateursPOA;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentExistantException;
 import OperateurDeTransportObjet.GestionUtilisateursPackage.AdherentInexistantException;
@@ -24,22 +24,25 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 	//Contient les notifications de colis arrivé en attente. 
 	private Multimap<Integer, String> multimapNumAdherentIdObjet;
 
+	//Contient l'ensemble des adhesion effectuées
 	private Map <Integer, Adhesion> mapAdherent;
 
-	private Map <Integer, List<Integer>> mapRegionZones;
-
-	public GestionUtilisateursImpl (String args[]) {
+	public GestionUtilisateursImpl () {
 
 		mapNumeroAdherentConnectes = new HashMap<>();
 		multimapNumAdherentIdObjet = ArrayListMultimap.create();
 
 		mapAdherent = new HashMap<>();
-		mapAdherent.put(1, new Adhesion(1, "toto", "Ponchel", "Igor", "Capitole"));
-		mapAdherent.put(2, new Adhesion(2, "toto", "Baadoud", "Kader", "Mirail"));
-		mapAdherent.put(3, new Adhesion(2, "toto", "Bastien", "Trevisan", "Minimes"));
+		mapAdherent.put(1, new Adhesion(1, "toto", "Ponchel", "Igor", "Capitole", new CoordBancaire(11111111, "", "", 0)));
+		mapAdherent.put(2, new Adhesion(2, "toto", "Baadoud", "Kader", "Mirail", new CoordBancaire(22232222, "", "", 0)));
+		mapAdherent.put(3, new Adhesion(3, "toto", "Trevisan", "Bastien", "Minimes", new CoordBancaire(33333333, "", "", 0)));
+		mapAdherent.put(4, new Adhesion(4, "toto", "Delpech", "Thomas", "St-Aubin", new CoordBancaire(4444444, "", "", 0)));
 
 	}
 
+	/**
+	 * Permet à un utilisateur d'adhérer au service
+	 */
 	@Override
 	public Adhesion demandeAdhesion (DemandeAdhesion demandeAdhesion) throws AdherentExistantException {
 
@@ -49,7 +52,7 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 
 		if (isNouvelAdherent) {
 			//Si nouvel adherent alors retourner information d'adhésion
-			Adhesion adhesion = new Adhesion(genererNumeroAdherent(), genererMotDePasse(), demandeAdhesion.nomAdherent, demandeAdhesion.prenomAdherent, demandeAdhesion.adresseAdherent.quartier);
+			Adhesion adhesion = new Adhesion(genererNumeroAdherent(), genererMotDePasse(), demandeAdhesion.nomAdherent, demandeAdhesion.prenomAdherent, demandeAdhesion.adresseAdherent.quartier, demandeAdhesion.coordonneesBancaires);
 			mapAdherent.put(adhesion.numeroAdherent, adhesion);
 			return adhesion;
 
@@ -95,22 +98,8 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 	}
 
 	/**
-	 * Calcule la zone correspondante au département de l'adhérent
+	 * Retourne le numéro d'un adhérent à partir de son nom et de son prénom
 	 */
-	private int getZone (int departement) {
-
-		for (int i = 1; i <= mapRegionZones.size(); i++) {
-
-			if(mapRegionZones.get(i).contains(departement)) {
-
-				return i;
-			}
-		}
-
-		return -1;
-		//		throw new Exception("Le département de l'adhérent n'est pas pris en charge. Seule la France métropolitaine est élligible.");
-	}
-
 	@Override
 	public int getNumAdherent(String nomAdherent, String prenom) throws AdherentInexistantException {
 	
@@ -126,8 +115,11 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 		throw new AdherentInexistantException("L'adherent recherché n'existe pas.");
 	}
 
+	/**
+	 * Vérifie le couple numéroAdhérent/Motdepasse d'une adhésion inscrit
+	 */
 	@Override
-	public String verifierAdherent(int numeroAdherent, String motDePasse) {
+	public String verifierAdherent(int numeroAdherent, String motDePasse) throws AdherentInexistantException {
 
 		Adhesion adhesion = mapAdherent.get(numeroAdherent);
 		if (adhesion != null) {
@@ -137,9 +129,28 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 			}
 		}
 
-		return "";
+		throw new AdherentInexistantException("L'adherent recherché n'existe pas.");
 	}
 
+	/**
+	 * Permet d'obtenir les coordonnées bancaires d'un adhérent pour pouvoir le facturer
+	 */
+	@Override
+	public CoordBancaire getCoordBancairesAdherent(int numAdherent)
+			throws AdherentInexistantException {
+		
+		if (mapAdherent.containsKey(numAdherent)) {
+			
+			return mapAdherent.get(numAdherent).coordonnesBancaires;
+		}
+		else {
+			throw new AdherentInexistantException();
+		}
+	}
+	
+	/**
+	 * Permet d'obtenir la zone de l'adhérent
+	 */
 	@Override
 	public String getZoneAdherent(String nomAdherent, String prenomAdherent)
 			throws AdherentInexistantException {
@@ -178,7 +189,7 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 	}
 
 	/**
-	 * Notifier l'adhérent que le colis dont il est destinataire est arrivé.
+	 * Notifie l'adhérent que le colis dont il est destinataire est arrivé en station.
 	 */
 	@Override
 	public void notifierColisArrive(int numeroAdherent, String idObjet) {
@@ -215,5 +226,5 @@ public class GestionUtilisateursImpl extends GestionUtilisateursPOA {
 			multimapNumAdherentIdObjet.removeAll(numeroAdherent);
 		}
 	}
-	
+
 }
