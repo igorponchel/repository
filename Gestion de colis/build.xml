@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<project basedir="." default="build" name="Gestion de colis">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="7"/>
+    <property name="source" value="7"/>
+    <path id="Gestion de colis.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="libs/avalon-framework.jar"/>
+        <pathelement location="libs/logkit.jar"/>
+        <pathelement location="libs/openorb_tools-1.3.1.jar"/>
+        <pathelement location="libs/openorb-1.3.1.jar"/>
+        <pathelement location="libs/guava-17.0.jar"/>
+    	<pathelement location="libs/jgoodies-common-1.8.0.jar"/>
+    	<pathelement location="libs/jgoodies-forms-1.8.0.jar"/>
+        <pathelement location="bin-idl"/>
+    </path>
+
+    <target name="init">
+        <mkdir dir="bin"/>
+        <mkdir dir="bin-idl"/>
+        <mkdir dir="livraison"/>
+        <mkdir dir="livraison/temp"/>
+        <mkdir dir="livraison/temp/libs"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="generated">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="clean">
+        <delete dir="bin"/>
+        <delete dir="livraison"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+
+    <target depends="init, IDL2Java, compile-project, build-livraison" name="build">
+        <echo message="Build : ${ant.project.name}: ${ant.file}"/>
+    </target>
+
+    <target depends="compiler-IDL, compiler-src" name="compile-project">
+        <echo message="Compilation sources générés par IDL puis sources"/>
+    </target>
+
+    <target name="compiler-IDL">
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin-idl" includeantruntime="false" source="${source}" target="${target}">
+            <src path="generated"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        </javac>
+    </target>
+
+    <target name="compiler-src">
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        </javac>
+    </target>
+
+    <target name="build-livraison" depends="jar-idl, jar-gestion-colis">
+        <copy todir="livraison/temp/libs">
+            <fileset dir="libs" includes="*.jar"/>
+        </copy>
+        <copy todir="livraison/temp">
+            <fileset dir="bat" includes="*.bat"/>
+        </copy>
+        <zip basedir="livraison/temp" file="livraison/gestion-colis.zip"/>
+    </target>
+
+    <target name="jar-idl">
+        <jar basedir="bin-idl" destfile="livraison/temp/libs/idl-generated.jar"/>
+    </target>
+
+    <target name="jar-gestion-colis">
+        <jar basedir="bin" destfile="livraison/temp/libs/gestion-colis.jar"/>
+    </target>
+
+
+
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+
+    <target name="IDL2Java">
+        <echo message="Suppression du repertoire generated..."/>
+        <delete dir="generated"/>
+        <echo message="Compilation de l'IDL vers le repertoire generated..."/>
+        <java classname="org.openorb.compiler.IdlCompiler" failonerror="true" fork="yes">
+            <arg line="IDL_Projet_Operateur_v2.idl -verbose -d ./generated"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        </java>
+    </target>
+
+    <target name="run-1-NamingService">
+        <java classname="org.openorb.util.MapNamingContext" failonerror="true" fork="yes">
+            <jvmarg line="-Dorg.omg.CORBA.ORBClass=org.openorb.CORBA.ORB"/>
+            <classpath refid="Gestion de colis.classpath"/>
+            <arg value="-ORBPort=2001"/>
+            <arg value="-print"/>
+        </java>
+    </target>
+    <target name="run-2-GestionnaireUtilisateurs">
+        <java classname="entites.GestionnaireUtilisateurs" failonerror="true" fork="yes">
+            <jvmarg line="-Dorg.omg.CORBA.ORBClass=org.openorb.CORBA.ORB"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        </java>
+    </target>
+    <target name="run-3-GestionnaireTransport">
+        <java classname="entites.GestionnaireTransportObjet" failonerror="true" fork="yes">
+            <jvmarg line="-Dorg.omg.CORBA.ORBClass=org.openorb.CORBA.ORB"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        </java>
+    </target>
+    <target name="run-4-GestionnairePaiement">
+        <java classname="entites.GestionnairePaiement" failonerror="true" fork="yes">
+            <jvmarg line="-Dorg.omg.CORBA.ORBClass=org.openorb.CORBA.ORB"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        </java>
+    </target>
+    <target name="run-5-Station1">
+        <java classname="entites.Station" failonerror="true" fork="yes">
+            <jvmarg line="-Dorg.omg.CORBA.ORBClass=org.openorb.CORBA.ORB"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        	<arg value="Capitole"/>
+        </java>
+    </target>
+    <target name="run-6-Station2">
+        <java classname="entites.Station" failonerror="true" fork="yes">
+            <jvmarg line="-Dorg.omg.CORBA.ORBClass=org.openorb.CORBA.ORB"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        	<arg value="Mirail"/>
+        </java>
+    </target>
+    <target name="run-7-Transporteur">
+        <java classname="entites.Transporteur" failonerror="true" fork="yes">
+            <jvmarg line="-Dorg.omg.CORBA.ORBClass=org.openorb.CORBA.ORB"/>
+            <classpath refid="Gestion de colis.classpath"/>
+        	<arg value="1"/>
+        </java>
+    </target>
+	 <target name="run-8-GestionColis">
+	        <java classname="entites.GestionColis" failonerror="true" fork="yes">
+	            <jvmarg line="-Dorg.omg.CORBA.ORBClass=org.openorb.CORBA.ORB"/>
+	            <classpath refid="Gestion de colis.classpath"/>
+	        	<arg value="1"/>
+	        </java>
+	    </target>
+</project>

@@ -247,6 +247,9 @@ public class StationUI extends JFrame implements ActionListener{
 
 					initFormulaireDestination();
 				}
+				else {
+					notifierErreur("Vous n'appartenez pas à cette station.");
+				}
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

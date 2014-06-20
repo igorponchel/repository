@@ -77,7 +77,6 @@ public class GestionColisUI extends JFrame implements ActionListener{
 	private CardLayout cardLayout;
 
 	private JMenuItem itemConnection;
-	private JMenuItem itemDeconnection;
 
 	//Formulaire inscription
 	private JTextField nomTransporteur;
@@ -116,9 +115,8 @@ public class GestionColisUI extends JFrame implements ActionListener{
 	private JList listeInfoObjet;
 	InfoObjetListModel listModel;
 
-
-
 	private String args[];
+
 
 	public GestionColisUI() {
 
